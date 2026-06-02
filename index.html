@@ -617,7 +617,7 @@ html.light .toggle-thumb{left:16px;background:#fff;}
 </main>
 <script>
 const C=2*Math.PI*75, CA=2*Math.PI*70;
-let state={salary:5950000,pN:50,pW:30,pS:20,debts:[],breakdown:{needs:[{name:'Makan & minuman',amt:''},{name:'Transportasi',amt:''},{name:'Listrik & air',amt:''}],wants:[{name:'Hiburan',amt:''},{name:'Makan di luar',amt:''}],savings:[{name:'Dana darurat',amt:''},{name:'Investasi',amt:''}]}};
+let state={salary:0,pN:0,pW:0,pS:0,debts:[],breakdown:{needs:[{name:'Makan & minuman',amt:''},{name:'Transportasi',amt:''},{name:'Listrik & air',amt:''}],wants:[{name:'Hiburan',amt:''},{name:'Makan di luar',amt:''}],savings:[{name:'Emas',amt:''},{name:'Investasi',amt:''}]}};
 let chartInstance=null,chartMode='amount',assetFilter='all';
 const fmt=n=>'Rp '+Math.round(n).toLocaleString('id-ID');
 const fmtK=n=>{if(n>=1e9)return 'Rp '+(n/1e9).toFixed(1)+'M';if(n>=1e6)return 'Rp '+(n/1e6).toFixed(1)+'jt';return 'Rp '+Math.round(n).toLocaleString('id-ID');};
