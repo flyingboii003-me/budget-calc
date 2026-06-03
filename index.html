@@ -102,6 +102,13 @@ html.light .toggle-thumb{left:16px;background:#fff;}
 .pct-status{font-size:.66rem;font-family:'JetBrains Mono',monospace;padding:6px 0 0;display:none;}
 .pct-status.warn{color:var(--debt);display:block;}
 .pct-status.ok{color:var(--savings);display:block;}
+.alloc-mode-toggle{display:flex;gap:4px;margin-bottom:10px;}
+.alloc-mode-btn{background:var(--surface2);border:1px solid var(--border);color:var(--muted);border-radius:7px;padding:5px 14px;cursor:pointer;font-size:.72rem;font-family:'Inter',sans-serif;font-weight:600;transition:all .18s;}
+.alloc-mode-btn.active{background:rgba(71,197,168,.1);border-color:var(--savings);color:var(--savings);}
+.nominal-input-wrap{display:flex;align-items:center;border:1px solid var(--border);border-radius:8px;overflow:hidden;width:140px;flex-shrink:0;background:var(--surface2);}
+.nominal-input-wrap:focus-within{border-color:var(--savings);}
+.nominal-input-wrap .badge{padding:8px 8px;font-size:.66rem;}
+.nominal-alloc-input{background:transparent;border:none;outline:none;color:var(--text);font-family:'JetBrains Mono',monospace;font-size:.82rem;font-weight:500;padding:8px 6px;width:100%;}
 
 /* BUTTONS */
 .btn-ghost{background:transparent;border:1px dashed var(--border);color:var(--muted);padding:8px 12px;font-size:.72rem;width:100%;text-align:center;border-radius:9px;cursor:pointer;font-family:'Inter',sans-serif;font-weight:600;}
@@ -448,10 +455,26 @@ html.light .toggle-thumb{left:16px;background:#fff;}
             <label class="form-label">Total Gaji / Penghasilan</label>
             <div class="input-wrap"><span class="badge">Rp</span><input type="text" class="money-input" id="salary-input" placeholder="Masukkan gaji..." inputmode="numeric"></div>
           </div>
+          <div class="alloc-mode-toggle">
+            <button class="alloc-mode-btn active" id="btn-mode-pct" onclick="setAllocMode('pct')">%</button>
+            <button class="alloc-mode-btn" id="btn-mode-nominal" onclick="setAllocMode('nominal')">Rp</button>
+          </div>
           <div class="pct-grid">
-            <div class="pct-row"><span class="pct-row-label">&#127968; Kebutuhan</span><div class="pct-input-wrap needs-focus"><input type="number" class="pct-number-input" id="range-needs" min="0" max="100" value="50" inputmode="numeric"><span class="pct-suffix">%</span></div></div>
-            <div class="pct-row"><span class="pct-row-label">&#128717; Keinginan</span><div class="pct-input-wrap wants-focus"><input type="number" class="pct-number-input" id="range-wants" min="0" max="100" value="30" inputmode="numeric"><span class="pct-suffix">%</span></div></div>
-            <div class="pct-row"><span class="pct-row-label">&#128184; Tabungan</span><div class="pct-input-wrap savings-focus"><input type="number" class="pct-number-input" id="range-savings" min="0" max="100" value="20" inputmode="numeric"><span class="pct-suffix">%</span></div></div>
+            <div class="pct-row">
+              <span class="pct-row-label">&#127968; Kebutuhan</span>
+              <div class="pct-input-wrap needs-focus" id="wrap-pct-needs"><input type="number" class="pct-number-input" id="range-needs" min="0" max="100" value="50" inputmode="numeric"><span class="pct-suffix">%</span></div>
+              <div class="nominal-input-wrap" id="wrap-nominal-needs" style="display:none"><span class="badge">Rp</span><input type="text" class="nominal-alloc-input" id="nominal-needs" inputmode="numeric" placeholder="0"></div>
+            </div>
+            <div class="pct-row">
+              <span class="pct-row-label">&#128717; Keinginan</span>
+              <div class="pct-input-wrap wants-focus" id="wrap-pct-wants"><input type="number" class="pct-number-input" id="range-wants" min="0" max="100" value="30" inputmode="numeric"><span class="pct-suffix">%</span></div>
+              <div class="nominal-input-wrap" id="wrap-nominal-wants" style="display:none"><span class="badge">Rp</span><input type="text" class="nominal-alloc-input" id="nominal-wants" inputmode="numeric" placeholder="0"></div>
+            </div>
+            <div class="pct-row">
+              <span class="pct-row-label">&#128184; Tabungan</span>
+              <div class="pct-input-wrap savings-focus" id="wrap-pct-savings"><input type="number" class="pct-number-input" id="range-savings" min="0" max="100" value="20" inputmode="numeric"><span class="pct-suffix">%</span></div>
+              <div class="nominal-input-wrap" id="wrap-nominal-savings" style="display:none"><span class="badge">Rp</span><input type="text" class="nominal-alloc-input" id="nominal-savings" inputmode="numeric" placeholder="0"></div>
+            </div>
           </div>
           <div class="pct-status" id="pct-status"></div>
         </div>
@@ -618,7 +641,7 @@ html.light .toggle-thumb{left:16px;background:#fff;}
 <script>
 const C=2*Math.PI*75, CA=2*Math.PI*70;
 let state={salary:0,pN:0,pW:0,pS:0,debts:[],breakdown:{needs:[{name:'Makan & minuman',amt:''},{name:'Transportasi',amt:''},{name:'Listrik & air',amt:''}],wants:[{name:'Hiburan',amt:''},{name:'Makan di luar',amt:''}],savings:[{name:'Emas',amt:''},{name:'Investasi',amt:''}]}};
-let chartInstance=null,chartMode='amount',assetFilter='all';
+let chartInstance=null,chartMode='amount',assetFilter='all',allocMode='pct';
 const fmt=n=>'Rp '+Math.round(n).toLocaleString('id-ID');
 const fmtK=n=>{if(n>=1e9)return 'Rp '+(n/1e9).toFixed(1)+'M';if(n>=1e6)return 'Rp '+(n/1e6).toFixed(1)+'jt';return 'Rp '+Math.round(n).toLocaleString('id-ID');};
 const parseM=v=>parseFloat((v+'').replace(/[^\d]/g,''))||0;
@@ -630,8 +653,12 @@ function toggleSidebar(){document.getElementById('sidebar').classList.toggle('op
 function closeSidebar(){document.getElementById('sidebar').classList.remove('open');document.getElementById('sidebar-overlay').classList.remove('show');}
 function toggleTheme(){const L=document.documentElement.classList.toggle('light');document.getElementById('theme-label').textContent=L?'Dark Mode':'Light Mode';localStorage.setItem('bp_theme',L?'light':'dark');if(chartInstance){const g=L?'#d4d0c8':'#2a2926',t=L?'#7a7870':'#6e6c64';chartInstance.options.scales.x.grid.color=g;chartInstance.options.scales.y.grid.color=g;chartInstance.options.scales.x.ticks.color=t;chartInstance.options.scales.y.ticks.color=t;chartInstance.options.plugins.legend.labels.color=t;chartInstance.update();}}
 ['needs','wants','savings'].forEach(k=>{document.getElementById('range-'+k).addEventListener('input',()=>{syncSliders(k);update();});});
-function syncSliders(changed){let n=Math.min(100,Math.max(0,parseInt(document.getElementById('range-needs').value)||0));let w=Math.min(100,Math.max(0,parseInt(document.getElementById('range-wants').value)||0));let s=Math.min(100,Math.max(0,parseInt(document.getElementById('range-savings').value)||0));if(n+w+s>100){const over=n+w+s-100;if(changed==='needs'){const rw=Math.min(over,w);w-=rw;const rs=Math.min(over-rw,s);s-=rs;}else if(changed==='wants'){const rn=Math.min(over,n);n-=rn;const rs=Math.min(over-rn,s);s-=rs;}else{const rn=Math.min(over,n);n-=rn;const rw=Math.min(over-rn,w);w-=rw;}document.getElementById('range-needs').value=n;document.getElementById('range-wants').value=w;document.getElementById('range-savings').value=s;}state.pN=parseInt(document.getElementById('range-needs').value)||0;state.pW=parseInt(document.getElementById('range-wants').value)||0;state.pS=parseInt(document.getElementById('range-savings').value)||0;const sum=state.pN+state.pW+state.pS;const st=document.getElementById('pct-status');if(sum>100){st.textContent='⚠ Total melebihi 100%';st.className='pct-status warn';}else if(sum===100){st.textContent='✓ Total = 100%';st.className='pct-status ok';}else{st.textContent=`Total ${sum}% — sisa ${100-sum}% belum dialokasikan`;st.className='pct-status warn';}}
-document.getElementById('salary-input').addEventListener('input',function(){const d=this.value.replace(/\D/g,'');this.value=fmtInput(d);state.salary=parseM(d);update();});
+function updatePctStatus(){const sum=state.pN+state.pW+state.pS;const st=document.getElementById('pct-status');if(sum>100){st.textContent='⚠ Total melebihi 100%';st.className='pct-status warn';}else if(sum===100){st.textContent='✓ Total = 100%';st.className='pct-status ok';}else{st.textContent=`Total ${sum}% — sisa ${100-sum}% belum dialokasikan`;st.className='pct-status warn';}}
+function syncSliders(changed){let n=Math.min(100,Math.max(0,parseInt(document.getElementById('range-needs').value)||0));let w=Math.min(100,Math.max(0,parseInt(document.getElementById('range-wants').value)||0));let s=Math.min(100,Math.max(0,parseInt(document.getElementById('range-savings').value)||0));if(n+w+s>100){const over=n+w+s-100;if(changed==='needs'){const rw=Math.min(over,w);w-=rw;const rs=Math.min(over-rw,s);s-=rs;}else if(changed==='wants'){const rn=Math.min(over,n);n-=rn;const rs=Math.min(over-rn,s);s-=rs;}else{const rn=Math.min(over,n);n-=rn;const rw=Math.min(over-rn,w);w-=rw;}document.getElementById('range-needs').value=n;document.getElementById('range-wants').value=w;document.getElementById('range-savings').value=s;}state.pN=parseInt(document.getElementById('range-needs').value)||0;state.pW=parseInt(document.getElementById('range-wants').value)||0;state.pS=parseInt(document.getElementById('range-savings').value)||0;updatePctStatus();}
+function setAllocMode(mode){allocMode=mode;document.getElementById('btn-mode-pct').classList.toggle('active',mode==='pct');document.getElementById('btn-mode-nominal').classList.toggle('active',mode==='nominal');const isPct=mode==='pct';['needs','wants','savings'].forEach(k=>{document.getElementById('wrap-pct-'+k).style.display=isPct?'':'none';document.getElementById('wrap-nominal-'+k).style.display=isPct?'none':'';});if(mode==='nominal'&&state.salary>0){document.getElementById('nominal-needs').value=fmtInput(String(Math.round(state.salary*state.pN/100)));document.getElementById('nominal-wants').value=fmtInput(String(Math.round(state.salary*state.pW/100)));document.getElementById('nominal-savings').value=fmtInput(String(Math.round(state.salary*state.pS/100)));}if(mode==='pct'){document.getElementById('range-needs').value=state.pN;document.getElementById('range-wants').value=state.pW;document.getElementById('range-savings').value=state.pS;}}
+// Nominal input listeners
+;['needs','wants','savings'].forEach(k=>{document.getElementById('nominal-'+k).addEventListener('input',function(){this.value=fmtInput(this.value);if(!state.salary)return;const val=parseM(this.value);const pct=Math.min(100,Math.round((val/state.salary)*100));if(k==='needs')state.pN=pct;if(k==='wants')state.pW=pct;if(k==='savings')state.pS=pct;document.getElementById('range-'+k).value=pct;updatePctStatus();update();});});
+document.getElementById('salary-input').addEventListener('input',function(){const d=this.value.replace(/\D/g,'');this.value=fmtInput(d);state.salary=parseM(d);update();if(allocMode==='nominal'&&state.salary>0){document.getElementById('nominal-needs').value=fmtInput(String(Math.round(state.salary*state.pN/100)));document.getElementById('nominal-wants').value=fmtInput(String(Math.round(state.salary*state.pW/100)));document.getElementById('nominal-savings').value=fmtInput(String(Math.round(state.salary*state.pS/100)));}const nomInputs=['nominal-needs','nominal-wants','nominal-savings'];nomInputs.forEach(id=>{document.getElementById(id).disabled=!state.salary;});});
 function renderDebtList(){const list=document.getElementById('debt-list');list.innerHTML='';state.debts.forEach((d,i)=>{const row=document.createElement('div');row.className='debt-item';const isPaid=d.paid||false;row.className='debt-item'+(isPaid?' paid-item':'');row.innerHTML=`<button class="debt-paid-btn${isPaid?' paid':''}" title="${isPaid?'Tandai belum lunas':'Tandai lunas'}">${isPaid?'✓':'○'}</button><div class="debt-name-wrap"><input class="debt-name-input" type="text" placeholder="Nama tagihan..." value="${d.name}"></div><div class="debt-amt-wrap"><span class="badge" style="padding:7px 8px;font-size:.66rem">Rp</span><input class="debt-amount-input" type="text" inputmode="numeric" placeholder="0" value="${d.amount}"></div><button class="btn-remove">×</button>`;row.querySelector('.debt-paid-btn').addEventListener('click',()=>{state.debts[i].paid=!state.debts[i].paid;renderDebtList();update();});row.querySelector('.debt-name-input').addEventListener('input',e=>{state.debts[i].name=e.target.value;update();});row.querySelector('.debt-amount-input').addEventListener('input',e=>{e.target.value=fmtInput(e.target.value);state.debts[i].amount=e.target.value;update();});row.querySelector('.btn-remove').addEventListener('click',()=>{state.debts.splice(i,1);renderDebtList();update();});list.appendChild(row);});}
 document.getElementById('btn-add-debt').addEventListener('click',()=>{state.debts.push({name:'',amount:'',paid:false});renderDebtList();update();});
 const getTotalDebt=()=>state.debts.reduce((s,d)=>s+parseM(d.amount),0);
