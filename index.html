@@ -109,6 +109,12 @@ html.light .toggle-thumb{left:16px;background:#fff;}
 .nominal-input-wrap:focus-within{border-color:var(--savings);}
 .nominal-input-wrap .badge{padding:8px 8px;font-size:.66rem;}
 .nominal-alloc-input{background:transparent;border:none;outline:none;color:var(--text);font-family:'JetBrains Mono',monospace;font-size:.82rem;font-weight:500;padding:8px 6px;width:100%;}
+.btn-fetch-price{background:rgba(71,197,168,.08);border:1px solid rgba(71,197,168,.18);color:var(--savings);border-radius:6px;padding:4px 9px;cursor:pointer;font-size:.62rem;font-family:'Inter',sans-serif;font-weight:600;white-space:nowrap;transition:all .18s;}
+.btn-fetch-price:hover{background:rgba(71,197,168,.18);}
+.btn-fetch-price:disabled{opacity:.5;cursor:not-allowed;}
+.live-price-bar{display:flex;align-items:center;justify-content:space-between;padding:8px 12px;background:rgba(71,197,168,.04);border:1px solid rgba(71,197,168,.12);border-radius:8px;margin-bottom:10px;}
+.live-price-bar span{font-size:.62rem;color:var(--muted);}
+.live-price-bar strong{font-family:'JetBrains Mono',monospace;font-size:.7rem;color:var(--savings);}
 
 /* BUTTONS */
 .btn-ghost{background:transparent;border:1px dashed var(--border);color:var(--muted);padding:8px 12px;font-size:.72rem;width:100%;text-align:center;border-radius:9px;cursor:pointer;font-family:'Inter',sans-serif;font-weight:600;}
@@ -642,6 +648,7 @@ html.light .toggle-thumb{left:16px;background:#fff;}
 const C=2*Math.PI*75, CA=2*Math.PI*70;
 let state={salary:0,pN:0,pW:0,pS:0,debts:[],breakdown:{needs:[{name:'Makan & minuman',amt:''},{name:'Transportasi',amt:''},{name:'Listrik & air',amt:''}],wants:[{name:'Hiburan',amt:''},{name:'Makan di luar',amt:''}],savings:[{name:'Emas',amt:''},{name:'Investasi',amt:''}]}};
 let chartInstance=null,chartMode='amount',assetFilter='all',allocMode='pct';
+const WORKER_URL='https://budget-planner-proxy.flyingboii003.workers.dev'; // ganti ini
 const fmt=n=>'Rp '+Math.round(n).toLocaleString('id-ID');
 const fmtK=n=>{if(n>=1e9)return 'Rp '+(n/1e9).toFixed(1)+'M';if(n>=1e6)return 'Rp '+(n/1e6).toFixed(1)+'jt';return 'Rp '+Math.round(n).toLocaleString('id-ID');};
 const parseM=v=>parseFloat((v+'').replace(/[^\d]/g,''))||0;
@@ -656,9 +663,8 @@ function toggleTheme(){const L=document.documentElement.classList.toggle('light'
 function updatePctStatus(){const sum=state.pN+state.pW+state.pS;const st=document.getElementById('pct-status');if(sum>100){st.textContent='⚠ Total melebihi 100%';st.className='pct-status warn';}else if(sum===100){st.textContent='✓ Total = 100%';st.className='pct-status ok';}else{st.textContent=`Total ${sum}% — sisa ${100-sum}% belum dialokasikan`;st.className='pct-status warn';}}
 function syncSliders(changed){let n=Math.min(100,Math.max(0,parseInt(document.getElementById('range-needs').value)||0));let w=Math.min(100,Math.max(0,parseInt(document.getElementById('range-wants').value)||0));let s=Math.min(100,Math.max(0,parseInt(document.getElementById('range-savings').value)||0));if(n+w+s>100){const over=n+w+s-100;if(changed==='needs'){const rw=Math.min(over,w);w-=rw;const rs=Math.min(over-rw,s);s-=rs;}else if(changed==='wants'){const rn=Math.min(over,n);n-=rn;const rs=Math.min(over-rn,s);s-=rs;}else{const rn=Math.min(over,n);n-=rn;const rw=Math.min(over-rn,w);w-=rw;}document.getElementById('range-needs').value=n;document.getElementById('range-wants').value=w;document.getElementById('range-savings').value=s;}state.pN=parseInt(document.getElementById('range-needs').value)||0;state.pW=parseInt(document.getElementById('range-wants').value)||0;state.pS=parseInt(document.getElementById('range-savings').value)||0;updatePctStatus();}
 function setAllocMode(mode){allocMode=mode;document.getElementById('btn-mode-pct').classList.toggle('active',mode==='pct');document.getElementById('btn-mode-nominal').classList.toggle('active',mode==='nominal');const isPct=mode==='pct';['needs','wants','savings'].forEach(k=>{document.getElementById('wrap-pct-'+k).style.display=isPct?'':'none';document.getElementById('wrap-nominal-'+k).style.display=isPct?'none':'';});if(mode==='nominal'&&state.salary>0){document.getElementById('nominal-needs').value=fmtInput(String(Math.round(state.salary*state.pN/100)));document.getElementById('nominal-wants').value=fmtInput(String(Math.round(state.salary*state.pW/100)));document.getElementById('nominal-savings').value=fmtInput(String(Math.round(state.salary*state.pS/100)));}if(mode==='pct'){document.getElementById('range-needs').value=state.pN;document.getElementById('range-wants').value=state.pW;document.getElementById('range-savings').value=state.pS;}}
-// Nominal input listeners
 ;['needs','wants','savings'].forEach(k=>{document.getElementById('nominal-'+k).addEventListener('input',function(){this.value=fmtInput(this.value);if(!state.salary)return;const val=parseM(this.value);const pct=Math.min(100,Math.round((val/state.salary)*100));if(k==='needs')state.pN=pct;if(k==='wants')state.pW=pct;if(k==='savings')state.pS=pct;document.getElementById('range-'+k).value=pct;updatePctStatus();update();});});
-document.getElementById('salary-input').addEventListener('input',function(){const d=this.value.replace(/\D/g,'');this.value=fmtInput(d);state.salary=parseM(d);update();if(allocMode==='nominal'&&state.salary>0){document.getElementById('nominal-needs').value=fmtInput(String(Math.round(state.salary*state.pN/100)));document.getElementById('nominal-wants').value=fmtInput(String(Math.round(state.salary*state.pW/100)));document.getElementById('nominal-savings').value=fmtInput(String(Math.round(state.salary*state.pS/100)));}const nomInputs=['nominal-needs','nominal-wants','nominal-savings'];nomInputs.forEach(id=>{document.getElementById(id).disabled=!state.salary;});});
+document.getElementById('salary-input').addEventListener('input',function(){const d=this.value.replace(/\D/g,'');this.value=fmtInput(d);state.salary=parseM(d);update();if(allocMode==='nominal'&&state.salary>0){document.getElementById('nominal-needs').value=fmtInput(String(Math.round(state.salary*state.pN/100)));document.getElementById('nominal-wants').value=fmtInput(String(Math.round(state.salary*state.pW/100)));document.getElementById('nominal-savings').value=fmtInput(String(Math.round(state.salary*state.pS/100)));}['nominal-needs','nominal-wants','nominal-savings'].forEach(id=>{document.getElementById(id).disabled=!state.salary;});});
 function renderDebtList(){const list=document.getElementById('debt-list');list.innerHTML='';state.debts.forEach((d,i)=>{const row=document.createElement('div');row.className='debt-item';const isPaid=d.paid||false;row.className='debt-item'+(isPaid?' paid-item':'');row.innerHTML=`<button class="debt-paid-btn${isPaid?' paid':''}" title="${isPaid?'Tandai belum lunas':'Tandai lunas'}">${isPaid?'✓':'○'}</button><div class="debt-name-wrap"><input class="debt-name-input" type="text" placeholder="Nama tagihan..." value="${d.name}"></div><div class="debt-amt-wrap"><span class="badge" style="padding:7px 8px;font-size:.66rem">Rp</span><input class="debt-amount-input" type="text" inputmode="numeric" placeholder="0" value="${d.amount}"></div><button class="btn-remove">×</button>`;row.querySelector('.debt-paid-btn').addEventListener('click',()=>{state.debts[i].paid=!state.debts[i].paid;renderDebtList();update();});row.querySelector('.debt-name-input').addEventListener('input',e=>{state.debts[i].name=e.target.value;update();});row.querySelector('.debt-amount-input').addEventListener('input',e=>{e.target.value=fmtInput(e.target.value);state.debts[i].amount=e.target.value;update();});row.querySelector('.btn-remove').addEventListener('click',()=>{state.debts.splice(i,1);renderDebtList();update();});list.appendChild(row);});}
 document.getElementById('btn-add-debt').addEventListener('click',()=>{state.debts.push({name:'',amount:'',paid:false});renderDebtList();update();});
 const getTotalDebt=()=>state.debts.reduce((s,d)=>s+parseM(d.amount),0);
@@ -774,11 +780,105 @@ const loadAssets=()=>JSON.parse(localStorage.getItem('bp_assets')||'[]');
 const saveAssets=arr=>{localStorage.setItem('bp_assets',JSON.stringify(arr));};
 function addAsset(){const arr=loadAssets();arr.push({id:Date.now(),name:'Aset Baru',type:'Saham',buyPrice:'',currentPrice:'',qty:''});saveAssets(arr);renderAssets();updateAssetDonut();updateNetWorth();}
 function filterAssets(type,btn){assetFilter=type;document.querySelectorAll('.type-pill').forEach(b=>b.classList.remove('active'));btn.classList.add('active');renderAssets();}
-function renderAssets(){const arr=loadAssets();const list=document.getElementById('asset-list');list.innerHTML='';const filtered=assetFilter==='all'?arr:arr.filter(a=>a.type===assetFilter);if(!filtered.length){list.innerHTML=`<div style="grid-column:1/-1;text-align:center;padding:28px;color:var(--muted);font-size:.76rem">${assetFilter==='all'?'Belum ada aset.':'Tidak ada aset tipe ini.'}</div>`;return;}filtered.forEach(a=>{const idx=arr.findIndex(x=>x.id===a.id);const ti=ASSET_TYPES.find(t=>t.key===a.type)||ASSET_TYPES[0];const buy=parseM(a.buyPrice),cur=parseM(a.currentPrice),qty=parseFloat((a.qty+'').replace(/[^\d.]/g,''))||0;const tb=buy*qty,tc=cur*qty,pl=tc-tb;const plPct=tb>0?((pl/tb)*100).toFixed(2):0;const plCls=pl>0?'profit':pl<0?'loss':'neutral';const el=document.createElement('div');el.className='asset-item';el.innerHTML=`<div class="asset-item-header"><span style="font-size:.95rem">${ti.icon}</span><input type="text" value="${a.name}" style="background:transparent;border:none;outline:none;color:var(--text);font-family:'Inter',sans-serif;font-weight:600;font-size:.84rem;flex:1;" onchange="updateAssetField(${idx},'name',this.value)"><button class="btn-remove" onclick="deleteAsset(${idx})">×</button></div><div class="asset-item-grid"><div class="asset-field"><label>Harga Beli/unit</label><div class="asset-field-input"><span class="badge">Rp</span><input type="text" inputmode="numeric" placeholder="0" value="${a.buyPrice}" oninput="this.value=fmtInput(this.value)" onchange="updateAssetField(${idx},'buyPrice',this.value)"></div></div><div class="asset-field"><label>Harga Sekarang/unit</label><div class="asset-field-input"><span class="badge">Rp</span><input type="text" inputmode="numeric" placeholder="0" value="${a.currentPrice}" oninput="this.value=fmtInput(this.value)" onchange="updateAssetField(${idx},'currentPrice',this.value)"></div></div><div class="asset-field"><label>Jumlah / Unit</label><div class="asset-field-input"><input type="text" inputmode="numeric" placeholder="1" value="${a.qty}" style="padding-left:9px" oninput="updateAssetField(${idx},'qty',this.value)"></div></div><div class="asset-field"><label>Tipe Aset</label><select class="asset-type-select" onchange="updateAssetField(${idx},'type',this.value)">${ASSET_TYPES.map(t=>`<option value="${t.key}" ${a.type===t.key?'selected':''}>${t.icon} ${t.key}</option>`).join('')}</select></div></div>${tb>0?`<div class="asset-pl-row ${plCls}"><div><div class="asset-pl-label">P/L</div><div style="font-size:.64rem;color:var(--muted);font-family:'JetBrains Mono',monospace;margin-top:1px">${fmtK(tb)} → ${fmtK(tc)}</div></div><div><span class="asset-pl-val ${plCls}">${pl>=0?'+':''}${fmt(pl)}</span><span class="asset-pl-pct ${plCls}">(${pl>=0?'+':''}${plPct}%)</span></div></div>`:''}`;list.appendChild(el);});}
+function renderAssets(){const arr=loadAssets();const list=document.getElementById('asset-list');list.innerHTML='';const filtered=assetFilter==='all'?arr:arr.filter(a=>a.type===assetFilter);if(!filtered.length){list.innerHTML=`<div style="grid-column:1/-1;text-align:center;padding:28px;color:var(--muted);font-size:.76rem">${assetFilter==='all'?'Belum ada aset.':'Tidak ada aset tipe ini.'}</div>`;return;}filtered.forEach(a=>{const idx=arr.findIndex(x=>x.id===a.id);const ti=ASSET_TYPES.find(t=>t.key===a.type)||ASSET_TYPES[0];const buy=parseM(a.buyPrice),cur=parseM(a.currentPrice),qty=parseFloat((a.qty+'').replace(/[^\d.]/g,''))||0;const tb=buy*qty,tc=cur*qty,pl=tc-tb;const plPct=tb>0?((pl/tb)*100).toFixed(2):0;const plCls=pl>0?'profit':pl<0?'loss':'neutral';
+  // Tombol fetch & currency input untuk Emas dan Cash/Valas
+  const isGold = a.type==='Emas';
+  const isCash = a.type==='Cash';
+  let fetchHtml = '';
+  if(isGold){
+    fetchHtml=`<div style="display:flex;align-items:center;gap:6px;margin-bottom:8px;padding:6px 8px;background:rgba(232,197,71,.05);border:1px solid rgba(232,197,71,.12);border-radius:7px;">
+      <span style="font-size:.6rem;color:var(--muted);flex:1">Harga spot 24k</span>
+      <button class="btn-fetch-price" id="fp-${a.id}" onclick="fetchGoldPrice(${a.id})">🔄 Update</button>
+    </div>`;
+  } else if(isCash){
+    fetchHtml=`<div style="display:flex;align-items:center;gap:6px;margin-bottom:8px;padding:6px 8px;background:rgba(71,197,168,.04);border:1px solid rgba(71,197,168,.1);border-radius:7px;">
+      <input type="text" id="currency-${a.id}" placeholder="USD / CHF / SGD" value="${a.currency||''}" maxlength="4"
+        style="background:transparent;border:none;outline:none;color:var(--text);font-family:'JetBrains Mono',monospace;font-size:.74rem;font-weight:600;width:80px;text-transform:uppercase;"
+        oninput="this.value=this.value.toUpperCase();updateAssetField(${idx},'currency',this.value)">
+      <span style="font-size:.6rem;color:var(--muted);flex:1">→ IDR per unit</span>
+      <button class="btn-fetch-price" id="fp-${a.id}" onclick="fetchForexPrice(${a.id},document.getElementById('currency-${a.id}').value)">🔄 Update</button>
+    </div>`;
+  }
+  const el=document.createElement('div');el.className='asset-item';el.innerHTML=`<div class="asset-item-header"><span style="font-size:.95rem">${ti.icon}</span><input type="text" value="${a.name}" style="background:transparent;border:none;outline:none;color:var(--text);font-family:'Inter',sans-serif;font-weight:600;font-size:.84rem;flex:1;" onchange="updateAssetField(${idx},'name',this.value)"><button class="btn-remove" onclick="deleteAsset(${idx})">×</button></div>${fetchHtml}<div class="asset-item-grid"><div class="asset-field"><label>Harga Beli/unit</label><div class="asset-field-input"><span class="badge">Rp</span><input type="text" inputmode="numeric" placeholder="0" value="${a.buyPrice}" oninput="this.value=fmtInput(this.value)" onchange="updateAssetField(${idx},'buyPrice',this.value)"></div></div><div class="asset-field"><label>${isGold?'Harga Sekarang/gram':isCash?'Kurs Sekarang/unit':'Harga Sekarang/unit'}</label><div class="asset-field-input"><span class="badge">Rp</span><input type="text" inputmode="numeric" placeholder="0" value="${a.currentPrice}" oninput="this.value=fmtInput(this.value)" onchange="updateAssetField(${idx},'currentPrice',this.value)"></div></div><div class="asset-field"><label>${isGold?'Jumlah (gram)':isCash?'Jumlah unit':'Jumlah / Unit'}</label><div class="asset-field-input"><input type="text" inputmode="numeric" placeholder="1" value="${a.qty}" style="padding-left:9px" oninput="updateAssetField(${idx},'qty',this.value)"></div></div><div class="asset-field"><label>Tipe Aset</label><select class="asset-type-select" onchange="updateAssetField(${idx},'type',this.value)">${ASSET_TYPES.map(t=>`<option value="${t.key}" ${a.type===t.key?'selected':''}>${t.icon} ${t.key}</option>`).join('')}</select></div></div>${tb>0?`<div class="asset-pl-row ${plCls}"><div><div class="asset-pl-label">P/L</div><div style="font-size:.64rem;color:var(--muted);font-family:'JetBrains Mono',monospace;margin-top:1px">${fmtK(tb)} → ${fmtK(tc)}</div></div><div><span class="asset-pl-val ${plCls}">${pl>=0?'+':''}${fmt(pl)}</span><span class="asset-pl-pct ${plCls}">(${pl>=0?'+':''}${plPct}%)</span></div></div>`:''}`;list.appendChild(el);});}
 function updateAssetField(idx,field,val){const arr=loadAssets();if(!arr[idx])return;arr[idx][field]=val;saveAssets(arr);updateAssetDonut();updateNetWorth();if(field==='type')renderAssets();}
 function deleteAsset(idx){const arr=loadAssets();arr.splice(idx,1);saveAssets(arr);renderAssets();updateAssetDonut();updateNetWorth();}
 function updateAssetDonut(){const arr=loadAssets();const totals={};ASSET_TYPES.forEach(t=>totals[t.key]=0);arr.forEach(a=>{const c=parseM(a.currentPrice),q=parseFloat((a.qty+'').replace(/[^\d.]/g,''))||0;totals[a.type]=(totals[a.type]||0)+c*q;});const grand=Object.values(totals).reduce((s,v)=>s+v,0);document.getElementById('ad-total-text').textContent=fmtK(grand);const arcIds={Saham:'ad-saham','Reksa Dana':'ad-reksa',Emas:'ad-emas',Kripto:'ad-kripto',Deposito:'ad-deposito',Properti:'ad-properti',Cash:'ad-cash'};Object.values(arcIds).forEach(id=>{const el=document.getElementById(id);if(el)el.style.strokeDasharray=`0 ${CA}`;});let off=0;if(grand>0){ASSET_TYPES.forEach(t=>{const pct=totals[t.key]/grand;const el=document.getElementById(arcIds[t.key]);if(!el||pct<=0)return;const len=CA*pct;el.style.strokeDasharray=`${len} ${CA-len}`;el.style.strokeDashoffset=-(CA*off);off+=pct;});}const leg=document.getElementById('asset-legend');leg.innerHTML='';ASSET_TYPES.forEach(t=>{if(!totals[t.key])return;const pct=grand>0?((totals[t.key]/grand)*100).toFixed(1):0;const li=document.createElement('div');li.className='asset-legend-item';li.innerHTML=`<div class="asset-legend-dot" style="background:${t.color}"></div>${t.key}<span class="asset-legend-pct" style="color:${t.color}">${pct}%</span>`;leg.appendChild(li);});const statsEl=document.getElementById('asset-stats');if(statsEl){statsEl.innerHTML='';ASSET_TYPES.forEach(t=>{if(!totals[t.key])return;const pct=grand>0?((totals[t.key]/grand)*100).toFixed(1):0;const d=document.createElement('div');d.style.cssText='display:flex;align-items:center;justify-content:space-between;padding:6px 10px;background:var(--surface2);border:1px solid var(--border);border-radius:8px;';d.innerHTML=`<span style="font-size:.72rem;color:var(--muted2)">${t.icon} ${t.key}</span><div style="text-align:right"><div style="font-family:JetBrains Mono,monospace;font-size:.76rem">${fmtK(totals[t.key])}</div><div style="font-size:.6rem;color:${t.color};font-family:JetBrains Mono,monospace">${pct}%</div></div>`;statsEl.appendChild(d);});}}
 function updateNetWorth(){const arr=loadAssets();const td=getTotalDebt();let ta=0,tba=0;arr.forEach(a=>{const c=parseM(a.currentPrice),b=parseM(a.buyPrice),q=parseFloat((a.qty+'').replace(/[^\d.]/g,''))||0;ta+=c*q;tba+=b*q;});const pl=ta-tba;document.getElementById('nw-total').textContent=fmt(ta);document.getElementById('nw-assets').textContent=fmt(ta);document.getElementById('nw-debts').textContent=fmt(td);const plEl=document.getElementById('nw-pl');plEl.textContent=(pl>=0?'+':'')+fmt(pl);plEl.className='nw-stat-val '+(pl>=0?'pos':'neg');const ms=state.salary*(state.pS/100);document.getElementById('sl-pct').textContent=state.pS+'%';document.getElementById('sl-invested').innerHTML=fmt(ta)+' <span style="color:var(--savings);font-size:.68rem">✓</span>';const idle=ms-ta;const idleEl=document.getElementById('sl-idle');idleEl.textContent=idle>0?fmt(idle)+' belum diinvestasikan':'Aset melebihi alokasi tabungan';idleEl.style.color=idle>0?'var(--muted)':'var(--savings)';}
+// ── LIVE PRICE ────────────────────────────────────────────────
+// Cache harga di memory agar tidak refetch terus saat re-render
+let livePriceCache = { gold: null, forex: null, lastFetch: null };
+
+async function fetchGoldPrice(assetId) {
+  const btn = document.getElementById('fp-'+assetId);
+  if (btn) { btn.textContent = '⏳'; btn.disabled = true; }
+  try {
+    // Pakai cache memory kalau belum lebih dari 1 jam
+    if (!livePriceCache.gold || (Date.now() - livePriceCache.lastFetch) > 3600000) {
+      const res = await fetch(WORKER_URL + '?type=gold');
+      if (!res.ok) throw new Error('Worker error: ' + res.status);
+      const data = await res.json();
+      livePriceCache.gold = data;
+      livePriceCache.lastFetch = Date.now();
+    }
+    const arr = loadAssets();
+    const idx = arr.findIndex(a => a.id === assetId);
+    if (idx < 0) return;
+    // Default pakai harga 24k — user bisa ganti manual kalau 22k/18k
+    arr[idx].currentPrice = String(livePriceCache.gold.price_gram_24k_idr);
+    saveAssets(arr);
+    renderAssets(); updateAssetDonut(); updateNetWorth();
+    showPriceToast('Harga emas 24k diupdate ✓');
+  } catch(err) {
+    showPriceToast('Gagal fetch harga emas: ' + err.message, true);
+  } finally {
+    const b = document.getElementById('fp-'+assetId);
+    if (b) { b.textContent = '🔄'; b.disabled = false; }
+  }
+}
+
+async function fetchForexPrice(assetId, currency) {
+  if (!currency || currency.trim() === '') {
+    showPriceToast('Isi kode mata uang dulu (contoh: USD, CHF)', true);
+    return;
+  }
+  const btn = document.getElementById('fp-'+assetId);
+  if (btn) { btn.textContent = '⏳'; btn.disabled = true; }
+  try {
+    const code = currency.trim().toUpperCase();
+    const res = await fetch(WORKER_URL + '?type=forex&from=' + code);
+    if (!res.ok) throw new Error('Worker error: ' + res.status);
+    const data = await res.json();
+    const arr = loadAssets();
+    const idx = arr.findIndex(a => a.id === assetId);
+    if (idx < 0) return;
+    arr[idx].currentPrice = String(data.rate_to_idr);
+    saveAssets(arr);
+    renderAssets(); updateAssetDonut(); updateNetWorth();
+    showPriceToast(`1 ${code} = ${fmt(data.rate_to_idr)} ✓`);
+  } catch(err) {
+    showPriceToast('Gagal fetch kurs: ' + err.message, true);
+  } finally {
+    const b = document.getElementById('fp-'+assetId);
+    if (b) { b.textContent = '🔄'; b.disabled = false; }
+  }
+}
+
+function showPriceToast(msg, isError=false) {
+  let toast = document.getElementById('price-toast');
+  if (!toast) {
+    toast = document.createElement('div');
+    toast.id = 'price-toast';
+    toast.style.cssText = 'position:fixed;bottom:24px;right:24px;padding:10px 16px;border-radius:10px;font-size:.74rem;font-family:Inter,sans-serif;font-weight:500;z-index:9999;transition:opacity .3s;pointer-events:none;';
+    document.body.appendChild(toast);
+  }
+  toast.textContent = msg;
+  toast.style.background = isError ? 'rgba(232,71,71,.9)' : 'rgba(71,197,168,.9)';
+  toast.style.color = '#fff';
+  toast.style.opacity = '1';
+  clearTimeout(toast._t);
+  toast._t = setTimeout(() => { toast.style.opacity = '0'; }, 3000);
+}
+// ── END LIVE PRICE ────────────────────────────────────────────
 function persistSettings(){
   localStorage.setItem('bp_settings',JSON.stringify({
     salary:state.salary,pN:state.pN,pW:state.pW,pS:state.pS,
