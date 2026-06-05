@@ -879,13 +879,81 @@ function showPriceToast(msg, isError=false) {
   toast._t = setTimeout(() => { toast.style.opacity = '0'; }, 3000);
 }
 // ── END LIVE PRICE ────────────────────────────────────────────
+
+let _persistTimer = null;
 function persistSettings(){
-  localStorage.setItem('bp_settings',JSON.stringify({
-    salary:state.salary,pN:state.pN,pW:state.pW,pS:state.pS,
-    debts:state.debts,breakdown:state.breakdown
-  }));
+  clearTimeout(_persistTimer);
+  _persistTimer = setTimeout(()=>{
+    localStorage.setItem('bp_settings',JSON.stringify({
+      salary:state.salary,pN:state.pN,pW:state.pW,pS:state.pS,
+      debts:state.debts,breakdown:state.breakdown
+    }));
+  }, 800);
 }
-function update(){const salary=state.salary;const pN=state.pN/100,pW=state.pW/100,pS=state.pS/100;const needs=salary*pN,wants=salary*pW,savings=salary*pS;const td=getTotalDebt(),hasDebt=td>0;document.getElementById('topbar-salary').textContent=fmtK(salary);document.getElementById('stat-salary').textContent=fmt(salary);document.getElementById('stat-needs').textContent=fmt(needs);document.getElementById('stat-wants').textContent=fmt(wants);document.getElementById('stat-savings').textContent=fmt(savings);document.getElementById('stat-needs-pct').textContent=state.pN+'% dari gaji';document.getElementById('stat-wants-pct').textContent=state.pW+'% dari gaji';document.getElementById('stat-savings-pct').textContent=state.pS+'% dari gaji';document.getElementById('pct-needs-lbl').textContent=state.pN+'%';document.getElementById('pct-wants-lbl').textContent=state.pW+'%';document.getElementById('pct-savings-lbl').textContent=state.pS+'%';document.getElementById('lbl-needs').textContent=state.pN+'% dari gaji';document.getElementById('lbl-wants').textContent=state.pW+'% dari gaji';document.getElementById('lbl-savings').textContent=state.pS+'% dari gaji';document.getElementById('amt-needs').textContent=fmt(needs);document.getElementById('amt-wants').textContent=fmt(wants);document.getElementById('amt-savings').textContent=fmt(savings);document.getElementById('donut-total').textContent=fmtK(salary);document.getElementById('leg-needs-val').textContent=fmtK(needs);document.getElementById('leg-wants-val').textContent=fmtK(wants);document.getElementById('leg-savings-val').textContent=fmtK(savings);document.getElementById('leg-needs').textContent='Kebutuhan '+state.pN+'%';document.getElementById('leg-wants').textContent='Keinginan '+state.pW+'%';document.getElementById('leg-savings').textContent='Tabungan '+state.pS+'%';const ds=document.getElementById('debt-summary');const dc=document.getElementById('debt-result-card');const sc=document.getElementById('sisa-card');const ld=document.getElementById('leg-debt-wrap');if(hasDebt){ds.style.display='flex';dc.style.display='flex';sc.style.display='block';ld.style.display='flex';document.getElementById('debt-total-display').textContent=fmt(td);document.getElementById('amt-debt').textContent=fmt(td);const dp=salary>0?((td/salary)*100).toFixed(1):'0';document.getElementById('pct-debt-lbl').textContent=dp+'% dari gaji';document.getElementById('leg-debt').textContent='Hutang '+dp+'%';document.getElementById('leg-debt-val').textContent=fmtK(td);const sisa=needs-td;const sisaEl=document.getElementById('sisa-amount');const sisaRow=document.getElementById('sisa-row');sisaEl.textContent=fmt(Math.abs(sisa));sisaEl.className='sisa-val '+(sisa>=0?'pos':'neg');sisaRow.className='sisa-row '+(sisa>=0?'ok':'over');document.getElementById('sisa-desc').textContent=sisa>=0?'sisa dari alokasi kebutuhan':'⚠ tagihan melebihi alokasi kebutuhan';}else{ds.style.display='none';dc.style.display='none';sc.style.display='none';ld.style.display='none';}setTimeout(()=>{document.getElementById('bar-needs').style.width=salary>0?'100%':'0%';document.getElementById('bar-wants').style.width=salary>0?'100%':'0%';document.getElementById('bar-savings').style.width=salary>0?'100%':'0%';if(hasDebt&&needs>0)document.getElementById('bar-debt').style.width=Math.min(100,(td/needs)*100)+'%';},80);setArc('arc-needs',pN,0,C);setArc('arc-wants',pW,pN,C);setArc('arc-savings',pS,pN+pW,C);setArc('arc-debt',salary>0?td/salary:0,0,C);persistSettings();}
+
+function update(){
+  const salary=state.salary;
+  const pN=state.pN/100,pW=state.pW/100,pS=state.pS/100;
+  const needs=salary*pN,wants=salary*pW,savings=salary*pS;
+  const td=getTotalDebt(),hasDebt=td>0;document.getElementById('topbar-salary').textContent=fmtK(salary);
+  document.getElementById('stat-salary').textContent=fmt(salary);
+  document.getElementById('stat-needs').textContent=fmt(needs);
+  document.getElementById('stat-wants').textContent=fmt(wants);
+  document.getElementById('stat-savings').textContent=fmt(savings);
+  document.getElementById('stat-needs-pct').textContent=state.pN+'% dari gaji';
+  document.getElementById('stat-wants-pct').textContent=state.pW+'% dari gaji';
+  document.getElementById('stat-savings-pct').textContent=state.pS+'% dari gaji';
+  document.getElementById('pct-needs-lbl').textContent=state.pN+'%';
+  document.getElementById('pct-wants-lbl').textContent=state.pW+'%';
+  document.getElementById('pct-savings-lbl').textContent=state.pS+'%';
+  document.getElementById('lbl-needs').textContent=state.pN+'% dari gaji';
+  document.getElementById('lbl-wants').textContent=state.pW+'% dari gaji';
+  document.getElementById('lbl-savings').textContent=state.pS+'% dari gaji';
+  document.getElementById('amt-needs').textContent=fmt(needs);
+  document.getElementById('amt-wants').textContent=fmt(wants);
+  document.getElementById('amt-savings').textContent=fmt(savings);
+  document.getElementById('donut-total').textContent=fmtK(salary);
+  document.getElementById('leg-needs-val').textContent=fmtK(needs);
+  document.getElementById('leg-wants-val').textContent=fmtK(wants);
+  document.getElementById('leg-savings-val').textContent=fmtK(savings);
+  document.getElementById('leg-needs').textContent='Kebutuhan '+state.pN+'%';
+  document.getElementById('leg-wants').textContent='Keinginan '+state.pW+'%';
+  document.getElementById('leg-savings').textContent='Tabungan '+state.pS+'%';
+  
+  const ds=document.getElementById('debt-summary');
+  const dc=document.getElementById('debt-result-card');
+  const sc=document.getElementById('sisa-card');
+  const ld=document.getElementById('leg-debt-wrap');
+    if(hasDebt){
+      ds.style.display='flex';
+      dc.style.display='flex';
+      sc.style.display='block';
+      ld.style.display='flex';
+      
+      document.getElementById('debt-total-display').textContent=fmt(td);
+      document.getElementById('amt-debt').textContent=fmt(td);
+      
+      const dp=salary>0?((td/salary)*100).toFixed(1):'0';
+      document.getElementById('pct-debt-lbl').textContent=dp+'% dari gaji';
+      document.getElementById('leg-debt').textContent='Hutang '+dp+'%';
+      document.getElementById('leg-debt-val').textContent=fmtK(td);
+      const sisa=needs-td;const sisaEl=document.getElementById('sisa-amount');
+      const sisaRow=document.getElementById('sisa-row');sisaEl.textContent=fmt(Math.abs(sisa));sisaEl.className='sisa-val '+(sisa>=0?'pos':'neg');
+      sisaRow.className='sisa-row '+(sisa>=0?'ok':'over');
+      document.getElementById('sisa-desc').textContent=sisa>=0?'sisa dari alokasi kebutuhan':'⚠ tagihan melebihi alokasi kebutuhan';
+    } else{
+      ds.style.display='none';
+      dc.style.display='none';
+      sc.style.display='none';
+      ld.style.display='none';
+        } setTimeout(()=>{
+          document.getElementById('bar-needs').style.width=salary>0?'100%':'0%';document.getElementById('bar-wants').style.width=salary>0?'100%':'0%';document.getElementById('bar-savings').style.width=salary>0?'100%':'0%';if(hasDebt&&needs>0)document.getElementById('bar-debt').style.width=Math.min(100,(td/needs)*100)+'%';},80);
+          setArc('arc-needs',pN,0,C);
+          setArc('arc-wants',pW,pN,C);
+          setArc('arc-savings',pS,pN+pW,C);
+          setArc('arc-debt',salary>0?td/salary:0,0,C);
+            persistSettings();
+    }
 // Restore full state from localStorage
 (function(){
   // Theme
