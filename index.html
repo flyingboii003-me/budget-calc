@@ -1343,6 +1343,60 @@ function deleteAssetFromModal(assetId) {
 // Cache harga di memory agar tidak refetch terus saat re-render
 let livePriceCache = { gold: null, forex: null, lastFetch: null };
 
+// Fetch harga emas dan cash valas
+async function fetchGoldPrice(assetId) {
+  const btn = document.getElementById('modal-fp-' + assetId);
+  if (btn) { btn.textContent = '⏳'; btn.disabled = true; }
+  try {
+    if (!livePriceCache.gold || (Date.now() - livePriceCache.lastFetch) > 3600000) {
+      const res = await fetch(WORKER_URL + '?type=gold');
+      if (!res.ok) throw new Error('Worker error: ' + res.status);
+      const data = await res.json();
+      livePriceCache.gold = data;
+      livePriceCache.lastFetch = Date.now();
+    }
+    const arr = loadAssets();
+    const idx = arr.findIndex(a => a.id === assetId);
+    if (idx < 0) return;
+    arr[idx].currentPrice = String(livePriceCache.gold.price_gram_24k_idr);
+    saveAssets(arr);
+    renderAssets(); updateAssetDonut(); updateNetWorth();
+    showPriceToast('Harga emas 24k diupdate ✓');
+  } catch(err) {
+    showPriceToast('Gagal fetch harga emas: ' + err.message, true);
+  } finally {
+    const b = document.getElementById('modal-fp-' + assetId);
+    if (b) { b.textContent = '🔄 Update Harga Kini'; b.disabled = false; }
+  }
+}
+
+async function fetchForexPrice(assetId, currency) {
+  if (!currency || currency.trim() === '') {
+    showPriceToast('Isi kode mata uang dulu (contoh: USD, CHF)', true);
+    return;
+  }
+  const btn = document.getElementById('modal-fp-' + assetId);
+  if (btn) { btn.textContent = '⏳'; btn.disabled = true; }
+  try {
+    const code = currency.trim().toUpperCase();
+    const res = await fetch(WORKER_URL + '?type=forex&from=' + code);
+    if (!res.ok) throw new Error('Worker error: ' + res.status);
+    const data = await res.json();
+    const arr = loadAssets();
+    const idx = arr.findIndex(a => a.id === assetId);
+    if (idx < 0) return;
+    arr[idx].currentPrice = String(data.rate_to_idr);
+    saveAssets(arr);
+    renderAssets(); updateAssetDonut(); updateNetWorth();
+    showPriceToast(`1 ${code} = ${fmt(data.rate_to_idr)} ✓`);
+  } catch(err) {
+    showPriceToast('Gagal fetch kurs: ' + err.message, true);
+  } finally {
+    const b = document.getElementById('modal-fp-' + assetId);
+    if (b) { b.textContent = '🔄 Update Kurs Kini'; b.disabled = false; }
+  }
+}
+
 // Versi modal — update harga lalu refresh modal
 async function fetchGoldPriceModal(assetId) {
   await fetchGoldPrice(assetId); // pakai fungsi yang sudah ada
