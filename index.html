@@ -277,32 +277,80 @@ html.light .toggle-thumb{left:16px;background:#fff;}
 .asset-type-filter{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:12px;}
 .type-pill{padding:4px 10px;border-radius:20px;border:1px solid var(--border);background:transparent;color:var(--muted);cursor:pointer;font-size:.64rem;font-family:'Inter',sans-serif;}
 .type-pill.active{background:var(--surface3);color:var(--text);}
-.asset-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:10px;}
-.asset-item{background:var(--surface2);border:1px solid var(--border);border-radius:11px;padding:14px 15px;}
-.asset-item-header{display:flex;align-items:center;gap:8px;margin-bottom:10px;}
-.asset-item-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-bottom:8px;}
-.asset-field{display:flex;flex-direction:column;gap:3px;}
-.asset-field label{font-size:.56rem;color:var(--muted);text-transform:uppercase;letter-spacing:.07em;}
-.asset-field-input{display:flex;align-items:center;border:1px solid var(--border);border-radius:7px;overflow:hidden;background:var(--surface);}
-.asset-field-input .badge{padding:7px 8px;font-size:.66rem;}
-.asset-field-input input{background:transparent;border:none;outline:none;color:var(--text);font-family:'JetBrains Mono',monospace;font-size:.76rem;padding:7px 6px;width:100%;}
-.asset-pl-row{display:flex;justify-content:space-between;align-items:center;padding:7px 10px;border-radius:7px;}
-.asset-pl-row.profit{background:rgba(71,197,168,.06);border:1px solid rgba(71,197,168,.14);}
+
+/*.asset-pl-row.profit{background:rgba(71,197,168,.06);border:1px solid rgba(71,197,168,.14);}
 .asset-pl-row.loss{background:rgba(232,71,71,.06);border:1px solid rgba(232,71,71,.14);}
-.asset-pl-row.neutral{background:var(--surface);border:1px solid var(--border);}
+.asset-pl-row.neutral{background:var(--surface);border:1px solid var(--border);}*/
 .asset-pl-label{font-size:.58rem;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;}
-.asset-pl-val{font-family:'JetBrains Mono',monospace;font-size:.8rem;font-weight:500;}
-.asset-pl-val.profit{color:var(--savings);}
-.asset-pl-val.loss{color:var(--debt);}
-.asset-pl-pct{font-size:.62rem;font-family:'JetBrains Mono',monospace;margin-left:5px;}
-.asset-pl-pct.profit{color:var(--savings);}
-.asset-pl-pct.loss{color:var(--debt);}
-.asset-type-select{background:var(--surface);border:1px solid var(--border);color:var(--text);border-radius:7px;padding:6px 8px;font-size:.68rem;font-family:'Inter',sans-serif;outline:none;cursor:pointer;flex:1;margin-right:6px;}
-.asset-type-select option{background:var(--surface2);}
-.btn-add-asset{background:linear-gradient(135deg,rgba(124,111,247,.1),rgba(71,197,168,.06));border:1px solid rgba(124,111,247,.22);color:#a89ff5;border-radius:9px;padding:9px;width:100%;cursor:pointer;font-size:.72rem;letter-spacing:.07em;text-transform:uppercase;font-family:'Inter',sans-serif;font-weight:600;margin-top:8px;}
-.btn-add-asset:hover{background:linear-gradient(135deg,rgba(124,111,247,.2),rgba(71,197,168,.12));}
+
+/* .asset-pl-val.profit{color:var(--savings);}
+.asset-pl-val.loss{color:var(--debt);} */
+
+/* .asset-pl-pct.profit{color:var(--savings);}
+.asset-pl-pct.loss{color:var(--debt);} */
+
+/* .asset-type-select option{background:var(--surface2);} */
+
 .sidebar-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:150;}
 .sidebar-overlay.show{display:block;}
+
+/* ASSET LIST NEW */
+.asset-list-new{display:flex;flex-direction:column;gap:8px;}
+.asset-card{background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:14px 16px;display:flex;align-items:center;gap:14px;cursor:pointer;transition:all .18s;position:relative;overflow:hidden;}
+.asset-card::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;border-radius:3px 0 0 3px;}
+.asset-card:hover{background:var(--surface3);border-color:#3a3835;transform:translateY(-1px);}
+.asset-card-icon{width:38px;height:38px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex-shrink:0;}
+.asset-card-info{flex:1;min-width:0;}
+.asset-card-name{font-size:.88rem;font-weight:600;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.asset-card-meta{font-size:.6rem;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-top:2px;}
+.asset-card-values{text-align:right;flex-shrink:0;}
+.asset-card-total{font-family:'JetBrains Mono',monospace;font-size:.88rem;font-weight:500;color:var(--text);}
+.asset-card-pl{font-family:'JetBrains Mono',monospace;font-size:.72rem;margin-top:3px;display:flex;align-items:center;justify-content:flex-end;gap:5px;}
+.asset-card-pl.profit{color:var(--savings);}
+.asset-card-pl.loss{color:var(--debt);}
+.asset-card-pl.neutral{color:var(--muted);}
+.pl-badge{padding:2px 7px;border-radius:5px;font-size:.62rem;font-weight:600;}
+.profit .pl-badge{background:rgba(71,197,168,.12);}
+.loss .pl-badge{background:rgba(232,71,71,.12);}
+.neutral .pl-badge{background:var(--surface3);color:var(--muted);}
+.asset-card-arrow{color:var(--muted);font-size:.8rem;flex-shrink:0;transition:transform .18s;}
+.asset-card:hover .asset-card-arrow{transform:translateX(3px);color:var(--muted2);}
+.btn-add-asset-new{background:transparent;border:1px dashed var(--border);color:var(--muted);border-radius:10px;padding:12px;width:100%;cursor:pointer;font-size:.72rem;letter-spacing:.07em;text-transform:uppercase;font-family:'Inter',sans-serif;font-weight:600;margin-top:4px;transition:all .18s;}
+.btn-add-asset-new:hover{border-color:var(--savings);color:var(--savings);}
+
+/* ASSET MODAL */
+.asset-modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:500;display:flex;align-items:center;justify-content:center;padding:20px;opacity:0;pointer-events:none;transition:opacity .22s;}
+.asset-modal-overlay.show{opacity:1;pointer-events:all;}
+.asset-modal{background:var(--surface);border:1px solid var(--border);border-radius:18px;width:100%;max-width:480px;max-height:88vh;overflow-y:auto;transform:translateY(16px) scale(.98);transition:transform .22s cubic-bezier(.34,1.56,.64,1);}
+.asset-modal-overlay.show .asset-modal{transform:translateY(0) scale(1);}
+.asset-modal-header{padding:20px 20px 0;display:flex;align-items:flex-start;justify-content:space-between;gap:12px;}
+.asset-modal-icon{width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:1.3rem;flex-shrink:0;}
+.asset-modal-title{font-size:1rem;font-weight:700;}
+.asset-modal-subtitle{font-size:.64rem;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-top:2px;}
+.asset-modal-close{background:var(--surface2);border:1px solid var(--border);color:var(--muted);width:30px;height:30px;border-radius:8px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0;transition:all .15s;}
+.asset-modal-close:hover{background:var(--surface3);color:var(--text);}
+.asset-modal-pl-banner{margin:14px 20px 0;padding:12px 16px;border-radius:10px;display:flex;justify-content:space-between;align-items:center;}
+.asset-modal-pl-banner.profit{background:rgba(71,197,168,.06);border:1px solid rgba(71,197,168,.16);}
+.asset-modal-pl-banner.loss{background:rgba(232,71,71,.06);border:1px solid rgba(232,71,71,.16);}
+.asset-modal-pl-banner.neutral{background:var(--surface2);border:1px solid var(--border);}
+.asset-modal-stats{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin:12px 20px 0;}
+.asset-modal-stat{background:var(--surface2);border:1px solid var(--border);border-radius:9px;padding:10px 12px;}
+.asset-modal-stat-label{font-size:.56rem;color:var(--muted);text-transform:uppercase;letter-spacing:.07em;}
+.asset-modal-stat-val{font-family:'JetBrains Mono',monospace;font-size:.8rem;font-weight:500;margin-top:4px;}
+.asset-modal-divider{height:1px;background:var(--border);margin:16px 20px;}
+.asset-modal-section{padding:0 20px;}
+.asset-modal-tabs{display:flex;gap:4px;margin-bottom:14px;}
+.asset-modal-tab{background:var(--surface2);border:1px solid var(--border);color:var(--muted);border-radius:7px;padding:6px 14px;cursor:pointer;font-size:.7rem;font-family:'Inter',sans-serif;font-weight:600;transition:all .15s;}
+.asset-modal-tab.active{background:rgba(71,197,168,.1);border-color:var(--savings);color:var(--savings);}
+.asset-modal-tab-content{display:none;}
+.asset-modal-tab-content.active{display:block;}
+.asset-modal-footer{padding:16px 20px 20px;display:flex;flex-direction:column;gap:6px;}
+.asset-modal-btn-save{background:rgba(71,197,168,.12);border:1px solid rgba(71,197,168,.25);color:var(--savings);border-radius:9px;padding:10px;width:100%;cursor:pointer;font-size:.76rem;font-weight:600;font-family:'Inter',sans-serif;transition:all .18s;}
+.asset-modal-btn-save:hover{background:rgba(71,197,168,.22);}
+.asset-modal-btn-delete{background:transparent;border:1px dashed rgba(232,71,71,.3);color:rgba(232,71,71,.6);border-radius:9px;padding:8px;width:100%;cursor:pointer;font-size:.7rem;font-family:'Inter',sans-serif;transition:all .18s;}
+.asset-modal-btn-delete:hover{border-color:var(--debt);color:var(--debt);}
+.avg-info{padding:8px 12px;background:rgba(232,197,71,.05);border:1px solid rgba(232,197,71,.1);border-radius:8px;margin-bottom:10px;font-size:.64rem;color:var(--muted);line-height:1.6;}
+.avg-info strong{color:var(--needs);font-family:'JetBrains Mono',monospace;}
 
 /* RESPONSIVE */
 @media(max-width:900px){
@@ -324,7 +372,7 @@ html.light .toggle-thumb{left:16px;background:#fff;}
   .debt-item{flex-wrap:wrap;}
   .debt-name-wrap{width:100%;}
   .debt-amt-wrap{flex:1;width:auto;}
-  .asset-item-grid{grid-template-columns:1fr;}
+  /* .asset-item-grid{grid-template-columns:1fr;} */
   .breakdown-item{flex-wrap:wrap;}
   .breakdown-item-name{width:100%;}
   .breakdown-item-amt{flex:1;width:auto;}
@@ -638,10 +686,13 @@ html.light .toggle-thumb{left:16px;background:#fff;}
         <button class="type-pill" onclick="filterAssets('Properti',this)">Properti</button>
         <button class="type-pill" onclick="filterAssets('Cash',this)">Cash</button>
       </div>
-      <div class="asset-grid" id="asset-list"></div>
-      <button class="btn-add-asset" onclick="addAsset()">+ Tambah Aset Baru</button>
+      <div class="asset-list-new" id="asset-list"></div>
+      <button class="btn-add-asset-new" onclick="addAsset()">+ Tambah Aset Baru</button>
     </div>
   </div>
+
+  //Container modal menu aset
+  <div id="asset-modal-container"></div>
 
 </main>
 <script>
@@ -653,17 +704,150 @@ const fmt=n=>'Rp '+Math.round(n).toLocaleString('id-ID');
 const fmtK=n=>{if(n>=1e9)return 'Rp '+(n/1e9).toFixed(1)+'M';if(n>=1e6)return 'Rp '+(n/1e6).toFixed(1)+'jt';return 'Rp '+Math.round(n).toLocaleString('id-ID');};
 const parseM=v=>parseFloat((v+'').replace(/[^\d]/g,''))||0;
 const fmtInput=v=>{const d=(v+'').replace(/\D/g,'');return d?parseInt(d).toLocaleString('id-ID'):''};
-function setArc(id,pct,off,cc){const el=document.getElementById(id);if(!el)return;if(pct<=0){el.style.strokeDasharray=`0 ${cc}`;return;}const len=cc*Math.min(pct,1);el.style.strokeDasharray=`${len} ${cc-len}`;el.style.strokeDashoffset=-(cc*off);}
-const PAGE_TITLES={overview:'Overview',breakdown:'Breakdown',health:'Kesehatan Keuangan',trend:'Tren Bulanan',aset:'Aset & Investasi'};
-function switchPage(name,btn){document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));document.querySelectorAll('.nav-item').forEach(b=>b.classList.remove('active'));document.getElementById('page-'+name).classList.add('active');if(btn)btn.classList.add('active');document.getElementById('page-title').textContent=PAGE_TITLES[name]||name;if(name==='trend')renderTrend();if(name==='health')renderHealth();if(name==='breakdown')renderBreakdown();if(name==='aset'){renderAssets();updateAssetDonut();updateNetWorth();}closeSidebar();}
-function toggleSidebar(){document.getElementById('sidebar').classList.toggle('open');document.getElementById('sidebar-overlay').classList.toggle('show');}
-function closeSidebar(){document.getElementById('sidebar').classList.remove('open');document.getElementById('sidebar-overlay').classList.remove('show');}
-function toggleTheme(){const L=document.documentElement.classList.toggle('light');document.getElementById('theme-label').textContent=L?'Dark Mode':'Light Mode';localStorage.setItem('bp_theme',L?'light':'dark');if(chartInstance){const g=L?'#d4d0c8':'#2a2926',t=L?'#7a7870':'#6e6c64';chartInstance.options.scales.x.grid.color=g;chartInstance.options.scales.y.grid.color=g;chartInstance.options.scales.x.ticks.color=t;chartInstance.options.scales.y.ticks.color=t;chartInstance.options.plugins.legend.labels.color=t;chartInstance.update();}}
-['needs','wants','savings'].forEach(k=>{document.getElementById('range-'+k).addEventListener('input',()=>{syncSliders(k);update();});});
-function updatePctStatus(){const sum=state.pN+state.pW+state.pS;const st=document.getElementById('pct-status');if(sum>100){st.textContent='⚠ Total melebihi 100%';st.className='pct-status warn';}else if(sum===100){st.textContent='✓ Total = 100%';st.className='pct-status ok';}else{st.textContent=`Total ${sum}% — sisa ${100-sum}% belum dialokasikan`;st.className='pct-status warn';}}
-function syncSliders(changed){let n=Math.min(100,Math.max(0,parseInt(document.getElementById('range-needs').value)||0));let w=Math.min(100,Math.max(0,parseInt(document.getElementById('range-wants').value)||0));let s=Math.min(100,Math.max(0,parseInt(document.getElementById('range-savings').value)||0));if(n+w+s>100){const over=n+w+s-100;if(changed==='needs'){const rw=Math.min(over,w);w-=rw;const rs=Math.min(over-rw,s);s-=rs;}else if(changed==='wants'){const rn=Math.min(over,n);n-=rn;const rs=Math.min(over-rn,s);s-=rs;}else{const rn=Math.min(over,n);n-=rn;const rw=Math.min(over-rn,w);w-=rw;}document.getElementById('range-needs').value=n;document.getElementById('range-wants').value=w;document.getElementById('range-savings').value=s;}state.pN=parseInt(document.getElementById('range-needs').value)||0;state.pW=parseInt(document.getElementById('range-wants').value)||0;state.pS=parseInt(document.getElementById('range-savings').value)||0;updatePctStatus();}
-function setAllocMode(mode){allocMode=mode;document.getElementById('btn-mode-pct').classList.toggle('active',mode==='pct');document.getElementById('btn-mode-nominal').classList.toggle('active',mode==='nominal');const isPct=mode==='pct';['needs','wants','savings'].forEach(k=>{document.getElementById('wrap-pct-'+k).style.display=isPct?'':'none';document.getElementById('wrap-nominal-'+k).style.display=isPct?'none':'';});if(mode==='nominal'&&state.salary>0){document.getElementById('nominal-needs').value=fmtInput(String(Math.round(state.salary*state.pN/100)));document.getElementById('nominal-wants').value=fmtInput(String(Math.round(state.salary*state.pW/100)));document.getElementById('nominal-savings').value=fmtInput(String(Math.round(state.salary*state.pS/100)));}if(mode==='pct'){document.getElementById('range-needs').value=state.pN;document.getElementById('range-wants').value=state.pW;document.getElementById('range-savings').value=state.pS;}}
-;['needs','wants','savings'].forEach(k=>{document.getElementById('nominal-'+k).addEventListener('input',function(){this.value=fmtInput(this.value);if(!state.salary)return;const val=parseM(this.value);const pct=Math.min(100,Math.round((val/state.salary)*100));if(k==='needs')state.pN=pct;if(k==='wants')state.pW=pct;if(k==='savings')state.pS=pct;document.getElementById('range-'+k).value=pct;updatePctStatus();update();});});
+
+function setArc(id,pct,off,cc){
+const el=document.getElementById(id);
+if(!el) return;
+if(pct<=0){
+  el.style.strokeDasharray=`0 ${cc}`;return;
+  }
+  
+const len=cc*Math.min(pct,1);
+  el.style.strokeDasharray=`${len} ${cc-len}`;
+  el.style.strokeDashoffset=-(cc*off);
+}
+
+const PAGE_TITLES={
+  overview:'Overview',
+  breakdown:'Breakdown',
+  health:'Kesehatan Keuangan',
+  trend:'Tren Bulanan',
+  aset:'Aset & Investasi'
+};
+
+function switchPage(name,btn){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(b=>b.classList.remove('active'));
+  document.getElementById('page-'+name).classList.add('active');if(btn)btn.classList.add('active');
+  document.getElementById('page-title').textContent=PAGE_TITLES[name]||name;
+  if(name==='trend')renderTrend();
+  if(name==='health')renderHealth();
+  if(name==='breakdown')renderBreakdown();
+  if(name==='aset'){
+    renderAssets();
+    updateAssetDonut();
+    updateNetWorth();
+  }
+  closeSidebar();
+}
+
+function toggleSidebar(){
+  document.getElementById('sidebar').classList.toggle('open');
+  document.getElementById('sidebar-overlay').classList.toggle('show');
+}
+
+function closeSidebar(){
+  document.getElementById('sidebar').classList.remove('open');
+  document.getElementById('sidebar-overlay').classList.remove('show');
+}
+
+function toggleTheme(){
+  const L=document.documentElement.classList.toggle('light');
+  document.getElementById('theme-label').textContent=L?'Dark Mode':'Light Mode';
+  localStorage.setItem('bp_theme',L?'light':'dark');
+    if(chartInstance){
+      const g=L?'#d4d0c8':'#2a2926',t=L?'#7a7870':'#6e6c64';chartInstance.options.scales.x.grid.color=g;
+      chartInstance.options.scales.y.grid.color=g;
+      chartInstance.options.scales.x.ticks.color=t;
+      chartInstance.options.scales.y.ticks.color=t;
+      chartInstance.options.plugins.legend.labels.color=t;
+      chartInstance.update();
+    }
+  }['needs','wants','savings'].forEach(k=>{
+  document.getElementById('range-'+k)
+  .addEventListener('input',()=>{syncSliders(k);
+    update();
+  });
+});
+
+function updatePctStatus(){
+  const sum=state.pN+state.pW+state.pS;
+  const st=document.getElementById('pct-status');
+  if(sum>100){
+    st.textContent='⚠ Total melebihi 100%';
+    st.className='pct-status warn';
+  }else if(sum===100){
+    st.textContent='✓ Total = 100%';
+    st.className='pct-status ok';
+  }else{
+    st.textContent=`Total ${sum}% — sisa ${100-sum}% belum dialokasikan`;
+    st.className='pct-status warn';
+  }
+}
+
+function syncSliders(changed){
+  let n=Math.min(100,Math.max(0,parseInt(document.getElementById('range-needs').value)||0));
+  let w=Math.min(100,Math.max(0,parseInt(document.getElementById('range-wants').value)||0));
+  let s=Math.min(100,Math.max(0,parseInt(document.getElementById('range-savings').value)||0));
+  if(n+w+s>100){
+    const over=n+w+s-100;
+    if(changed==='needs'){
+      const rw=Math.min(over,w);w-=rw;
+      const rs=Math.min(over-rw,s);s-=rs;
+    }else if(changed==='wants'){
+      const rn=Math.min(over,n);n-=rn;const rs=Math.min(over-rn,s);
+      s-=rs;
+    }else{
+      const rn=Math.min(over,n);
+      n-=rn;
+      const rw=Math.min(over-rn,w);
+      w-=rw;
+    }
+    document.getElementById('range-needs').value=n;
+    document.getElementById('range-wants').value=w;
+    document.getElementById('range-savings').value=s;
+  }
+  state.pN=parseInt(document.getElementById('range-needs').value)||0;
+  state.pW=parseInt(document.getElementById('range-wants').value)||0;
+  state.pS=parseInt(document.getElementById('range-savings').value)||0;
+  updatePctStatus();
+}
+
+function setAllocMode(mode){
+  allocMode=mode;document.getElementById('btn-mode-pct').classList.toggle('active',mode==='pct');document.getElementById('btn-mode-nominal').classList.toggle('active',mode==='nominal');
+  const isPct=mode==='pct';
+  ['needs','wants','savings'].forEach(k=>{
+    document.getElementById('wrap-pct-'+k).style.display=isPct?'':'none';document.getElementById('wrap-nominal-'+k).style.display=isPct?'none':'';
+  }
+);
+if(mode==='nominal'&&state.salary>0){
+  document.getElementById('nominal-needs').value=fmtInput(String(Math.round(state.salary*state.pN/100)
+  ));
+  document.getElementById('nominal-wants').value=fmtInput(String(Math.round(state.salary*state.pW/100)
+  ));
+  document.getElementById('nominal-savings').value=fmtInput(String(Math.round(state.salary*state.pS/100)
+  ));
+    }if(mode==='pct'){
+    document.getElementById('range-needs').value=state.pN;
+    document.getElementById('range-wants').value=state.pW;
+    document.getElementById('range-savings').value=state.pS;
+    }
+};
+['needs','wants','savings'].forEach(k=>{
+  document.getElementById('nominal-'+k).addEventListener('input',function(){
+    this.value=fmtInput(this.value);
+    if(!state.salary)
+    return;
+    const val=parseM(this.value);
+    const pct=Math.min(100,Math.round((val/state.salary)*100));
+    if(k==='needs')state.pN=pct;
+    if(k==='wants')state.pW=pct;
+    if(k==='savings')state.pS=pct;
+    document.getElementById('range-'+k).value=pct;
+    updatePctStatus();
+    update();
+    });
+});
 document.getElementById('salary-input').addEventListener('input',function(){const d=this.value.replace(/\D/g,'');this.value=fmtInput(d);state.salary=parseM(d);update();if(allocMode==='nominal'&&state.salary>0){document.getElementById('nominal-needs').value=fmtInput(String(Math.round(state.salary*state.pN/100)));document.getElementById('nominal-wants').value=fmtInput(String(Math.round(state.salary*state.pW/100)));document.getElementById('nominal-savings').value=fmtInput(String(Math.round(state.salary*state.pS/100)));}['nominal-needs','nominal-wants','nominal-savings'].forEach(id=>{document.getElementById(id).disabled=!state.salary;});});
 function renderDebtList(){const list=document.getElementById('debt-list');list.innerHTML='';state.debts.forEach((d,i)=>{const row=document.createElement('div');row.className='debt-item';const isPaid=d.paid||false;row.className='debt-item'+(isPaid?' paid-item':'');row.innerHTML=`<button class="debt-paid-btn${isPaid?' paid':''}" title="${isPaid?'Tandai belum lunas':'Tandai lunas'}">${isPaid?'✓':'○'}</button><div class="debt-name-wrap"><input class="debt-name-input" type="text" placeholder="Nama tagihan..." value="${d.name}"></div><div class="debt-amt-wrap"><span class="badge" style="padding:7px 8px;font-size:.66rem">Rp</span><input class="debt-amount-input" type="text" inputmode="numeric" placeholder="0" value="${d.amount}"></div><button class="btn-remove">×</button>`;row.querySelector('.debt-paid-btn').addEventListener('click',()=>{state.debts[i].paid=!state.debts[i].paid;renderDebtList();update();});row.querySelector('.debt-name-input').addEventListener('input',e=>{state.debts[i].name=e.target.value;update();});row.querySelector('.debt-amount-input').addEventListener('input',e=>{e.target.value=fmtInput(e.target.value);state.debts[i].amount=e.target.value;update();});row.querySelector('.btn-remove').addEventListener('click',()=>{state.debts.splice(i,1);renderDebtList();update();});list.appendChild(row);});}
 document.getElementById('btn-add-debt').addEventListener('click',()=>{state.debts.push({name:'',amount:'',paid:false});renderDebtList();update();});
@@ -778,41 +962,392 @@ function setChartMode(mode,btn){chartMode=mode;document.querySelectorAll('.chart
 const ASSET_TYPES=[{key:'Saham',color:'#7c6ff7',icon:'📈'},{key:'Reksa Dana',color:'#47c5a8',icon:'🏦'},{key:'Emas',color:'#e8c547',icon:'🥇'},{key:'Kripto',color:'#e87d47',icon:'₿'},{key:'Deposito',color:'#47a5c5',icon:'🏧'},{key:'Properti',color:'#c5476f',icon:'🏠'},{key:'Cash',color:'#a8a8a8',icon:'💵'}];
 const loadAssets=()=>JSON.parse(localStorage.getItem('bp_assets')||'[]');
 const saveAssets=arr=>{localStorage.setItem('bp_assets',JSON.stringify(arr));};
-function addAsset(){const arr=loadAssets();arr.push({id:Date.now(),name:'Aset Baru',type:'Saham',buyPrice:'',currentPrice:'',qty:''});saveAssets(arr);renderAssets();updateAssetDonut();updateNetWorth();}
-function filterAssets(type,btn){assetFilter=type;document.querySelectorAll('.type-pill').forEach(b=>b.classList.remove('active'));btn.classList.add('active');renderAssets();}
-function renderAssets(){const arr=loadAssets();const list=document.getElementById('asset-list');list.innerHTML='';const filtered=assetFilter==='all'?arr:arr.filter(a=>a.type===assetFilter);if(!filtered.length){list.innerHTML=`<div style="grid-column:1/-1;text-align:center;padding:28px;color:var(--muted);font-size:.76rem">${assetFilter==='all'?'Belum ada aset.':'Tidak ada aset tipe ini.'}</div>`;return;}filtered.forEach(a=>{const idx=arr.findIndex(x=>x.id===a.id);const ti=ASSET_TYPES.find(t=>t.key===a.type)||ASSET_TYPES[0];const buy=parseM(a.buyPrice),cur=parseM(a.currentPrice),qty=parseFloat((a.qty+'').replace(/[^\d.]/g,''))||0;const tb=buy*qty,tc=cur*qty,pl=tc-tb;const plPct=tb>0?((pl/tb)*100).toFixed(2):0;const plCls=pl>0?'profit':pl<0?'loss':'neutral';
-  // Tombol fetch & currency input untuk Emas dan Cash/Valas
-  const isGold = a.type==='Emas';
-  const isCash = a.type==='Cash';
-  let fetchHtml = '';
-  if(isGold){
-    fetchHtml=`<div style="display:flex;align-items:center;gap:6px;margin-bottom:8px;padding:6px 8px;background:rgba(232,197,71,.05);border:1px solid rgba(232,197,71,.12);border-radius:7px;">
-      <span style="font-size:.6rem;color:var(--muted);flex:1">Harga spot 24k</span>
-      <button class="btn-fetch-price" id="fp-${a.id}" onclick="fetchGoldPrice(${a.id})">🔄 Update</button>
-    </div>`;
-  } else if(isCash){
-    fetchHtml=`<div style="display:flex;align-items:center;gap:6px;margin-bottom:8px;padding:6px 8px;background:rgba(71,197,168,.04);border:1px solid rgba(71,197,168,.1);border-radius:7px;">
-      <input type="text" id="currency-${a.id}" placeholder="USD / CHF / SGD" value="${a.currency||''}" maxlength="4"
-        style="background:transparent;border:none;outline:none;color:var(--text);font-family:'JetBrains Mono',monospace;font-size:.74rem;font-weight:600;width:80px;text-transform:uppercase;"
-        oninput="this.value=this.value.toUpperCase();updateAssetField(${idx},'currency',this.value)">
-      <span style="font-size:.6rem;color:var(--muted);flex:1">→ IDR per unit</span>
-      <button class="btn-fetch-price" id="fp-${a.id}" onclick="fetchForexPrice(${a.id},document.getElementById('currency-${a.id}').value)">🔄 Update</button>
-    </div>`;
+function addAsset() {
+  const arr = loadAssets();
+  arr.push({ id: Date.now(), name: 'Aset Baru', type: 'Saham', buyPrice: '', currentPrice: '', qty: '', currency: '' });
+  saveAssets(arr);
+  renderAssets();
+  updateAssetDonut();
+  updateNetWorth();
+  // Langsung buka modal untuk aset yang baru dibuat
+  openAssetModal(arr[arr.length - 1].id);
+}
+
+function filterAssets(type,btn){
+  assetFilter=type;document.querySelectorAll('.type-pill')
+  .forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');renderAssets();
+}
+
+function renderAssets() {
+  const arr = loadAssets();
+  const list = document.getElementById('asset-list');
+  list.innerHTML = '';
+
+  const filtered = assetFilter === 'all' ? arr : arr.filter(a => a.type === assetFilter);
+
+  if (!filtered.length) {
+    list.innerHTML = `<div style="text-align:center;padding:28px;color:var(--muted);font-size:.76rem">
+      ${assetFilter === 'all' ? 'Belum ada aset.' : 'Tidak ada aset tipe ini.'}</div>`;
+    return;
   }
-  const el=document.createElement('div');el.className='asset-item';el.innerHTML=`<div class="asset-item-header"><span style="font-size:.95rem">${ti.icon}</span><input type="text" value="${a.name}" style="background:transparent;border:none;outline:none;color:var(--text);font-family:'Inter',sans-serif;font-weight:600;font-size:.84rem;flex:1;" onchange="updateAssetField(${idx},'name',this.value)"><button class="btn-remove" onclick="deleteAsset(${idx})">×</button></div>${fetchHtml}<div class="asset-item-grid"><div class="asset-field"><label>Harga Beli/unit</label><div class="asset-field-input"><span class="badge">Rp</span><input type="text" inputmode="numeric" placeholder="0" value="${a.buyPrice}" oninput="this.value=fmtInput(this.value)" onchange="updateAssetField(${idx},'buyPrice',this.value)"></div></div><div class="asset-field"><label>${isGold?'Harga Sekarang/gram':isCash?'Kurs Sekarang/unit':'Harga Sekarang/unit'}</label><div class="asset-field-input"><span class="badge">Rp</span><input type="text" inputmode="numeric" placeholder="0" value="${a.currentPrice}" oninput="this.value=fmtInput(this.value)" onchange="updateAssetField(${idx},'currentPrice',this.value)"></div></div><div class="asset-field"><label>${isGold?'Jumlah (gram)':isCash?'Jumlah unit':'Jumlah / Unit'}</label><div class="asset-field-input"><input type="text" inputmode="numeric" placeholder="1" value="${a.qty}" style="padding-left:9px" oninput="updateAssetField(${idx},'qty',this.value)"></div></div><div class="asset-field"><label>Tipe Aset</label><select class="asset-type-select" onchange="updateAssetField(${idx},'type',this.value)">${ASSET_TYPES.map(t=>`<option value="${t.key}" ${a.type===t.key?'selected':''}>${t.icon} ${t.key}</option>`).join('')}</select></div></div>${tb>0?`<div class="asset-pl-row ${plCls}"><div><div class="asset-pl-label">P/L</div><div style="font-size:.64rem;color:var(--muted);font-family:'JetBrains Mono',monospace;margin-top:1px">${fmtK(tb)} → ${fmtK(tc)}</div></div><div><span class="asset-pl-val ${plCls}">${pl>=0?'+':''}${fmt(pl)}</span><span class="asset-pl-pct ${plCls}">(${pl>=0?'+':''}${plPct}%)</span></div></div>`:''}`;list.appendChild(el);});}
-function updateAssetField(idx,field,val){const arr=loadAssets();if(!arr[idx])return;arr[idx][field]=val;saveAssets(arr);updateAssetDonut();updateNetWorth();if(field==='type')renderAssets();}
-function deleteAsset(idx){const arr=loadAssets();arr.splice(idx,1);saveAssets(arr);renderAssets();updateAssetDonut();updateNetWorth();}
-function updateAssetDonut(){const arr=loadAssets();const totals={};ASSET_TYPES.forEach(t=>totals[t.key]=0);arr.forEach(a=>{const c=parseM(a.currentPrice),q=parseFloat((a.qty+'').replace(/[^\d.]/g,''))||0;totals[a.type]=(totals[a.type]||0)+c*q;});const grand=Object.values(totals).reduce((s,v)=>s+v,0);document.getElementById('ad-total-text').textContent=fmtK(grand);const arcIds={Saham:'ad-saham','Reksa Dana':'ad-reksa',Emas:'ad-emas',Kripto:'ad-kripto',Deposito:'ad-deposito',Properti:'ad-properti',Cash:'ad-cash'};Object.values(arcIds).forEach(id=>{const el=document.getElementById(id);if(el)el.style.strokeDasharray=`0 ${CA}`;});let off=0;if(grand>0){ASSET_TYPES.forEach(t=>{const pct=totals[t.key]/grand;const el=document.getElementById(arcIds[t.key]);if(!el||pct<=0)return;const len=CA*pct;el.style.strokeDasharray=`${len} ${CA-len}`;el.style.strokeDashoffset=-(CA*off);off+=pct;});}const leg=document.getElementById('asset-legend');leg.innerHTML='';ASSET_TYPES.forEach(t=>{if(!totals[t.key])return;const pct=grand>0?((totals[t.key]/grand)*100).toFixed(1):0;const li=document.createElement('div');li.className='asset-legend-item';li.innerHTML=`<div class="asset-legend-dot" style="background:${t.color}"></div>${t.key}<span class="asset-legend-pct" style="color:${t.color}">${pct}%</span>`;leg.appendChild(li);});const statsEl=document.getElementById('asset-stats');if(statsEl){statsEl.innerHTML='';ASSET_TYPES.forEach(t=>{if(!totals[t.key])return;const pct=grand>0?((totals[t.key]/grand)*100).toFixed(1):0;const d=document.createElement('div');d.style.cssText='display:flex;align-items:center;justify-content:space-between;padding:6px 10px;background:var(--surface2);border:1px solid var(--border);border-radius:8px;';d.innerHTML=`<span style="font-size:.72rem;color:var(--muted2)">${t.icon} ${t.key}</span><div style="text-align:right"><div style="font-family:JetBrains Mono,monospace;font-size:.76rem">${fmtK(totals[t.key])}</div><div style="font-size:.6rem;color:${t.color};font-family:JetBrains Mono,monospace">${pct}%</div></div>`;statsEl.appendChild(d);});}}
+
+  filtered.forEach(a => {
+    const ti = ASSET_TYPES.find(t => t.key === a.type) || ASSET_TYPES[0];
+    const buy = parseM(a.buyPrice);
+    const cur = parseM(a.currentPrice);
+    const qty = parseFloat((a.qty + '').replace(/[^\d.]/g, '')) || 0;
+    const tb = buy * qty, tc = cur * qty, pl = tc - tb;
+    const plPct = tb > 0 ? ((pl / tb) * 100).toFixed(2) : 0;
+    const plCls = pl > 0 ? 'profit' : pl < 0 ? 'loss' : 'neutral';
+    const plSign = pl > 0 ? '+' : '';
+
+    // Label meta: tipe + qty dengan unit yang tepat
+    const isCash = a.type === 'Cash';
+    const isGold = a.type === 'Emas';
+    const qtyLabel = isCash
+      ? `${qty} ${a.currency || 'unit'}`
+      : isGold
+        ? `${qty} gram`
+        : `${qty} unit`;
+    const metaLabel = `${a.type} · ${qtyLabel}`;
+
+    const card = document.createElement('div');
+    card.className = 'asset-card';
+    card.style.setProperty('--card-color', ti.color);
+    card.style.cssText += `cursor:pointer;`;
+    card.innerHTML = `
+      <style>.asset-card[data-id="${a.id}"]::before{background:${ti.color};}
+      .asset-card[data-id="${a.id}"] .asset-card-icon{background:${ti.color}1a;}</style>
+      <div class="asset-card-icon">${ti.icon}</div>
+      <div class="asset-card-info">
+        <div class="asset-card-name">${a.name}</div>
+        <div class="asset-card-meta">${metaLabel}</div>
+      </div>
+      <div class="asset-card-values">
+        <div class="asset-card-total">${fmtK(tc)}</div>
+        <div class="asset-card-pl ${plCls}">
+          <span>${plSign}${fmtK(Math.abs(pl))}</span>
+          <span class="pl-badge">${plSign}${plPct}%</span>
+        </div>
+      </div>
+      <div class="asset-card-arrow">›</div>`;
+
+    card.setAttribute('data-id', a.id);
+    card.addEventListener('click', () => openAssetModal(a.id));
+    list.appendChild(card);
+  });
+}
+function updateAssetField(idx,field,val){
+  const arr=loadAssets();
+  if(!arr[idx])return;
+  arr[idx][field]=val;
+  saveAssets(arr);
+  updateAssetDonut();
+  updateNetWorth();
+  if(field==='type')renderAssets();
+}
+function deleteAsset(idx){
+  const arr=loadAssets();
+  arr.splice(idx,1);
+  saveAssets(arr);
+  renderAssets();
+  updateAssetDonut();
+  updateNetWorth();
+}
+function updateAssetDonut(){
+  const arr=loadAssets();
+  const totals={};
+  ASSET_TYPES.forEach(t=>totals[t.key]=0);
+  arr.forEach(a=>{const c=parseM(a.currentPrice),
+    q=parseFloat((a.qty+'').replace(/[^\d.]/g,''))||0;
+    totals[a.type]=(totals[a.type]||0)+c*q;});
+    const grand=Object.values(totals).reduce((s,v)=>s+v,0);
+    document.getElementById('ad-total-text').textContent=fmtK(grand);
+    const arcIds={
+      Saham:'ad-saham','Reksa Dana':'ad-reksa',
+      Emas:'ad-emas',
+      Kripto:'ad-kripto',
+      Deposito:'ad-deposito',
+      Properti:'ad-properti',
+      Cash:'ad-cash'
+    };
+    Object.values(arcIds)
+    .forEach(id=>{
+      const el=document.getElementById(id);
+      if(el)el.style.strokeDasharray=`0 ${CA}`;
+    });
+    let off=0;
+    if(grand>0){
+      ASSET_TYPES.forEach(t=>{
+        const pct=totals[t.key]/grand;
+        const el=document.getElementById(arcIds[t.key]);
+        if(!el||pct<=0)
+        return;
+      const len=CA*pct;
+      el.style.strokeDasharray=`${len} ${CA-len}`;
+      el.style.strokeDashoffset=-(CA*off);off+=pct;});
+    }
+    const leg=document.getElementById('asset-legend');
+    leg.innerHTML='';
+    ASSET_TYPES.forEach(t=>{
+      if(!totals[t.key])
+      return;
+    const pct=grand>0?((totals[t.key]/grand)*100).toFixed(1):0;
+    const li=document.createElement('div');
+    li.className='asset-legend-item';
+    li.innerHTML=`<div class="asset-legend-dot" style="background:${t.color}">
+      </div>${t.key}
+      <span class="asset-legend-pct" style="color:${t.color}">${pct}%</span>`;
+      leg.appendChild(li);
+    });
+    const statsEl=document.getElementById('asset-stats');
+    if(statsEl){statsEl.innerHTML='';
+    ASSET_TYPES.forEach(t=>{
+      if(!totals[t.key])return;const pct=grand>0?((totals[t.key]/grand)*100).toFixed(1):0;
+      const d=document.createElement('div');
+      d.style.cssText='display:flex;align-items:center;justify-content:space-between;padding:6px 10px;background:var(--surface2);border:1px solid var(--border);border-radius:8px;';d.innerHTML=`<span style="font-size:.72rem;color:var(--muted2)">${t.icon} ${t.key}</span><div style="text-align:right"><div style="font-family:JetBrains Mono,monospace;font-size:.76rem">${fmtK(totals[t.key])}</div><div style="font-size:.6rem;color:${t.color};font-family:JetBrains Mono,monospace">${pct}%</div></div>`;statsEl.appendChild(d);
+    });
+  }
+}
 function updateNetWorth(){const arr=loadAssets();const td=getTotalDebt();let ta=0,tba=0;arr.forEach(a=>{const c=parseM(a.currentPrice),b=parseM(a.buyPrice),q=parseFloat((a.qty+'').replace(/[^\d.]/g,''))||0;ta+=c*q;tba+=b*q;});const pl=ta-tba;document.getElementById('nw-total').textContent=fmt(ta);document.getElementById('nw-assets').textContent=fmt(ta);document.getElementById('nw-debts').textContent=fmt(td);const plEl=document.getElementById('nw-pl');plEl.textContent=(pl>=0?'+':'')+fmt(pl);plEl.className='nw-stat-val '+(pl>=0?'pos':'neg');const ms=state.salary*(state.pS/100);document.getElementById('sl-pct').textContent=state.pS+'%';document.getElementById('sl-invested').innerHTML=fmt(ta)+' <span style="color:var(--savings);font-size:.68rem">✓</span>';const idle=ms-ta;const idleEl=document.getElementById('sl-idle');idleEl.textContent=idle>0?fmt(idle)+' belum diinvestasikan':'Aset melebihi alokasi tabungan';idleEl.style.color=idle>0?'var(--muted)':'var(--savings)';}
+
+//Fungsi Asset Modal
+let activeModalId = null;
+
+function openAssetModal(assetId) {
+  const arr = loadAssets();
+  const a = arr.find(x => x.id === assetId);
+  if (!a) return;
+
+  const ti = ASSET_TYPES.find(t => t.key === a.type) || ASSET_TYPES[0];
+  const buy = parseM(a.buyPrice);
+  const cur = parseM(a.currentPrice);
+  const qty = parseFloat((a.qty + '').replace(/[^\d.]/g, '')) || 0;
+  const tb = buy * qty, tc = cur * qty, pl = tc - tb;
+  const plPct = tb > 0 ? ((pl / tb) * 100).toFixed(2) : 0;
+  const plCls = pl > 0 ? 'profit' : pl < 0 ? 'loss' : 'neutral';
+  const plSign = pl > 0 ? '+' : '';
+  const isCash = a.type === 'Cash';
+  const isGold = a.type === 'Emas';
+
+  // Unit label
+  const unitLabel = isCash ? (a.currency || 'unit') : isGold ? 'gram' : 'unit';
+
+  // Fetch bar HTML
+  const fetchBarHtml = isGold
+    ? `<div class="live-price-bar" style="margin-bottom:12px">
+        <span>Harga spot 24k</span>
+        <button class="btn-fetch-price" id="modal-fp-${a.id}" onclick="fetchGoldPriceModal(${a.id})">🔄 Update Harga Kini</button>
+       </div>`
+    : isCash && a.currency
+      ? `<div class="live-price-bar" style="margin-bottom:12px">
+          <span>Kurs ${a.currency} → IDR</span>
+          <button class="btn-fetch-price" id="modal-fp-${a.id}" onclick="fetchForexPriceModal(${a.id},'${a.currency}')">🔄 Update Kurs Kini</button>
+         </div>`
+      : '';
+
+  // Currency input khusus Cash
+  const currencyInputHtml = isCash
+    ? `<div class="form-group">
+        <label class="form-label">Kode Mata Uang</label>
+        <div class="input-wrap">
+          <input type="text" class="money-input" id="modal-currency-${a.id}"
+            value="${a.currency || ''}" maxlength="4" placeholder="USD / CHF / SGD"
+            style="text-transform:uppercase;font-size:.86rem"
+            oninput="this.value=this.value.toUpperCase()"
+            onchange="saveModalField(${a.id},'currency',this.value)">
+        </div>
+       </div>`
+    : '';
+
+  const html = `
+    <div class="asset-modal-overlay show" id="asset-modal-overlay" onclick="handleModalOverlayClick(event)">
+      <div class="asset-modal">
+
+        <div class="asset-modal-header">
+          <div class="asset-modal-icon" style="background:${ti.color}1a">${ti.icon}</div>
+          <div style="flex:1">
+            <div class="asset-modal-title">
+              <input type="text" value="${a.name}"
+                style="background:transparent;border:none;outline:none;color:var(--text);font-family:'Inter',sans-serif;font-weight:700;font-size:1rem;width:100%"
+                onchange="saveModalField(${a.id},'name',this.value)">
+            </div>
+            <div class="asset-modal-subtitle">${a.type}${isCash && a.currency ? ' · ' + a.currency : ''} · ${qty} ${unitLabel}</div>
+          </div>
+          <button class="asset-modal-close" onclick="closeAssetModal()">×</button>
+        </div>
+
+        <div class="asset-modal-pl-banner ${plCls}">
+          <div>
+            <div style="font-size:.58rem;color:var(--muted);text-transform:uppercase;letter-spacing:.07em">Profit / Loss</div>
+            <div style="font-family:'JetBrains Mono',monospace;font-size:1.1rem;font-weight:500;margin-top:2px;color:var(--${plCls === 'profit' ? 'savings' : plCls === 'loss' ? 'debt' : 'muted'})">${plSign}${fmt(pl)}</div>
+          </div>
+          <div style="text-align:right">
+            <div style="font-size:.58rem;color:var(--muted);text-transform:uppercase;letter-spacing:.07em">Return</div>
+            <div style="font-family:'JetBrains Mono',monospace;font-size:1.1rem;font-weight:600;margin-top:2px;color:var(--${plCls === 'profit' ? 'savings' : plCls === 'loss' ? 'debt' : 'muted'})">${plSign}${plPct}%</div>
+          </div>
+        </div>
+
+        <div class="asset-modal-stats">
+          <div class="asset-modal-stat">
+            <div class="asset-modal-stat-label">Modal</div>
+            <div class="asset-modal-stat-val">${fmtK(tb)}</div>
+          </div>
+          <div class="asset-modal-stat">
+            <div class="asset-modal-stat-label">Nilai Kini</div>
+            <div class="asset-modal-stat-val">${fmtK(tc)}</div>
+          </div>
+          <div class="asset-modal-stat">
+            <div class="asset-modal-stat-label">Qty</div>
+            <div class="asset-modal-stat-val">${qty} ${unitLabel}</div>
+          </div>
+        </div>
+
+        <div class="asset-modal-divider"></div>
+
+        <div class="asset-modal-section">
+          ${fetchBarHtml}
+          ${currencyInputHtml}
+
+          <div style="font-size:.58rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);font-weight:600;margin-bottom:10px">Update Posisi</div>
+          <div class="asset-modal-tabs">
+            <button class="asset-modal-tab active" onclick="switchAssetTab('buy')">Harga Beli</button>
+            <button class="asset-modal-tab" onclick="switchAssetTab('cur')">Harga Kini</button>
+            <button class="asset-modal-tab" onclick="switchAssetTab('qty')">Qty</button>
+          </div>
+
+          <!-- Tab: Harga Beli -->
+          <div class="asset-modal-tab-content active" id="asset-tab-buy">
+            <div class="form-group">
+              <label class="form-label">${isCash ? 'Kurs Beli rata-rata (IDR per 1 ' + (a.currency || 'unit') + ')' : isGold ? 'Harga Beli rata-rata per gram' : 'Harga Beli rata-rata per unit'}</label>
+              <div class="input-wrap">
+                <span class="badge">Rp</span>
+                <input type="text" class="money-input" id="modal-buy-${a.id}"
+                  value="${fmtInput(a.buyPrice)}" inputmode="numeric"
+                  oninput="this.value=fmtInput(this.value)"
+                  onchange="saveModalField(${a.id},'buyPrice',this.value)">
+              </div>
+            </div>
+            <div class="avg-info">Avg. beli saat ini: <strong>${fmt(buy)}/${unitLabel}</strong> · Total modal: <strong>${fmt(tb)}</strong></div>
+          </div>
+
+          <!-- Tab: Harga Kini -->
+          <div class="asset-modal-tab-content" id="asset-tab-cur">
+            <div class="form-group">
+              <label class="form-label">${isCash ? 'Kurs Sekarang (IDR per 1 ' + (a.currency || 'unit') + ')' : isGold ? 'Harga Sekarang per gram' : 'Harga Sekarang per unit'}</label>
+              <div class="input-wrap">
+                <span class="badge">Rp</span>
+                <input type="text" class="money-input" id="modal-cur-${a.id}"
+                  value="${fmtInput(a.currentPrice)}" inputmode="numeric"
+                  oninput="this.value=fmtInput(this.value)"
+                  onchange="saveModalField(${a.id},'currentPrice',this.value)">
+              </div>
+            </div>
+          </div>
+
+          <!-- Tab: Qty -->
+          <div class="asset-modal-tab-content" id="asset-tab-qty">
+            <div class="form-group">
+              <label class="form-label">Jumlah (${unitLabel})</label>
+              <div class="input-wrap">
+                <input type="text" class="money-input" id="modal-qty-${a.id}"
+                  value="${a.qty}" inputmode="numeric" placeholder="0"
+                  style="padding-left:14px"
+                  onchange="saveModalField(${a.id},'qty',this.value)">
+                <span class="badge" style="border-left:1px solid var(--border);border-right:none">${unitLabel}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="asset-modal-footer">
+          <button class="asset-modal-btn-save" onclick="saveAndCloseModal(${a.id})">✓ Simpan & Tutup</button>
+          <button class="asset-modal-btn-delete" onclick="deleteAssetFromModal(${a.id})">Hapus Aset Ini</button>
+        </div>
+
+      </div>
+    </div>`;
+
+  document.getElementById('asset-modal-container').innerHTML = html;
+  document.body.style.overflow = 'hidden';
+  activeModalId = assetId;
+}
+
+function closeAssetModal() {
+  document.getElementById('asset-modal-container').innerHTML = '';
+  document.body.style.overflow = '';
+  activeModalId = null;
+}
+
+function handleModalOverlayClick(e) {
+  if (e.target.id === 'asset-modal-overlay') closeAssetModal();
+}
+
+function switchAssetTab(tab) {
+  document.querySelectorAll('.asset-modal-tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.asset-modal-tab-content').forEach(c => c.classList.remove('active'));
+  document.getElementById('asset-tab-' + tab).classList.add('active');
+  // Re-activate correct button
+  document.querySelectorAll('.asset-modal-tab').forEach(t => {
+    if (t.getAttribute('onclick').includes("'" + tab + "'")) t.classList.add('active');
+  });
+}
+
+function saveModalField(assetId, field, val) {
+  const arr = loadAssets();
+  const idx = arr.findIndex(a => a.id === assetId);
+  if (idx < 0) return;
+  arr[idx][field] = val;
+  saveAssets(arr);
+  updateAssetDonut();
+  updateNetWorth();
+}
+
+function saveAndCloseModal(assetId) {
+  // Flush semua input field yang mungkin belum trigger onchange
+  const fields = [
+    { id: `modal-buy-${assetId}`, field: 'buyPrice' },
+    { id: `modal-cur-${assetId}`, field: 'currentPrice' },
+    { id: `modal-qty-${assetId}`, field: 'qty' },
+    { id: `modal-currency-${assetId}`, field: 'currency' },
+  ];
+  const arr = loadAssets();
+  const idx = arr.findIndex(a => a.id === assetId);
+  if (idx >= 0) {
+    fields.forEach(f => {
+      const el = document.getElementById(f.id);
+      if (el) arr[idx][f.field] = el.value;
+    });
+    saveAssets(arr);
+  }
+  closeAssetModal();
+  renderAssets();
+  updateAssetDonut();
+  updateNetWorth();
+}
+
+function deleteAssetFromModal(assetId) {
+  const arr = loadAssets();
+  const idx = arr.findIndex(a => a.id === assetId);
+  if (idx < 0) return;
+  arr.splice(idx, 1);
+  saveAssets(arr);
+  closeAssetModal();
+  renderAssets();
+  updateAssetDonut();
+  updateNetWorth();
+}
+
 // ── LIVE PRICE ────────────────────────────────────────────────
 // Cache harga di memory agar tidak refetch terus saat re-render
 let livePriceCache = { gold: null, forex: null, lastFetch: null };
 
+// Fetch harga emas dan cash valas
 async function fetchGoldPrice(assetId) {
-  const btn = document.getElementById('fp-'+assetId);
+  const btn = document.getElementById('modal-fp-' + assetId);
   if (btn) { btn.textContent = '⏳'; btn.disabled = true; }
   try {
-    // Pakai cache memory kalau belum lebih dari 1 jam
     if (!livePriceCache.gold || (Date.now() - livePriceCache.lastFetch) > 3600000) {
       const res = await fetch(WORKER_URL + '?type=gold');
       if (!res.ok) throw new Error('Worker error: ' + res.status);
@@ -823,7 +1358,6 @@ async function fetchGoldPrice(assetId) {
     const arr = loadAssets();
     const idx = arr.findIndex(a => a.id === assetId);
     if (idx < 0) return;
-    // Default pakai harga 24k — user bisa ganti manual kalau 22k/18k
     arr[idx].currentPrice = String(livePriceCache.gold.price_gram_24k_idr);
     saveAssets(arr);
     renderAssets(); updateAssetDonut(); updateNetWorth();
@@ -831,8 +1365,8 @@ async function fetchGoldPrice(assetId) {
   } catch(err) {
     showPriceToast('Gagal fetch harga emas: ' + err.message, true);
   } finally {
-    const b = document.getElementById('fp-'+assetId);
-    if (b) { b.textContent = '🔄'; b.disabled = false; }
+    const b = document.getElementById('modal-fp-' + assetId);
+    if (b) { b.textContent = '🔄 Update Harga Kini'; b.disabled = false; }
   }
 }
 
@@ -841,7 +1375,7 @@ async function fetchForexPrice(assetId, currency) {
     showPriceToast('Isi kode mata uang dulu (contoh: USD, CHF)', true);
     return;
   }
-  const btn = document.getElementById('fp-'+assetId);
+  const btn = document.getElementById('modal-fp-' + assetId);
   if (btn) { btn.textContent = '⏳'; btn.disabled = true; }
   try {
     const code = currency.trim().toUpperCase();
@@ -858,9 +1392,20 @@ async function fetchForexPrice(assetId, currency) {
   } catch(err) {
     showPriceToast('Gagal fetch kurs: ' + err.message, true);
   } finally {
-    const b = document.getElementById('fp-'+assetId);
-    if (b) { b.textContent = '🔄'; b.disabled = false; }
+    const b = document.getElementById('modal-fp-' + assetId);
+    if (b) { b.textContent = '🔄 Update Kurs Kini'; b.disabled = false; }
   }
+}
+
+// Versi modal — update harga lalu refresh modal
+async function fetchGoldPriceModal(assetId) {
+  await fetchGoldPrice(assetId); // pakai fungsi yang sudah ada
+  openAssetModal(assetId);       // re-render modal dengan harga baru
+}
+
+async function fetchForexPriceModal(assetId, currency) {
+  await fetchForexPrice(assetId, currency);
+  openAssetModal(assetId);
 }
 
 function showPriceToast(msg, isError=false) {
