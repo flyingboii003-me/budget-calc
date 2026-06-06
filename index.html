@@ -958,7 +958,15 @@ function clearHistory(){if(confirm('Hapus semua riwayat?')){localStorage.removeI
 function renderTrend(){const h=JSON.parse(localStorage.getItem('bp_history')||'[]');const noEl=document.getElementById('no-trend');const wrapEl=document.getElementById('chart-wrap');const histEl=document.getElementById('history-list');const clearBtn=document.getElementById('btn-clear-history');histEl.innerHTML='';if(!h.length){noEl.style.display='block';wrapEl.style.display='none';clearBtn.style.display='none';return;}noEl.style.display='none';wrapEl.style.display='block';clearBtn.style.display='block';h.slice().reverse().forEach((entry,i)=>{const ri=h.length-1-i;const d=document.createElement('div');d.className='history-item';d.innerHTML=`<div><div class="hi-label">${entry.label}</div><div class="hi-sub">Gaji: ${fmtK(entry.salary)} · Tagihan: ${fmtK(entry.debt)}</div></div><button class="history-item-del" onclick="deleteEntry(${ri})">Hapus</button>`;histEl.appendChild(d);});const isAmt=chartMode==='amount';const isLight=document.documentElement.classList.contains('light');const g=isLight?'#d4d0c8':'#2a2926',t=isLight?'#7a7870':'#6e6c64';const datasets=isAmt?[{label:'Kebutuhan',data:h.map(x=>x.needs),borderColor:'#e8c547',backgroundColor:'rgba(232,197,71,.1)',tension:.4,fill:true},{label:'Keinginan',data:h.map(x=>x.wants),borderColor:'#e87d47',backgroundColor:'rgba(232,125,71,.08)',tension:.4,fill:true},{label:'Tabungan',data:h.map(x=>x.savings),borderColor:'#47c5a8',backgroundColor:'rgba(71,197,168,.08)',tension:.4,fill:true},{label:'Hutang',data:h.map(x=>x.debt),borderColor:'#e84747',backgroundColor:'rgba(232,71,71,.07)',tension:.4,fill:true}]:[{label:'% Kebutuhan',data:h.map(x=>x.pN),borderColor:'#e8c547',backgroundColor:'rgba(232,197,71,.1)',tension:.4,fill:true},{label:'% Keinginan',data:h.map(x=>x.pW),borderColor:'#e87d47',backgroundColor:'rgba(232,125,71,.08)',tension:.4,fill:true},{label:'% Tabungan',data:h.map(x=>x.pS),borderColor:'#47c5a8',backgroundColor:'rgba(71,197,168,.08)',tension:.4,fill:true}];if(chartInstance){chartInstance.destroy();chartInstance=null;}chartInstance=new Chart(document.getElementById('trend-chart'),{type:'line',data:{labels:h.map(x=>x.label),datasets},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:t,font:{size:11},boxWidth:10}}},scales:{x:{ticks:{color:t,font:{size:10}},grid:{color:g}},y:{ticks:{color:t,font:{size:10},callback:v=>isAmt?fmtK(v):v+'%'},grid:{color:g}}}}});}
 function deleteEntry(i){let h=JSON.parse(localStorage.getItem('bp_history')||'[]');h.splice(i,1);localStorage.setItem('bp_history',JSON.stringify(h));renderTrend();}
 function setChartMode(mode,btn){chartMode=mode;document.querySelectorAll('.chart-actions button').forEach(b=>b.classList.remove('active'));btn.classList.add('active');renderTrend();}
-const ASSET_TYPES=[{key:'Saham',color:'#7c6ff7',icon:'📈'},{key:'Reksa Dana',color:'#47c5a8',icon:'🏦'},{key:'Emas',color:'#e8c547',icon:'🥇'},{key:'Kripto',color:'#e87d47',icon:'₿'},{key:'Deposito',color:'#47a5c5',icon:'🏧'},{key:'Properti',color:'#c5476f',icon:'🏠'},{key:'Cash',color:'#a8a8a8',icon:'💵'}];
+const ASSET_TYPES=[
+    {key:'Saham',color:'#7c6ff7',icon:'📈'},
+    {key:'Reksa Dana',color:'#47c5a8',icon:'🏦'},
+    {key:'Emas',color:'#e8c547',icon:'🥇'},
+    {key:'Kripto',color:'#e87d47',icon:'₿'},
+    {key:'Deposito',color:'#47a5c5',icon:'🏧'},
+    {key:'Properti',color:'#c5476f',icon:'🏠'},
+    {key:'Cash',color:'#a8a8a8',icon:'💵'}
+  ];
 const loadAssets=()=>JSON.parse(localStorage.getItem('bp_assets')||'[]');
 const saveAssets=arr=>{localStorage.setItem('bp_assets',JSON.stringify(arr));};
 function addAsset() {
@@ -1172,7 +1180,12 @@ function openAssetModal(assetId) {
                 style="background:transparent;border:none;outline:none;color:var(--text);font-family:'Inter',sans-serif;font-weight:700;font-size:1rem;width:100%"
                 onchange="saveModalField(${a.id},'name',this.value)">
             </div>
-            <div class="asset-modal-subtitle">${a.type}${isCash && a.currency ? ' · ' + a.currency : ''} · ${qty} ${unitLabel}</div>
+            <div class="asset-modal-subtitle" style="margin-top:6px">
+              <select style="background:var(--surface2);border:1px solid var(--border);border-radius:6px;color:var(--text);font-family:'Inter',sans-serif;font-size:.72rem;padding:4px 8px;outline:none;cursor:pointer;"
+                onchange="saveModalField(${a.id},'type',this.value);openAssetModal(${a.id})">
+                ${ASSET_TYPES.map(t => `<option value="${t.key}" ${a.type === t.key ? 'selected' : ''}>${t.icon} ${t.key}</option>`).join('')}
+              </select>
+            </div>
           </div>
           <button class="asset-modal-close" onclick="closeAssetModal()">×</button>
         </div>
