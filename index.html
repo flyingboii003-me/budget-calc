@@ -277,22 +277,14 @@ html.light .toggle-thumb{left:16px;background:#fff;}
 .asset-type-filter{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:12px;}
 .type-pill{padding:4px 10px;border-radius:20px;border:1px solid var(--border);background:transparent;color:var(--muted);cursor:pointer;font-size:.64rem;font-family:'Inter',sans-serif;}
 .type-pill.active{background:var(--surface3);color:var(--text);}
-
-/*.asset-pl-row.profit{background:rgba(71,197,168,.06);border:1px solid rgba(71,197,168,.14);}
-.asset-pl-row.loss{background:rgba(232,71,71,.06);border:1px solid rgba(232,71,71,.14);}
-.asset-pl-row.neutral{background:var(--surface);border:1px solid var(--border);}*/
 .asset-pl-label{font-size:.58rem;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;}
-
-/* .asset-pl-val.profit{color:var(--savings);}
-.asset-pl-val.loss{color:var(--debt);} */
-
-/* .asset-pl-pct.profit{color:var(--savings);}
-.asset-pl-pct.loss{color:var(--debt);} */
-
-/* .asset-type-select option{background:var(--surface2);} */
-
 .sidebar-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:150;}
 .sidebar-overlay.show{display:block;}
+/* FOREX TABLE */
+.forex-rate-item{background:var(--surface2);border:1px solid var(--border);border-radius:9px;padding:10px 12px;display:flex;flex-direction:column;gap:3px;}
+.forex-rate-code{font-size:.6rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);font-weight:600;}
+.forex-rate-val{font-family:'JetBrains Mono',monospace;font-size:.86rem;font-weight:500;color:var(--text);}
+.forex-rate-name{font-size:.58rem;color:var(--muted);}
 
 /* ASSET LIST NEW */
 .asset-list-new{display:flex;flex-direction:column;gap:8px;}
@@ -516,17 +508,17 @@ html.light .toggle-thumb{left:16px;background:#fff;}
           <div class="pct-grid">
             <div class="pct-row">
               <span class="pct-row-label">&#127968; Kebutuhan</span>
-              <div class="pct-input-wrap needs-focus" id="wrap-pct-needs"><input type="number" class="pct-number-input" id="range-needs" min="0" max="100" value="50" inputmode="numeric"><span class="pct-suffix">%</span></div>
+              <div class="pct-input-wrap needs-focus" id="wrap-pct-needs"><input type="number" class="pct-number-input" id="range-needs" min="0" max="100" value="0" step="0.01" inputmode="decimal"><span class="pct-suffix">%</span></div>
               <div class="nominal-input-wrap" id="wrap-nominal-needs" style="display:none"><span class="badge">Rp</span><input type="text" class="nominal-alloc-input" id="nominal-needs" inputmode="numeric" placeholder="0"></div>
             </div>
             <div class="pct-row">
               <span class="pct-row-label">&#128717; Keinginan</span>
-              <div class="pct-input-wrap wants-focus" id="wrap-pct-wants"><input type="number" class="pct-number-input" id="range-wants" min="0" max="100" value="30" inputmode="numeric"><span class="pct-suffix">%</span></div>
+              <div class="pct-input-wrap wants-focus" id="wrap-pct-wants"><input type="number" class="pct-number-input" id="range-wants" min="0" max="100" value="0"step="0.01" inputmode="decimal"><span class="pct-suffix">%</span></div>
               <div class="nominal-input-wrap" id="wrap-nominal-wants" style="display:none"><span class="badge">Rp</span><input type="text" class="nominal-alloc-input" id="nominal-wants" inputmode="numeric" placeholder="0"></div>
             </div>
             <div class="pct-row">
               <span class="pct-row-label">&#128184; Tabungan</span>
-              <div class="pct-input-wrap savings-focus" id="wrap-pct-savings"><input type="number" class="pct-number-input" id="range-savings" min="0" max="100" value="20" inputmode="numeric"><span class="pct-suffix">%</span></div>
+              <div class="pct-input-wrap savings-focus" id="wrap-pct-savings"><input type="number" class="pct-number-input" id="range-savings" min="0" max="100" value="0"step="0.01" inputmode="decimal"><span class="pct-suffix">%</span></div>
               <div class="nominal-input-wrap" id="wrap-nominal-savings" style="display:none"><span class="badge">Rp</span><input type="text" class="nominal-alloc-input" id="nominal-savings" inputmode="numeric" placeholder="0"></div>
             </div>
           </div>
@@ -642,6 +634,19 @@ html.light .toggle-thumb{left:16px;background:#fff;}
         <div><div class="nw-stat-label">Total Aset</div><div class="nw-stat-val pos" id="nw-assets">Rp 0</div></div>
         <div style="display:none"><div class="nw-stat-label">Total Hutang</div><div class="nw-stat-val neg" id="nw-debts">Rp 0</div></div>
         <div><div class="nw-stat-label">Profit / Loss</div><div class="nw-stat-val" id="nw-pl">Rp 0</div></div>
+      </div>
+    </div>
+    <!-- FOREX TABLE CARD -->
+    <div class="card" id="forex-card">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+        <div class="section-title" style="margin-bottom:0">💱 Kurs Valas Per Hari Ini</div>
+        <div style="display:flex;align-items:center;gap:8px">
+          <span id="forex-timestamp" style="font-size:.6rem;color:var(--muted);font-family:'JetBrains Mono',monospace"></span>
+          <button class="btn-fetch-price" id="btn-forex-refresh" onclick="fetchForexTable()">🔄 Refresh</button>
+        </div>
+      </div>
+      <div id="forex-table-body" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:6px">
+        <div style="text-align:center;padding:16px;color:var(--muted);font-size:.72rem;grid-column:1/-1">Refresh untuk memuat kurs terkini.</div>
       </div>
     </div>
     <div class="grid-2">
@@ -779,15 +784,15 @@ function updatePctStatus(){
     st.textContent='✓ Total = 100%';
     st.className='pct-status ok';
   }else{
-    st.textContent=`Total ${sum}% — sisa ${100-sum}% belum dialokasikan`;
+    st.textContent = `Total ${sum.toFixed(2)}% — sisa ${(100 - sum).toFixed(2)}% belum dialokasikan`;
     st.className='pct-status warn';
   }
 }
 
 function syncSliders(changed){
-  let n=Math.min(100,Math.max(0,parseInt(document.getElementById('range-needs').value)||0));
-  let w=Math.min(100,Math.max(0,parseInt(document.getElementById('range-wants').value)||0));
-  let s=Math.min(100,Math.max(0,parseInt(document.getElementById('range-savings').value)||0));
+  let n=Math.min(100,Math.max(0,parseFloat(document.getElementById('range-needs').value)||0));
+  let w=Math.min(100,Math.max(0,parseFloat(document.getElementById('range-wants').value)||0));
+  let s=Math.min(100,Math.max(0,parseFloat(document.getElementById('range-savings').value)||0));
   if(n+w+s>100){
     const over=n+w+s-100;
     if(changed==='needs'){
@@ -806,9 +811,9 @@ function syncSliders(changed){
     document.getElementById('range-wants').value=w;
     document.getElementById('range-savings').value=s;
   }
-  state.pN=parseInt(document.getElementById('range-needs').value)||0;
-  state.pW=parseInt(document.getElementById('range-wants').value)||0;
-  state.pS=parseInt(document.getElementById('range-savings').value)||0;
+  state.pN=parseFloat(document.getElementById('range-needs').value)||0;
+  state.pW=parseFloat(document.getElementById('range-wants').value)||0;
+  state.pS=parseFloat(document.getElementById('range-savings').value)||0;
   updatePctStatus();
 }
 
@@ -838,7 +843,7 @@ if(mode==='nominal'&&state.salary>0){
     if(!state.salary)
     return;
     const val=parseM(this.value);
-    const pct=Math.min(100,Math.round((val/state.salary)*100));
+    const pct = Math.min(100, Math.round((val / state.salary) * 10000) / 100);
     if(k==='needs')state.pN=pct;
     if(k==='wants')state.pW=pct;
     if(k==='savings')state.pS=pct;
@@ -958,7 +963,15 @@ function clearHistory(){if(confirm('Hapus semua riwayat?')){localStorage.removeI
 function renderTrend(){const h=JSON.parse(localStorage.getItem('bp_history')||'[]');const noEl=document.getElementById('no-trend');const wrapEl=document.getElementById('chart-wrap');const histEl=document.getElementById('history-list');const clearBtn=document.getElementById('btn-clear-history');histEl.innerHTML='';if(!h.length){noEl.style.display='block';wrapEl.style.display='none';clearBtn.style.display='none';return;}noEl.style.display='none';wrapEl.style.display='block';clearBtn.style.display='block';h.slice().reverse().forEach((entry,i)=>{const ri=h.length-1-i;const d=document.createElement('div');d.className='history-item';d.innerHTML=`<div><div class="hi-label">${entry.label}</div><div class="hi-sub">Gaji: ${fmtK(entry.salary)} · Tagihan: ${fmtK(entry.debt)}</div></div><button class="history-item-del" onclick="deleteEntry(${ri})">Hapus</button>`;histEl.appendChild(d);});const isAmt=chartMode==='amount';const isLight=document.documentElement.classList.contains('light');const g=isLight?'#d4d0c8':'#2a2926',t=isLight?'#7a7870':'#6e6c64';const datasets=isAmt?[{label:'Kebutuhan',data:h.map(x=>x.needs),borderColor:'#e8c547',backgroundColor:'rgba(232,197,71,.1)',tension:.4,fill:true},{label:'Keinginan',data:h.map(x=>x.wants),borderColor:'#e87d47',backgroundColor:'rgba(232,125,71,.08)',tension:.4,fill:true},{label:'Tabungan',data:h.map(x=>x.savings),borderColor:'#47c5a8',backgroundColor:'rgba(71,197,168,.08)',tension:.4,fill:true},{label:'Hutang',data:h.map(x=>x.debt),borderColor:'#e84747',backgroundColor:'rgba(232,71,71,.07)',tension:.4,fill:true}]:[{label:'% Kebutuhan',data:h.map(x=>x.pN),borderColor:'#e8c547',backgroundColor:'rgba(232,197,71,.1)',tension:.4,fill:true},{label:'% Keinginan',data:h.map(x=>x.pW),borderColor:'#e87d47',backgroundColor:'rgba(232,125,71,.08)',tension:.4,fill:true},{label:'% Tabungan',data:h.map(x=>x.pS),borderColor:'#47c5a8',backgroundColor:'rgba(71,197,168,.08)',tension:.4,fill:true}];if(chartInstance){chartInstance.destroy();chartInstance=null;}chartInstance=new Chart(document.getElementById('trend-chart'),{type:'line',data:{labels:h.map(x=>x.label),datasets},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:t,font:{size:11},boxWidth:10}}},scales:{x:{ticks:{color:t,font:{size:10}},grid:{color:g}},y:{ticks:{color:t,font:{size:10},callback:v=>isAmt?fmtK(v):v+'%'},grid:{color:g}}}}});}
 function deleteEntry(i){let h=JSON.parse(localStorage.getItem('bp_history')||'[]');h.splice(i,1);localStorage.setItem('bp_history',JSON.stringify(h));renderTrend();}
 function setChartMode(mode,btn){chartMode=mode;document.querySelectorAll('.chart-actions button').forEach(b=>b.classList.remove('active'));btn.classList.add('active');renderTrend();}
-const ASSET_TYPES=[{key:'Saham',color:'#7c6ff7',icon:'📈'},{key:'Reksa Dana',color:'#47c5a8',icon:'🏦'},{key:'Emas',color:'#e8c547',icon:'🥇'},{key:'Kripto',color:'#e87d47',icon:'₿'},{key:'Deposito',color:'#47a5c5',icon:'🏧'},{key:'Properti',color:'#c5476f',icon:'🏠'},{key:'Cash',color:'#a8a8a8',icon:'💵'}];
+const ASSET_TYPES=[
+    {key:'Saham',color:'#7c6ff7',icon:'📈'},
+    {key:'Reksa Dana',color:'#47c5a8',icon:'🏦'},
+    {key:'Emas',color:'#e8c547',icon:'🥇'},
+    {key:'Kripto',color:'#e87d47',icon:'₿'},
+    {key:'Deposito',color:'#47a5c5',icon:'🏧'},
+    {key:'Properti',color:'#c5476f',icon:'🏠'},
+    {key:'Cash',color:'#a8a8a8',icon:'💵'}
+  ];
 const loadAssets=()=>JSON.parse(localStorage.getItem('bp_assets')||'[]');
 const saveAssets=arr=>{localStorage.setItem('bp_assets',JSON.stringify(arr));};
 function addAsset() {
@@ -1172,7 +1185,12 @@ function openAssetModal(assetId) {
                 style="background:transparent;border:none;outline:none;color:var(--text);font-family:'Inter',sans-serif;font-weight:700;font-size:1rem;width:100%"
                 onchange="saveModalField(${a.id},'name',this.value)">
             </div>
-            <div class="asset-modal-subtitle">${a.type}${isCash && a.currency ? ' · ' + a.currency : ''} · ${qty} ${unitLabel}</div>
+            <div class="asset-modal-subtitle" style="margin-top:6px">
+              <select style="background:var(--surface2);border:1px solid var(--border);border-radius:6px;color:var(--text);font-family:'Inter',sans-serif;font-size:.72rem;padding:4px 8px;outline:none;cursor:pointer;"
+                onchange="saveModalField(${a.id},'type',this.value);openAssetModal(${a.id})">
+                ${ASSET_TYPES.map(t => `<option value="${t.key}" ${a.type === t.key ? 'selected' : ''}>${t.icon} ${t.key}</option>`).join('')}
+              </select>
+            </div>
           </div>
           <button class="asset-modal-close" onclick="closeAssetModal()">×</button>
         </div>
@@ -1393,6 +1411,59 @@ async function fetchForexPrice(assetId, currency) {
   } finally {
     const b = document.getElementById('modal-fp-' + assetId);
     if (b) { b.textContent = '🔄 Update Kurs Kini'; b.disabled = false; }
+  }
+}
+
+// Mata uang yang ditampilkan di tabel — bisa ditambah/kurangi sesuai kebutuhan
+const FOREX_DISPLAY = [
+  { code: 'USD', name: 'Dollar Amerika' },
+  { code: 'CHF', name: 'Franc Swiss' },
+  { code: 'SGD', name: 'Dollar Singapura' },
+  { code: 'EUR', name: 'Euro' },
+  { code: 'GBP', name: 'Pound Sterling' },
+  { code: 'JPY', name: 'Yen Jepang' },
+  { code: 'MYR', name: 'Ringgit Malaysia' },
+  { code: 'AUD', name: 'Dollar Australia' },
+  { code: 'SAR', name: 'Riyal Saudi' },
+];
+
+async function fetchForexTable() {
+  const btn = document.getElementById('btn-forex-refresh');
+  const body = document.getElementById('forex-table-body');
+  if (btn) { btn.textContent = '⏳'; btn.disabled = true; }
+
+  try {
+    const res = await fetch(WORKER_URL + '?type=forex&from=USD');
+    if (!res.ok) throw new Error('Worker error: ' + res.status);
+    const data = await res.json();
+
+    // data.popular_rates berisi semua kurs yang sudah disiapkan Worker
+    body.innerHTML = '';
+    FOREX_DISPLAY.forEach(fx => {
+      const rate = data.popular_rates[fx.code];
+      if (!rate) return;
+      const item = document.createElement('div');
+      item.className = 'forex-rate-item';
+      item.innerHTML = `
+        <div class="forex-rate-code">${fx.code}</div>
+        <div class="forex-rate-val">${fmt(rate.rate_to_idr)}</div>
+        <div class="forex-rate-name">${fx.name}</div>`;
+      body.appendChild(item);
+    });
+
+    // Timestamp
+    const ts = document.getElementById('forex-timestamp');
+    if (ts) {
+      const now = new Date();
+      ts.textContent = 'Update: ' + now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
+    }
+
+    showPriceToast('Kurs diupdate ✓');
+  } catch(err) {
+    showPriceToast('Gagal fetch kurs: ' + err.message, true);
+    if (body) body.innerHTML = `<div style="text-align:center;padding:16px;color:var(--debt);font-size:.72rem;grid-column:1/-1">Gagal memuat kurs. Coba lagi.</div>`;
+  } finally {
+    if (btn) { btn.textContent = '🔄 Refresh'; btn.disabled = false; }
   }
 }
 
