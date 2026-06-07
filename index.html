@@ -214,32 +214,6 @@ html.light .toggle-thumb{left:16px;background:#fff;}
 .breakdown-remaining.ok strong{color:var(--savings);font-family:'JetBrains Mono',monospace;}
 .breakdown-remaining.over strong{color:var(--debt);font-family:'JetBrains Mono',monospace;}
 
-/* HEALTH */
-.score-circle{width:70px;height:70px;border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;flex-shrink:0;border:3px solid;}
-.score-circle.good{border-color:var(--savings);background:rgba(71,197,168,.08);}
-.score-circle.fair{border-color:var(--needs);background:rgba(232,197,71,.08);}
-.score-circle.poor{border-color:var(--debt);background:rgba(232,71,71,.08);}
-.score-num{font-family:'Playfair Display',serif;font-size:1.5rem;font-weight:900;line-height:1;}
-.score-circle.good .score-num{color:var(--savings);}
-.score-circle.fair .score-num{color:var(--needs);}
-.score-circle.poor .score-num{color:var(--debt);}
-.score-sub{font-size:.52rem;color:var(--muted);text-transform:uppercase;letter-spacing:.07em;margin-top:1px;}
-.health-header{display:flex;align-items:center;gap:14px;margin-bottom:14px;}
-.health-title{font-size:.96rem;font-weight:700;margin-bottom:2px;}
-.health-sub{font-size:.72rem;color:var(--muted);line-height:1.5;}
-.health-checks{display:flex;flex-direction:column;gap:6px;}
-.health-check{display:flex;align-items:flex-start;gap:9px;padding:9px 11px;border-radius:9px;background:var(--surface2);border:1px solid var(--border);}
-.check-icon{font-size:.88rem;flex-shrink:0;margin-top:1px;}
-.check-text{font-size:.72rem;line-height:1.45;color:var(--muted);}
-.check-text strong{color:var(--text);display:block;margin-bottom:1px;font-size:.76rem;}
-
-/* TARGET */
-.target-result{margin-top:12px;border-radius:10px;overflow:hidden;border:1px solid var(--border);}
-.target-result-row{display:flex;justify-content:space-between;align-items:center;padding:9px 13px;border-bottom:1px solid var(--border);background:var(--surface2);}
-.target-result-row:last-child{border-bottom:none;}
-.target-result-row span{font-size:.64rem;color:var(--muted);text-transform:uppercase;letter-spacing:.07em;}
-.target-result-row strong{font-family:'JetBrains Mono',monospace;font-size:.82rem;color:var(--savings);}
-
 /* TREND */
 .chart-wrap{position:relative;width:100%;height:230px;}
 .chart-actions{display:flex;gap:6px;margin-bottom:12px;}
@@ -459,7 +433,6 @@ html.light .toggle-thumb{left:16px;background:#fff;}
     <div class="nav-section-label">Menu Utama</div>
     <button class="nav-item active" onclick="switchPage('overview',this)"><span class="nav-icon">📊</span>Overview</button>
     <button class="nav-item" onclick="switchPage('breakdown',this)"><span class="nav-icon">🗂</span>Breakdown</button>
-    <button class="nav-item" onclick="switchPage('health',this)"><span class="nav-icon">❤️</span>Kesehatan</button>
     <button class="nav-item" onclick="switchPage('trend',this)"><span class="nav-icon">📈</span>Tren Bulanan</button>
     <button class="nav-item" onclick="switchPage('aset',this)"><span class="nav-icon">💎</span>Aset & Investasi</button>
   </nav>
@@ -575,34 +548,6 @@ html.light .toggle-thumb{left:16px;background:#fff;}
       <div class="section-title">&#128193; Rincian per Kategori</div>
       <p style="font-size:.74rem;color:var(--muted);margin-bottom:14px;line-height:1.6;">Masukkan rincian pengeluaran per kategori. Sisa anggaran dihitung otomatis.</p>
       <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:12px" id="breakdown-section"></div>
-    </div>
-  </div>
-
-  <!-- PAGE: HEALTH -->
-  <div class="page" id="page-health">
-    <div class="grid-2">
-      <div class="card">
-        <div class="section-title">&#10084;&#65039; Skor Kesehatan Keuangan</div>
-        <div class="health-header">
-          <div class="score-circle good" id="score-circle"><div class="score-num" id="score-num">—</div><div class="score-sub">Skor</div></div>
-          <div><div class="health-title" id="health-title">Masukkan data dulu</div><div class="health-sub" id="health-sub">Isi gaji di Overview untuk melihat skor.</div></div>
-        </div>
-        <div class="health-checks" id="health-checks"></div>
-      </div>
-      <div class="card">
-        <div class="section-title">&#127919; Kalkulator Target Tabungan</div>
-        <div style="display:flex;flex-direction:column;gap:9px">
-          <div class="form-group" style="margin-bottom:0"><label class="form-label">Nama Target</label><div class="input-wrap"><input type="text" class="money-input" id="target-name" placeholder="Dana darurat, beli HP..." style="font-size:.86rem"></div></div>
-          <div class="form-group" style="margin-bottom:0"><label class="form-label">Jumlah Target</label><div class="input-wrap"><span class="badge">Rp</span><input type="text" class="money-input" id="target-amount" placeholder="10.000.000" inputmode="numeric"></div></div>
-          <div class="form-group" style="margin-bottom:0"><label class="form-label">Tabungan Saat Ini</label><div class="input-wrap"><span class="badge">Rp</span><input type="text" class="money-input" id="current-savings" placeholder="0" inputmode="numeric"></div></div>
-        </div>
-        <div class="target-result" id="target-result" style="display:none">
-          <div class="target-result-row"><span>Sisa dibutuhkan</span><strong id="tr-remaining">Rp 0</strong></div>
-          <div class="target-result-row"><span>Tabungan / bulan</span><strong id="tr-monthly">Rp 0</strong></div>
-          <div class="target-result-row"><span>Tercapai dalam</span><strong id="tr-months">—</strong></div>
-          <div class="target-result-row"><span>Estimasi bulan</span><strong id="tr-date">—</strong></div>
-        </div>
-      </div>
     </div>
   </div>
 
@@ -724,7 +669,6 @@ const len=cc*Math.min(pct,1);
 const PAGE_TITLES={
   overview:'Overview',
   breakdown:'Breakdown',
-  health:'Kesehatan Keuangan',
   trend:'Tren Bulanan',
   aset:'Aset & Investasi'
 };
@@ -735,7 +679,6 @@ function switchPage(name,btn){
   document.getElementById('page-'+name).classList.add('active');if(btn)btn.classList.add('active');
   document.getElementById('page-title').textContent=PAGE_TITLES[name]||name;
   if(name==='trend')renderTrend();
-  if(name==='health')renderHealth();
   if(name==='breakdown')renderBreakdown();
   if(name==='aset'){
     renderAssets();
@@ -956,7 +899,6 @@ function renderBreakdown(){
     });
   });
 }
-function renderHealth(){const salary=state.salary;if(!salary)return;const totalDebt=getTotalDebt();let score=100;const checks=[];if(state.pS>=20)checks.push({icon:'✅',title:'Tabungan ideal',text:'Kamu mengalokasikan '+state.pS+'% untuk tabungan.'});else if(state.pS>=10){score-=15;checks.push({icon:'⚠️',title:'Tabungan perlu ditingkatkan',text:'Tabunganmu '+state.pS+'%. Idealnya minimal 20%.'});}else{score-=30;checks.push({icon:'❌',title:'Tabungan terlalu kecil',text:'Hanya '+state.pS+'%. Kurangi pengeluaran keinginan.'});}if(state.pN<=50)checks.push({icon:'✅',title:'Kebutuhan terkontrol',text:'Alokasi kebutuhan '+state.pN+'% masih aman.'});else if(state.pN<=65){score-=15;checks.push({icon:'⚠️',title:'Kebutuhan agak tinggi',text:'Kebutuhanmu '+state.pN+'%.'});}else{score-=25;checks.push({icon:'❌',title:'Kebutuhan terlalu besar',text:'Kebutuhanmu '+state.pN+'% dari gaji.'});}const dr=totalDebt/salary;if(totalDebt===0)checks.push({icon:'✅',title:'Bebas hutang bulanan',text:'Tidak ada cicilan.'});else if(dr<=0.3)checks.push({icon:'✅',title:'Hutang masih aman',text:`Cicilan ${(dr*100).toFixed(0)}% dari gaji. Batas 30%.`});else if(dr<=0.5){score-=20;checks.push({icon:'⚠️',title:'Hutang cukup tinggi',text:`Cicilan ${(dr*100).toFixed(0)}% dari gaji.`});}else{score-=35;checks.push({icon:'❌',title:'Hutang sangat berat',text:`Cicilan ${(dr*100).toFixed(0)}%. Prioritaskan pelunasan.`});}const sav=salary*(state.pS/100);if(sav>=salary*3)checks.push({icon:'✅',title:'Dana darurat mencukupi',text:'Alokasi cukup untuk 3 bulan.'});else{score-=10;checks.push({icon:'💡',title:'Prioritaskan dana darurat',text:`Target: ${fmt(salary*3)} (3x gaji).`});}score=Math.max(0,Math.min(100,score));const cls=score>=75?'good':score>=50?'fair':'poor';document.getElementById('score-circle').className='score-circle '+cls;document.getElementById('score-num').textContent=score;document.getElementById('health-title').textContent=score>=75?'Keuangan Sehat 💪':score>=50?'Perlu Perhatian ⚠️':'Keuangan Kritis 🚨';document.getElementById('health-sub').textContent=score>=75?'Alokasi sudah bagus!':score>=50?'Ada hal yang perlu diperbaiki.':'Perlu penanganan segera.';const el=document.getElementById('health-checks');el.innerHTML='';checks.forEach(c=>{const d=document.createElement('div');d.className='health-check';d.innerHTML=`<div class="check-icon">${c.icon}</div><div class="check-text"><strong>${c.title}</strong>${c.text}</div>`;el.appendChild(d);});['target-amount','current-savings'].forEach(id=>{document.getElementById(id).oninput=function(){this.value=fmtInput(this.value);calcTarget();};});document.getElementById('target-name').oninput=calcTarget;calcTarget();}
 function calcTarget(){const target=parseM(document.getElementById('target-amount').value);const current=parseM(document.getElementById('current-savings').value);const monthly=state.salary*(state.pS/100);const res=document.getElementById('target-result');if(!target||!monthly){res.style.display='none';return;}const remaining=Math.max(0,target-current);const months=monthly>0?Math.ceil(remaining/monthly):0;const d=new Date();d.setMonth(d.getMonth()+months);const bl=['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Agu','Sep','Okt','Nov','Des'];res.style.display='block';document.getElementById('tr-remaining').textContent=fmt(remaining);document.getElementById('tr-monthly').textContent=fmt(monthly);document.getElementById('tr-months').textContent=months+' bulan';document.getElementById('tr-date').textContent=bl[d.getMonth()]+' '+d.getFullYear();}
 function saveMonth(){const salary=state.salary;const needs=salary*(state.pN/100),wants=salary*(state.pW/100),savings=salary*(state.pS/100),debt=getTotalDebt();const d=new Date();const bl=['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Agu','Sep','Okt','Nov','Des'];const label=bl[d.getMonth()]+' '+d.getFullYear();let h=JSON.parse(localStorage.getItem('bp_history')||'[]');const ei=h.findIndex(x=>x.label===label);const entry={label,salary,needs,wants,savings,debt,pN:state.pN,pW:state.pW,pS:state.pS};if(ei>=0)h[ei]=entry;else h.push(entry);localStorage.setItem('bp_history',JSON.stringify(h));const st=document.getElementById('save-status');st.classList.add('show');setTimeout(()=>st.classList.remove('show'),2500);}
 function clearHistory(){if(confirm('Hapus semua riwayat?')){localStorage.removeItem('bp_history');renderTrend();}}
