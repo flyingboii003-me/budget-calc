@@ -1446,58 +1446,160 @@ function deleteAsset(idx){
   updateAssetDonut();
   updateNetWorth();
 }
-function updateAssetDonut(){
-  const arr=loadAssets();
-  const totals={};
-  ASSET_TYPES.forEach(t=>totals[t.key]=0);
-  arr.forEach(a=>{const c=parseM(a.currentPrice),
-    q=parseFloat((a.qty+'').replace(/[^\d.]/g,''))||0;
-    totals[a.type]=(totals[a.type]||0)+c*q;});
-    const grand=Object.values(totals).reduce((s,v)=>s+v,0);
-    document.getElementById('ad-total-text').textContent=fmtK(grand);
-    const arcIds={
-      Saham:'ad-saham','Reksa Dana':'ad-reksa',
-      Emas:'ad-emas',
-      Kripto:'ad-kripto',
-      Deposito:'ad-deposito',
-      Properti:'ad-properti',
-      Cash:'ad-cash'
-    };
-    Object.values(arcIds)
-    .forEach(id=>{
-      const el=document.getElementById(id);
-      if(el)el.style.strokeDasharray=`0 ${CA}`;
-    });
-    let off=0;
-    if(grand>0){
-      ASSET_TYPES.forEach(t=>{
-        const pct=totals[t.key]/grand;
-        const el=document.getElementById(arcIds[t.key]);
-        if(!el||pct<=0)
-        return;
-      const len=CA*pct;
-      el.style.strokeDasharray=`${len} ${CA-len}`;
-      el.style.strokeDashoffset=-(CA*off);off+=pct;});
+function updateAssetDonut() {
+  const arr = loadAssets();
+
+  const totals = {};
+  ASSET_TYPES.forEach(t => {
+    totals[t.key] = 0;
+  });
+
+  arr.forEach(a => {
+    const c = parseM(a.currentPrice);
+    const q =
+      parseFloat((a.qty + '').replace(/[^\d.]/g, '')) || 0;
+
+    totals[a.type] =
+      (totals[a.type] || 0) + (c * q);
+  });
+
+  const grand =
+    Object.values(totals)
+      .reduce((s, v) => s + v, 0);
+
+  document.getElementById('ad-total-text').textContent =
+    fmtK(grand);
+
+  const arcIds = {
+    Saham: 'ad-saham',
+    'Reksa Dana': 'ad-reksa',
+    Emas: 'ad-emas',
+    Kripto: 'ad-kripto',
+    Deposito: 'ad-deposito',
+    Properti: 'ad-properti',
+    Cash: 'ad-cash'
+  };
+
+  Object.values(arcIds).forEach(id => {
+    const el = document.getElementById(id);
+
+    if (el) {
+      el.style.strokeDasharray = `0 ${CA}`;
     }
-    const leg=document.getElementById('asset-legend');
-    leg.innerHTML='';
-    ASSET_TYPES.forEach(t=>{
-      if(!totals[t.key])
-      return;
-    const pct=grand>0?((totals[t.key]/grand)*100).toFixed(1):0;
-    const li=document.createElement('div');
-    li.className='asset-legend-item';
-    li.innerHTML=`<div class="asset-legend-dot" style="background:${t.color}">
-      </div>${t.key}
-      <span class="asset-legend-pct" style="color:${t.color}">${pct}%</span>`;
-      leg.appendChild(li);
+  });
+
+  let off = 0;
+
+  if (grand > 0) {
+    ASSET_TYPES.forEach(t => {
+      const pct = totals[t.key] / grand;
+      const el = document.getElementById(arcIds[t.key]);
+
+      if (!el || pct <= 0) {
+        return;
+      }
+
+      const len = CA * pct;
+
+      el.style.strokeDasharray =
+        `${len} ${CA - len}`;
+
+      el.style.strokeDashoffset =
+        -(CA * off);
+
+      off += pct;
     });
-    const statsEl=document.getElementById('asset-stats');
-    if(statsEl){statsEl.innerHTML='';
-    ASSET_TYPES.forEach(t=>{
-      if(!totals[t.key])return;const pct=grand>0?((totals[t.key]/grand)*100).toFixed(1):0;
-      const d=document.createElement('div');
-      d.style.cssText='display:flex;align-items:center;justify-content:space-between;padding:6px 10px;background:var(--surface2);border:1px solid var(--border);border-radius:8px;';d.innerHTML=`<span style="font-size:.72rem;color:var(--muted2)">${t.icon} ${t.key}</span><div style="text-align:right"><div style="font-family:JetBrains Mono,monospace;font-size:.76rem">${fmtK(totals[t.key])}</div><div style="font-size:.6rem;color:${t.color};font-family:JetBrains Mono,monospace">${pct}%</div></div>`;
+  }
+
+  const leg = document.getElementById('asset-legend');
+  leg.innerHTML = '';
+
+  ASSET_TYPES.forEach(t => {
+    if (!totals[t.key]) {
+      return;
+    }
+
+    const pct =
+      grand > 0
+        ? ((totals[t.key] / grand) * 100).toFixed(1)
+        : 0;
+
+    const li = document.createElement('div');
+
+    li.className = 'asset-legend-item';
+
+    li.innerHTML = `
+      <div
+        class="asset-legend-dot"
+        style="background:${t.color}">
+      </div>
+      ${t.key}
+      <span
+        class="asset-legend-pct"
+        style="color:${t.color}">
+        ${pct}%
+      </span>
+    `;
+
+    leg.appendChild(li);
+  });
+
+  const statsEl =
+    document.getElementById('asset-stats');
+
+  if (statsEl) {
+    statsEl.innerHTML = '';
+
+    ASSET_TYPES.forEach(t => {
+      if (!totals[t.key]) {
+        return;
+      }
+
+      const pct =
+        grand > 0
+          ? ((totals[t.key] / grand) * 100).toFixed(1)
+          : 0;
+
+      const d = document.createElement('div');
+
+      d.style.cssText =
+        'display:flex;' +
+        'align-items:center;' +
+        'justify-content:space-between;' +
+        'padding:6px 10px;' +
+        'background:var(--surface2);' +
+        'border:1px solid var(--border);' +
+        'border-radius:8px;';
+
+      d.innerHTML = `
+        <span
+          style="
+            font-size:.72rem;
+            color:var(--muted2)
+          ">
+          ${t.icon} ${t.key}
+        </span>
+
+        <div style="text-align:right">
+          <div
+            style="
+              font-family:JetBrains Mono,monospace;
+              font-size:.76rem
+            ">
+            ${fmtK(totals[t.key])}
+          </div>
+
+          <div
+            style="
+              font-size:.6rem;
+              color:${t.color};
+              font-family:JetBrains Mono,monospace
+            ">
+            ${pct}%
+          </div>
+        </div>
+      `;
+
       statsEl.appendChild(d);
     });
   }
