@@ -654,6 +654,254 @@ const fmtK=n=>{if(n>=1e9)return 'Rp '+(n/1e9).toFixed(1)+'M';if(n>=1e6)return 'R
 const parseM=v=>parseFloat((v+'').replace(/[^\d]/g,''))||0;
 const fmtInput=v=>{const d=(v+'').replace(/\D/g,'');return d?parseInt(d).toLocaleString('id-ID'):''};
 
+// Helper Function
+
+function updateNominalInputs() {
+  if (state.salary <= 0) return;
+
+  document.getElementById('nominal-needs').value =
+    fmtInput(String(Math.round(state.salary * state.pN / 100)));
+
+  document.getElementById('nominal-wants').value =
+    fmtInput(String(Math.round(state.salary * state.pW / 100)));
+
+  document.getElementById('nominal-savings').value =
+    fmtInput(String(Math.round(state.salary * state.pS / 100)));
+}
+
+function getBudgetData() {
+  const salary = state.salary;
+
+  const needs = salary * (state.pN / 100);
+  const wants = salary * (state.pW / 100);
+  const savings = salary * (state.pS / 100);
+
+  const debt = getTotalDebt();
+
+  return {
+    salary,
+    needs,
+    wants,
+    savings,
+    debt,
+
+    hasDebt: debt > 0,
+
+    pN: state.pN,
+    pW: state.pW,
+    pS: state.pS
+  };
+}
+
+function updateStatCards(data) {
+  document.getElementById('topbar-salary').textContent =
+    fmtK(data.salary);
+
+  document.getElementById('stat-salary').textContent =
+    fmt(data.salary);
+
+  document.getElementById('stat-needs').textContent =
+    fmt(data.needs);
+
+  document.getElementById('stat-wants').textContent =
+    fmt(data.wants);
+
+  document.getElementById('stat-savings').textContent =
+    fmt(data.savings);
+
+  document.getElementById('stat-needs-pct').textContent =
+    data.pN + '% dari gaji';
+
+  document.getElementById('stat-wants-pct').textContent =
+    data.pW + '% dari gaji';
+
+  document.getElementById('stat-savings-pct').textContent =
+    data.pS + '% dari gaji';
+}
+
+function updateBudgetCards(data) {
+  document.getElementById('pct-needs-lbl').textContent =
+    data.pN + '%';
+
+  document.getElementById('pct-wants-lbl').textContent =
+    data.pW + '%';
+
+  document.getElementById('pct-savings-lbl').textContent =
+    data.pS + '%';
+
+  document.getElementById('lbl-needs').textContent =
+    data.pN + '% dari gaji';
+
+  document.getElementById('lbl-wants').textContent =
+    data.pW + '% dari gaji';
+
+  document.getElementById('lbl-savings').textContent =
+    data.pS + '% dari gaji';
+
+  document.getElementById('amt-needs').textContent =
+    fmt(data.needs);
+
+  document.getElementById('amt-wants').textContent =
+    fmt(data.wants);
+
+  document.getElementById('amt-savings').textContent =
+    fmt(data.savings);
+}
+
+function updateDonut(data) {
+  document.getElementById('donut-total').textContent =
+    fmtK(data.salary);
+
+  document.getElementById('leg-needs-val').textContent =
+    fmtK(data.needs);
+
+  document.getElementById('leg-wants-val').textContent =
+    fmtK(data.wants);
+
+  document.getElementById('leg-savings-val').textContent =
+    fmtK(data.savings);
+
+  document.getElementById('leg-needs').textContent =
+    'Kebutuhan ' + data.pN + '%';
+
+  document.getElementById('leg-wants').textContent =
+    'Keinginan ' + data.pW + '%';
+
+  document.getElementById('leg-savings').textContent =
+    'Tabungan ' + data.pS + '%';
+
+  setArc('arc-needs', data.pN / 100, 0, C);
+
+  setArc(
+    'arc-wants',
+    data.pW / 100,
+    data.pN / 100,
+    C
+  );
+
+  setArc(
+    'arc-savings',
+    data.pS / 100,
+    (data.pN + data.pW) / 100,
+    C
+  );
+
+  setArc(
+    'arc-debt',
+    data.salary > 0
+      ? data.debt / data.salary
+      : 0,
+    0,
+    C
+  );
+}
+
+function updateDebtSection(data) {
+  const debtSummary =
+    document.getElementById('debt-summary');
+
+  const debtCard =
+    document.getElementById('debt-result-card');
+
+  const remainingCard =
+    document.getElementById('sisa-card');
+
+  const debtLegend =
+    document.getElementById('leg-debt-wrap');
+
+  if (!data.hasDebt) {
+    debtSummary.style.display = 'none';
+    debtCard.style.display = 'none';
+    remainingCard.style.display = 'none';
+    debtLegend.style.display = 'none';
+    return;
+  }
+
+  debtSummary.style.display = 'flex';
+  debtCard.style.display = 'flex';
+  remainingCard.style.display = 'block';
+  debtLegend.style.display = 'flex';
+
+  document.getElementById('debt-total-display')
+    .textContent = fmt(data.debt);
+
+  document.getElementById('amt-debt')
+    .textContent = fmt(data.debt);
+
+  const debtPct =
+    data.salary > 0
+      ? ((data.debt / data.salary) * 100).toFixed(1)
+      : '0';
+
+  document.getElementById('pct-debt-lbl')
+    .textContent = debtPct + '% dari gaji';
+
+  document.getElementById('leg-debt')
+    .textContent = 'Hutang ' + debtPct + '%';
+
+  document.getElementById('leg-debt-val')
+    .textContent = fmtK(data.debt);
+
+  const remaining =
+    data.needs - data.debt;
+
+  const remainingAmount =
+    document.getElementById('sisa-amount');
+
+  const remainingRow =
+    document.getElementById('sisa-row');
+
+  remainingAmount.textContent =
+    fmt(Math.abs(remaining));
+
+  remainingAmount.className =
+    'sisa-val ' +
+    (remaining >= 0 ? 'pos' : 'neg');
+
+  remainingRow.className =
+    'sisa-row ' +
+    (remaining >= 0 ? 'ok' : 'over');
+
+  document.getElementById('sisa-desc')
+    .textContent =
+      remaining >= 0
+        ? 'sisa dari alokasi kebutuhan'
+        : '⚠ tagihan melebihi alokasi kebutuhan';
+}
+
+function updateProgressBars(data) {
+  setTimeout(() => {
+    document.getElementById('bar-needs').style.width =
+      data.salary > 0 ? '100%' : '0%';
+
+    document.getElementById('bar-wants').style.width =
+      data.salary > 0 ? '100%' : '0%';
+
+    document.getElementById('bar-savings').style.width =
+      data.salary > 0 ? '100%' : '0%';
+
+    if (data.hasDebt && data.needs > 0) {
+      document.getElementById('bar-debt').style.width =
+        Math.min(
+          100,
+          (data.debt / data.needs) * 100
+        ) + '%';
+    }
+  }, 80);
+}
+
+function toggleNominalInputs(isDisabled) {
+  [
+    'nominal-needs',
+    'nominal-wants',
+    'nominal-savings'
+  ].forEach(id => {
+    document.getElementById(id).disabled = isDisabled;
+  });
+}
+
+// End of Helper Function
+
 function setArc(id,pct,off,cc){
 const el=document.getElementById(id);
 if(!el) return;
@@ -760,26 +1008,40 @@ function syncSliders(changed){
   updatePctStatus();
 }
 
-function setAllocMode(mode){
-  allocMode=mode;document.getElementById('btn-mode-pct').classList.toggle('active',mode==='pct');document.getElementById('btn-mode-nominal').classList.toggle('active',mode==='nominal');
-  const isPct=mode==='pct';
-  ['needs','wants','savings'].forEach(k=>{
-    document.getElementById('wrap-pct-'+k).style.display=isPct?'':'none';document.getElementById('wrap-nominal-'+k).style.display=isPct?'none':'';
+function setAllocMode(mode) {
+  allocMode = mode;
+
+  const isPct = mode === 'pct';
+
+  document
+    .getElementById('btn-mode-pct')
+    .classList.toggle('active', isPct);
+
+  document
+    .getElementById('btn-mode-nominal')
+    .classList.toggle('active', !isPct);
+
+  ['needs', 'wants', 'savings'].forEach(category => {
+    const pctWrapper =
+      document.getElementById(`wrap-pct-${category}`);
+
+    const nominalWrapper =
+      document.getElementById(`wrap-nominal-${category}`);
+
+    pctWrapper.style.display = isPct ? '' : 'none';
+    nominalWrapper.style.display = isPct ? 'none' : '';
+  });
+
+  if (!isPct) {
+    updateNominalInputs();
+    return;
   }
-);
-if(mode==='nominal'&&state.salary>0){
-  document.getElementById('nominal-needs').value=fmtInput(String(Math.round(state.salary*state.pN/100)
-  ));
-  document.getElementById('nominal-wants').value=fmtInput(String(Math.round(state.salary*state.pW/100)
-  ));
-  document.getElementById('nominal-savings').value=fmtInput(String(Math.round(state.salary*state.pS/100)
-  ));
-    }if(mode==='pct'){
-    document.getElementById('range-needs').value=state.pN;
-    document.getElementById('range-wants').value=state.pW;
-    document.getElementById('range-savings').value=state.pS;
-    }
-};
+
+  document.getElementById('range-needs').value = state.pN;
+  document.getElementById('range-wants').value = state.pW;
+  document.getElementById('range-savings').value = state.pS;
+}
+
 ['needs','wants','savings'].forEach(k=>{
   document.getElementById('nominal-'+k).addEventListener('input',function(){
     this.value=fmtInput(this.value);
@@ -795,7 +1057,27 @@ if(mode==='nominal'&&state.salary>0){
     update();
     });
 });
-document.getElementById('salary-input').addEventListener('input',function(){const d=this.value.replace(/\D/g,'');this.value=fmtInput(d);state.salary=parseM(d);update();if(allocMode==='nominal'&&state.salary>0){document.getElementById('nominal-needs').value=fmtInput(String(Math.round(state.salary*state.pN/100)));document.getElementById('nominal-wants').value=fmtInput(String(Math.round(state.salary*state.pW/100)));document.getElementById('nominal-savings').value=fmtInput(String(Math.round(state.salary*state.pS/100)));}['nominal-needs','nominal-wants','nominal-savings'].forEach(id=>{document.getElementById(id).disabled=!state.salary;});});
+
+function handleSalaryInput(event) {
+  const rawValue = event.target.value.replace(/\D/g, '');
+
+  event.target.value = fmtInput(rawValue);
+
+  state.salary = parseM(rawValue);
+
+  update();
+
+  if (allocMode === 'nominal') {
+    updateNominalInputs();
+  }
+
+  toggleNominalInputs(!state.salary);
+}
+
+document
+  .getElementById('salary-input')
+  .addEventListener('input', handleSalaryInput);
+
 function renderDebtList() {
   const list = document.getElementById('debt-list');
   list.innerHTML = '';
@@ -914,7 +1196,7 @@ function renderBreakdown(){
         <div class="breakdown-item-name"><input type="text" placeholder="Nama..." value="${it.name.replace(/"/g,'&quot;')}"></div>
         <div class="breakdown-item-amt">
           <span class="badge" style="padding:6px 7px;font-size:.64rem">Rp</span>
-          <input type="text" inputmode="numeric" placeholder="0" value="${it.amt}">
+          <input type="text" inputmode="numeric" placeholder="0" value="${fmtInput(it.amt)}">
         </div>
         <button class="btn-remove" style="width:25px;height:25px;font-size:.85rem">×</button>`;
 
@@ -1220,6 +1502,7 @@ function updateAssetDonut(){
     });
   }
 }
+
 function updateNetWorth(){
   const arr=loadAssets();
   const td=getTotalDebt();
@@ -1626,72 +1909,19 @@ function persistSettings(){
     }));
   }, 800);
 }
-function update(){
-  const salary=state.salary;
-  const pN=state.pN/100,pW=state.pW/100,pS=state.pS/100;
-  const needs=salary*pN,wants=salary*pW,savings=salary*pS;
-  const td=getTotalDebt(),hasDebt=td>0;
-  document.getElementById('topbar-salary').textContent=fmtK(salary);document.getElementById('stat-salary').textContent=fmt(salary);
-  document.getElementById('stat-needs').textContent=fmt(needs);
-  document.getElementById('stat-wants').textContent=fmt(wants);
-  document.getElementById('stat-savings').textContent=fmt(savings);
-  document.getElementById('stat-needs-pct').textContent=state.pN+'% dari gaji';
-  document.getElementById('stat-wants-pct').textContent=state.pW+'% dari gaji';
-  document.getElementById('stat-savings-pct').textContent=state.pS+'% dari gaji';
-  document.getElementById('pct-needs-lbl').textContent=state.pN+'%';document.getElementById('pct-wants-lbl').textContent=state.pW+'%';
-  document.getElementById('pct-savings-lbl').textContent=state.pS+'%';document.getElementById('lbl-needs').textContent=state.pN+'% dari gaji';
-  document.getElementById('lbl-wants').textContent=state.pW+'% dari gaji';
-  document.getElementById('lbl-savings').textContent=state.pS+'% dari gaji';
-  document.getElementById('amt-needs').textContent=fmt(needs);
-  document.getElementById('amt-wants').textContent=fmt(wants);
-  document.getElementById('amt-savings').textContent=fmt(savings);
-  document.getElementById('donut-total').textContent=fmtK(salary);
-  document.getElementById('leg-needs-val').textContent=fmtK(needs);
-  document.getElementById('leg-wants-val').textContent=fmtK(wants);
-  document.getElementById('leg-savings-val').textContent=fmtK(savings);
-  document.getElementById('leg-needs').textContent='Kebutuhan '+state.pN+'%';
-  document.getElementById('leg-wants').textContent='Keinginan '+state.pW+'%';
-  document.getElementById('leg-savings').textContent='Tabungan '+state.pS+'%';
-  
-  const ds=document.getElementById('debt-summary');
-  const dc=document.getElementById('debt-result-card');
-  const sc=document.getElementById('sisa-card');
-  const ld=document.getElementById('leg-debt-wrap');
-  if(hasDebt){
-    ds.style.display='flex';
-    dc.style.display='flex';
-    sc.style.display='block';
-    ld.style.display='flex';
-    
-    document.getElementById('debt-total-display').textContent=fmt(td);
-    document.getElementById('amt-debt').textContent=fmt(td);
-    const dp=salary>0?((td/salary)*100).toFixed(1):'0';
-    document.getElementById('pct-debt-lbl').textContent=dp+'% dari gaji';
-    document.getElementById('leg-debt').textContent='Hutang '+dp+'%';
-    document.getElementById('leg-debt-val').textContent=fmtK(td);
-    const sisa=needs-td;const sisaEl=document.getElementById('sisa-amount');
-    const sisaRow=document.getElementById('sisa-row');
-    sisaEl.textContent=fmt(Math.abs(sisa));
-    sisaEl.className='sisa-val '+(sisa>=0?'pos':'neg');
-    sisaRow.className='sisa-row '+(sisa>=0?'ok':'over');
-    document.getElementById('sisa-desc').textContent=sisa>=0?'sisa dari alokasi kebutuhan':'⚠ tagihan melebihi alokasi kebutuhan';
-  }else{
-    ds.style.display='none';
-    dc.style.display='none';
-    sc.style.display='none';
-    ld.style.display='none';
-  }setTimeout(()=>{
-    document.getElementById('bar-needs').style.width=salary>0?'100%':'0%';
-    document.getElementById('bar-wants').style.width=salary>0?'100%':'0%';
-    document.getElementById('bar-savings').style.width=salary>0?'100%':'0%';
-    if(hasDebt&&needs>0)document.getElementById('bar-debt').style.width=Math.min(100,(td/needs)*100)+'%';
-  },80);
-  setArc('arc-needs',pN,0,C);
-  setArc('arc-wants',pW,pN,C);
-  setArc('arc-savings',pS,pN+pW,C);
-  setArc('arc-debt',salary>0?td/salary:0,0,C);
+
+function update() {
+  const data = getBudgetData();
+
+  updateStatCards(data);
+  updateBudgetCards(data);
+  updateDonut(data);
+  updateDebtSection(data);
+  updateProgressBars(data);
+
   persistSettings();
 }
+
 // Restore full state from localStorage
 (function(){
   
