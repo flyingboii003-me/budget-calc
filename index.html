@@ -254,6 +254,9 @@ html.light .toggle-thumb{left:16px;background:#fff;}
 .asset-pl-label{font-size:.58rem;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;}
 .sidebar-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:150;}
 .sidebar-overlay.show{display:block;}
+.theme-toggle-mobile{display:none;background:transparent;border:1px solid var(--border);color:var(--muted2);width:32px;height:32px;border-radius:8px;cursor:pointer;font-size:.95rem;align-items:center;justify-content:center;flex-shrink:0;transition:all .18s;}
+.theme-toggle-mobile:hover{background:var(--surface2);color:var(--text);}
+
 /* FOREX TABLE */
 .forex-rate-item{background:var(--surface2);border:1px solid var(--border);border-radius:9px;padding:10px 12px;display:flex;flex-direction:column;gap:3px;}
 .forex-rate-code{font-size:.6rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);font-weight:600;}
@@ -331,6 +334,7 @@ html.light .toggle-thumb{left:16px;background:#fff;}
   .topbar{left:0;}
   .main{margin-left:0;padding:14px;}
   .hamburger{display:flex;}
+  .theme-toggle-mobile{display:flex;}
   .grid-2,.grid-3,.grid-4,.grid-2-1{grid-template-columns:1fr;}
   .donut-row{flex-direction:column;align-items:flex-start;}
   .networth-banner{flex-direction:column;align-items:flex-start;}
@@ -459,6 +463,7 @@ html.light .toggle-thumb{left:16px;background:#fff;}
   </div>
   <div class="topbar-right">
     <div class="topbar-salary-badge">Gaji: <span id="topbar-salary">Rp 0</span></div>
+    <button class="theme-toggle-mobile" onclick="toggleTheme()" title="Toggle tema">☀️</button>
     <button class="topbar-save-btn" onclick="saveMonth()">&#128190; Simpan</button>
     <span class="save-status" id="save-status">&#10003; Tersimpan</span>
   </div>
@@ -956,10 +961,11 @@ function closeSidebar(){
   document.getElementById('sidebar-overlay').classList.remove('show');
 }
 
-function toggleTheme() {
+function toggleTheme(){
   const isLight = document.documentElement.classList.toggle('light');
 
   document.getElementById('theme-label').textContent = isLight ? 'Dark Mode' : 'Light Mode';
+  document.querySelector('.theme-toggle-mobile').textContent = isLight ? '🌙' : '☀️';
   localStorage.setItem('bp_theme', isLight ? 'light' : 'dark');
 
   if (chartInstance) {
@@ -2042,12 +2048,16 @@ function update() {
   persistSettings();
 }
 
-// Restore full state from localStorage
-(function(){
-  
+  // Restore full state from localStorage
+  (function(){
+
   // Theme
   const savedTheme=localStorage.getItem('bp_theme');
-  if(savedTheme==='light'){document.documentElement.classList.add('light');document.getElementById('theme-label').textContent='Dark Mode';}
+  if(savedTheme==='light'){
+    document.documentElement.classList.add('light');
+    document.getElementById('theme-label').textContent='Dark Mode';
+    document.querySelector('.theme-toggle-mobile').textContent='🌙';
+  }
 
   // Salary & allocation settings
   const savedSettings=localStorage.getItem('bp_settings');
@@ -2066,7 +2076,7 @@ function update() {
   renderDebtList();
   syncSliders('needs');
   update();
-})();
+  })();
 </script>
 </body>
 </html>
