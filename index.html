@@ -1245,7 +1245,12 @@ function saveMonth() {
   let h = JSON.parse(localStorage.getItem('bp_history') || '[]');
 
   const ei    = h.findIndex(x => x.label === label);
-  const entry = { label, salary, needs, wants, savings, debt, pN: state.pN, pW: state.pW, pS: state.pS };
+  const entry = {
+    label, salary, needs, wants, savings, debt,
+    pN: state.pN, pW: state.pW, pS: state.pS,
+    breakdown: JSON.parse(JSON.stringify(state.breakdown)),
+    debts: JSON.parse(JSON.stringify(state.debts))
+  };
 
   if (ei >= 0) h[ei] = entry;
   else h.push(entry);
