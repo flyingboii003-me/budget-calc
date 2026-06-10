@@ -441,6 +441,14 @@ html.light .toggle-thumb{left:16px;background:#fff;}
       <div class="toggle-track"><div class="toggle-thumb"></div></div>
       <span id="theme-label">Light Mode</span>
     </button>
+    <div style="display:flex;gap:6px;padding:0 10px 4px">
+      <button class="theme-btn" style="flex:1;justify-content:center;font-size:.72rem" onclick="exportData()">
+        ↑ Ekspor Data JSON
+      </button>
+      <button class="theme-btn" style="flex:1;justify-content:center;font-size:.72rem" onclick="importData()">
+        ↓ Impor Data JSON
+      </button>
+    </div>
   </div>
 </aside>
 
@@ -902,16 +910,18 @@ function toggleNominalInputs(isDisabled) {
 
 // End of Helper Function
 
-function setArc(id,pct,off,cc){
-const el=document.getElementById(id);
-if(!el) return;
-if(pct<=0){
-  el.style.strokeDasharray=`0 ${cc}`;return;
+function setArc(id, pct, off, cc) {
+  const el = document.getElementById(id);
+  if (!el) return;
+
+  if (pct <= 0) {
+    el.style.strokeDasharray = `0 ${cc}`;
+    return;
   }
-  
-const len=cc*Math.min(pct,1);
-  el.style.strokeDasharray=`${len} ${cc-len}`;
-  el.style.strokeDashoffset=-(cc*off);
+
+  const len = cc * Math.min(pct, 1);
+  el.style.strokeDasharray  = `${len} ${cc - len}`;
+  el.style.strokeDashoffset = -(cc * off);
 }
 
 const PAGE_TITLES={
@@ -946,21 +956,29 @@ function closeSidebar(){
   document.getElementById('sidebar-overlay').classList.remove('show');
 }
 
-function toggleTheme(){
-  const L=document.documentElement.classList.toggle('light');
-  document.getElementById('theme-label').textContent=L?'Dark Mode':'Light Mode';
-  localStorage.setItem('bp_theme',L?'light':'dark');
-    if(chartInstance){
-      const g=L?'#d4d0c8':'#2a2926',t=L?'#7a7870':'#6e6c64';chartInstance.options.scales.x.grid.color=g;
-      chartInstance.options.scales.y.grid.color=g;
-      chartInstance.options.scales.x.ticks.color=t;
-      chartInstance.options.scales.y.ticks.color=t;
-      chartInstance.options.plugins.legend.labels.color=t;
-      chartInstance.update();
-    }
-  }['needs','wants','savings'].forEach(k=>{
-  document.getElementById('range-'+k)
-  .addEventListener('input',()=>{syncSliders(k);
+function toggleTheme() {
+  const isLight = document.documentElement.classList.toggle('light');
+
+  document.getElementById('theme-label').textContent = isLight ? 'Dark Mode' : 'Light Mode';
+  localStorage.setItem('bp_theme', isLight ? 'light' : 'dark');
+
+  if (chartInstance) {
+    const gridColor = isLight ? '#d4d0c8' : '#2a2926';
+    const tickColor = isLight ? '#7a7870' : '#6e6c64';
+
+    chartInstance.options.scales.x.grid.color  = gridColor;
+    chartInstance.options.scales.y.grid.color  = gridColor;
+    chartInstance.options.scales.x.ticks.color = tickColor;
+    chartInstance.options.scales.y.ticks.color = tickColor;
+    chartInstance.options.plugins.legend.labels.color = tickColor;
+    chartInstance.update();
+  }
+}
+
+// ── ALLOCATION SLIDER LISTENERS ───────────────────────────────
+['needs', 'wants', 'savings'].forEach(k => {
+  document.getElementById('range-' + k).addEventListener('input', () => {
+    syncSliders(k);
     update();
   });
 });
@@ -1451,163 +1469,86 @@ function deleteAsset(idx){
   updateAssetDonut();
   updateNetWorth();
 }
+
 function updateAssetDonut() {
   const arr = loadAssets();
 
+  // ── Hitung total nilai per tipe aset ──
   const totals = {};
-  ASSET_TYPES.forEach(t => {
-    totals[t.key] = 0;
-  });
-
+  ASSET_TYPES.forEach(t => totals[t.key] = 0);
   arr.forEach(a => {
-    const c = parseM(a.currentPrice);
-    const q =
-      parseFloat((a.qty + '').replace(/[^\d.]/g, '')) || 0;
-
-    totals[a.type] =
-      (totals[a.type] || 0) + (c * q);
+    const cur = parseM(a.currentPrice);
+    const qty = parseFloat((a.qty + '').replace(/[^\d.]/g, '')) || 0;
+    totals[a.type] = (totals[a.type] || 0) + cur * qty;
   });
 
-  const grand =
-    Object.values(totals)
-      .reduce((s, v) => s + v, 0);
+  const grand = Object.values(totals).reduce((s, v) => s + v, 0);
+  document.getElementById('ad-total-text').textContent = fmtK(grand);
 
-  document.getElementById('ad-total-text').textContent =
-    fmtK(grand);
-
+  // ── Map tipe aset ke SVG arc element ID ──
   const arcIds = {
-    Saham: 'ad-saham',
+    'Saham'     : 'ad-saham',
     'Reksa Dana': 'ad-reksa',
-    Emas: 'ad-emas',
-    Kripto: 'ad-kripto',
-    Deposito: 'ad-deposito',
-    Properti: 'ad-properti',
-    Cash: 'ad-cash'
+    'Emas'      : 'ad-emas',
+    'Kripto'    : 'ad-kripto',
+    'Deposito'  : 'ad-deposito',
+    'Properti'  : 'ad-properti',
+    'Cash'      : 'ad-cash',
   };
 
+  // Reset semua arc ke kosong
   Object.values(arcIds).forEach(id => {
     const el = document.getElementById(id);
-
-    if (el) {
-      el.style.strokeDasharray = `0 ${CA}`;
-    }
+    if (el) el.style.strokeDasharray = `0 ${CA}`;
   });
 
+  // ── Render arc donut per tipe ──
   let off = 0;
-
   if (grand > 0) {
     ASSET_TYPES.forEach(t => {
       const pct = totals[t.key] / grand;
-      const el = document.getElementById(arcIds[t.key]);
-
-      if (!el || pct <= 0) {
-        return;
-      }
+      const el  = document.getElementById(arcIds[t.key]);
+      if (!el || pct <= 0) return;
 
       const len = CA * pct;
-
-      el.style.strokeDasharray =
-        `${len} ${CA - len}`;
-
-      el.style.strokeDashoffset =
-        -(CA * off);
-
+      el.style.strokeDasharray  = `${len} ${CA - len}`;
+      el.style.strokeDashoffset = -(CA * off);
       off += pct;
     });
   }
 
+  // ── Render legend ──
   const leg = document.getElementById('asset-legend');
   leg.innerHTML = '';
-
   ASSET_TYPES.forEach(t => {
-    if (!totals[t.key]) {
-      return;
-    }
-
-    const pct =
-      grand > 0
-        ? ((totals[t.key] / grand) * 100).toFixed(1)
-        : 0;
-
-    const li = document.createElement('div');
-
+    if (!totals[t.key]) return;
+    const pct = grand > 0 ? ((totals[t.key] / grand) * 100).toFixed(1) : 0;
+    const li  = document.createElement('div');
     li.className = 'asset-legend-item';
-
     li.innerHTML = `
-      <div
-        class="asset-legend-dot"
-        style="background:${t.color}">
-      </div>
+      <div class="asset-legend-dot" style="background:${t.color}"></div>
       ${t.key}
-      <span
-        class="asset-legend-pct"
-        style="color:${t.color}">
-        ${pct}%
-      </span>
-    `;
-
+      <span class="asset-legend-pct" style="color:${t.color}">${pct}%</span>`;
     leg.appendChild(li);
   });
 
-  const statsEl =
-    document.getElementById('asset-stats');
-
-  if (statsEl) {
-    statsEl.innerHTML = '';
-
-    ASSET_TYPES.forEach(t => {
-      if (!totals[t.key]) {
-        return;
-      }
-
-      const pct =
-        grand > 0
-          ? ((totals[t.key] / grand) * 100).toFixed(1)
-          : 0;
-
-      const d = document.createElement('div');
-
-      d.style.cssText =
-        'display:flex;' +
-        'align-items:center;' +
-        'justify-content:space-between;' +
-        'padding:6px 10px;' +
-        'background:var(--surface2);' +
-        'border:1px solid var(--border);' +
-        'border-radius:8px;';
-
-      d.innerHTML = `
-        <span
-          style="
-            font-size:.72rem;
-            color:var(--muted2)
-          ">
-          ${t.icon} ${t.key}
-        </span>
-
-        <div style="text-align:right">
-          <div
-            style="
-              font-family:JetBrains Mono,monospace;
-              font-size:.76rem
-            ">
-            ${fmtK(totals[t.key])}
-          </div>
-
-          <div
-            style="
-              font-size:.6rem;
-              color:${t.color};
-              font-family:JetBrains Mono,monospace
-            ">
-            ${pct}%
-          </div>
-        </div>
-      `;
-
-      statsEl.appendChild(d);
-    });
-  }
+  // ── Render statistik per tipe ──
+  const statsEl = document.getElementById('asset-stats');
+  if (!statsEl) return;
+  statsEl.innerHTML = '';
+  ASSET_TYPES.forEach(t => {
+    if (!totals[t.key]) return;
+    const pct = grand > 0 ? ((totals[t.key] / grand) * 100).toFixed(1) : 0;
+    const d   = document.createElement('div');
+    d.style.cssText = 'display:flex;align-items:center;justify-content:space-between;padding:6px 10px;background:var(--surface2);border:1px solid var(--border);border-radius:8px;';
+    d.innerHTML = `
+      <span style="font-size:.72rem;color:var(--muted2)">${t.icon} ${t.key}</span>
+      <div style="text-align:right">
+        <div style="font-family:JetBrains Mono,monospace;font-size:.76rem">${fmtK(totals[t.key])}</div>
+        <div style="font-size:.6rem;color:${t.color};font-family:JetBrains Mono,monospace">${pct}%</div>
+      </div>`;
+    statsEl.appendChild(d);
+  });
 }
 
 function updateNetWorth(){
@@ -1886,17 +1827,21 @@ async function fetchGoldPrice(assetId) {
     }
     const arr = loadAssets();
     const idx = arr.findIndex(a => a.id === assetId);
-    if (idx < 0) return;
+    if (idx < 0) 
+    return;
+    
     arr[idx].currentPrice = String(livePriceCache.gold.price_gram_24k_idr);
     saveAssets(arr);
-    renderAssets(); updateAssetDonut(); updateNetWorth();
+    renderAssets(); 
+    updateAssetDonut(); 
+    updateNetWorth();
     showPriceToast('Harga emas 24k diupdate ✓');
-  } catch(err) {
-    showPriceToast('Gagal fetch harga emas: ' + err.message, true);
-  } finally {
-    const b = document.getElementById('modal-fp-' + assetId);
-    if (b) { b.textContent = '🔄 Update Harga Kini'; b.disabled = false; }
-  }
+    } catch(err) {
+        showPriceToast('Gagal fetch harga emas: ' + err.message, true);
+      } finally {
+        const b = document.getElementById('modal-fp-' + assetId);
+        if (b) { b.textContent = '🔄 Update Harga Kini'; b.disabled = false; }
+    }
 }
 
 async function fetchForexPrice(assetId, currency) {
@@ -1913,17 +1858,20 @@ async function fetchForexPrice(assetId, currency) {
     const data = await res.json();
     const arr = loadAssets();
     const idx = arr.findIndex(a => a.id === assetId);
-    if (idx < 0) return;
+    if (idx < 0) 
+    return;
     arr[idx].currentPrice = String(data.rate_to_idr);
     saveAssets(arr);
-    renderAssets(); updateAssetDonut(); updateNetWorth();
+    renderAssets(); 
+    updateAssetDonut(); 
+    updateNetWorth();
     showPriceToast(`1 ${code} = ${fmt(data.rate_to_idr)} ✓`);
-  } catch(err) {
-    showPriceToast('Gagal fetch kurs: ' + err.message, true);
-  } finally {
-    const b = document.getElementById('modal-fp-' + assetId);
-    if (b) { b.textContent = '🔄 Update Kurs Kini'; b.disabled = false; }
-  }
+    } catch(err) {
+        showPriceToast('Gagal fetch kurs: ' + err.message, true);
+    } finally {
+      const b = document.getElementById('modal-fp-' + assetId);
+      if (b) { b.textContent = '🔄 Update Kurs Kini'; b.disabled = false; }
+    }
 }
 
 // Mata uang yang ditampilkan di tabel — bisa ditambah/kurangi sesuai kebutuhan
@@ -2006,6 +1954,71 @@ function showPriceToast(msg, isError=false) {
   toast._t = setTimeout(() => { toast.style.opacity = '0'; }, 3000);
 }
 // ── END LIVE PRICE ────────────────────────────────────────────
+
+
+// JSON EKSPORT
+function exportData() {
+  const data = {
+    version: 1,
+    exportedAt: new Date().toISOString(),
+    bp_settings: JSON.parse(localStorage.getItem('bp_settings') || 'null'),
+    bp_assets:   JSON.parse(localStorage.getItem('bp_assets')   || '[]'),
+    bp_history:  JSON.parse(localStorage.getItem('bp_history')  || '[]'),
+    bp_theme:    localStorage.getItem('bp_theme') || 'dark'
+  };
+
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement('a');
+  const date = new Date().toISOString().slice(0, 10); // "2025-06-10"
+
+  a.href     = url;
+  a.download = `budget-planner-${date}.json`;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+// JSON IMPORT
+function importData() {
+  const input = document.createElement('input');
+  input.type  = 'file';
+  input.accept = '.json';
+
+  input.addEventListener('change', e => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = ev => {
+      try {
+        const data = JSON.parse(ev.target.result);
+
+        // Validasi minimal — pastikan ini file dari app ini
+        if (!data.bp_settings && !data.bp_assets) {
+          alert('File tidak valid atau bukan dari Budget Planner.');
+          return;
+        }
+
+        if (!confirm('Import akan menimpa semua data saat ini. Lanjutkan?')) return;
+
+        if (data.bp_settings) localStorage.setItem('bp_settings', JSON.stringify(data.bp_settings));
+        if (data.bp_assets)   localStorage.setItem('bp_assets',   JSON.stringify(data.bp_assets));
+        if (data.bp_history)  localStorage.setItem('bp_history',  JSON.stringify(data.bp_history));
+        if (data.bp_theme)    localStorage.setItem('bp_theme',    data.bp_theme);
+
+        // Reload halaman agar semua state di-restore dari awal
+        location.reload();
+
+      } catch(err) {
+        alert('Gagal membaca file: ' + err.message);
+      }
+    };
+    reader.readAsText(file);
+  });
+
+  input.click();
+}
+
 let _persistTimer = null;
 function persistSettings(){
   clearTimeout(_persistTimer);
