@@ -441,6 +441,14 @@ html.light .toggle-thumb{left:16px;background:#fff;}
       <div class="toggle-track"><div class="toggle-thumb"></div></div>
       <span id="theme-label">Light Mode</span>
     </button>
+    <div style="display:flex;gap:6px;padding:0 10px 4px">
+      <button class="theme-btn" style="flex:1;justify-content:center;font-size:.72rem" onclick="exportData()">
+        ↑ Ekspor Data JSON
+      </button>
+      <button class="theme-btn" style="flex:1;justify-content:center;font-size:.72rem" onclick="importData()">
+        ↓ Impor Data JSON
+      </button>
+    </div>
   </div>
 </aside>
 
@@ -1941,6 +1949,71 @@ function showPriceToast(msg, isError=false) {
   toast._t = setTimeout(() => { toast.style.opacity = '0'; }, 3000);
 }
 // ── END LIVE PRICE ────────────────────────────────────────────
+
+
+// JSON EKSPORT
+function exportData() {
+  const data = {
+    version: 1,
+    exportedAt: new Date().toISOString(),
+    bp_settings: JSON.parse(localStorage.getItem('bp_settings') || 'null'),
+    bp_assets:   JSON.parse(localStorage.getItem('bp_assets')   || '[]'),
+    bp_history:  JSON.parse(localStorage.getItem('bp_history')  || '[]'),
+    bp_theme:    localStorage.getItem('bp_theme') || 'dark'
+  };
+
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement('a');
+  const date = new Date().toISOString().slice(0, 10); // "2025-06-10"
+
+  a.href     = url;
+  a.download = `budget-planner-${date}.json`;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+// JSON IMPORT
+function importData() {
+  const input = document.createElement('input');
+  input.type  = 'file';
+  input.accept = '.json';
+
+  input.addEventListener('change', e => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = ev => {
+      try {
+        const data = JSON.parse(ev.target.result);
+
+        // Validasi minimal — pastikan ini file dari app ini
+        if (!data.bp_settings && !data.bp_assets) {
+          alert('File tidak valid atau bukan dari Budget Planner.');
+          return;
+        }
+
+        if (!confirm('Import akan menimpa semua data saat ini. Lanjutkan?')) return;
+
+        if (data.bp_settings) localStorage.setItem('bp_settings', JSON.stringify(data.bp_settings));
+        if (data.bp_assets)   localStorage.setItem('bp_assets',   JSON.stringify(data.bp_assets));
+        if (data.bp_history)  localStorage.setItem('bp_history',  JSON.stringify(data.bp_history));
+        if (data.bp_theme)    localStorage.setItem('bp_theme',    data.bp_theme);
+
+        // Reload halaman agar semua state di-restore dari awal
+        location.reload();
+
+      } catch(err) {
+        alert('Gagal membaca file: ' + err.message);
+      }
+    };
+    reader.readAsText(file);
+  });
+
+  input.click();
+}
+
 let _persistTimer = null;
 function persistSettings(){
   clearTimeout(_persistTimer);
