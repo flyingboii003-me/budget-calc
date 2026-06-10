@@ -965,7 +965,7 @@ function toggleTheme(){
   const isLight = document.documentElement.classList.toggle('light');
 
   document.getElementById('theme-label').textContent = isLight ? 'Dark Mode' : 'Light Mode';
-  document.querySelector('.theme-toggle-mobile').textContent = L ? '🌙' : '☀️';
+  document.querySelector('.theme-toggle-mobile').textContent = isLight ? '🌙' : '☀️';
   localStorage.setItem('bp_theme', isLight ? 'light' : 'dark');
 
   if (chartInstance) {
