@@ -659,15 +659,89 @@ html.light .toggle-thumb{left:16px;background:#fff;}
 </main>
 <script>
 const C=2*Math.PI*75, CA=2*Math.PI*70;
-let state={salary:0,pN:0,pW:0,pS:0,debts:[],breakdown:{needs:[{name:'Makan & minuman',amt:''},{name:'Transportasi',amt:''},{name:'Listrik & air',amt:''}],wants:[{name:'Hiburan',amt:''},{name:'Makan di luar',amt:''}],savings:[{name:'Emas',amt:''},{name:'Investasi',amt:''}]}};
-let chartInstance=null,chartMode='amount',assetFilter='all',allocMode='pct';
-const WORKER_URL='https://budget-planner-proxy.flyingboii003.workers.dev'; // ganti ini
+let activeMonth = new Date().toISOString().slice(0, 7); // "2025-06"
+let state={
+  salary:0,pN:0,pW:0,pS:0,
+  debts:[],
+  breakdown:{
+    needs:[
+      {name:'Makan & minuman',amt:''},
+      {name:'Transportasi',amt:''},
+      {name:'Listrik & air',amt:''}
+    ],
+    wants:[
+      {name:'Hiburan',amt:''},
+      {name:'Makan di luar',amt:''}
+    ],
+    savings:[
+      {name:'Emas',amt:''},
+      {name:'Investasi',amt:''}
+    ]}
+  };
+let chartInstance=null,
+    chartMode='amount',
+    assetFilter='all',
+    allocMode='pct';
+const WORKER_URL='https://budget-planner-proxy.flyingboii003.workers.dev';
 const fmt=n=>'Rp '+Math.round(n).toLocaleString('id-ID');
-const fmtK=n=>{if(n>=1e9)return 'Rp '+(n/1e9).toFixed(1)+'M';if(n>=1e6)return 'Rp '+(n/1e6).toFixed(1)+'jt';return 'Rp '+Math.round(n).toLocaleString('id-ID');};
+const fmtK=n=>{
+    if(n>=1e9)
+    return 'Rp '+(n/1e9).toFixed(1)+'M';
+    if(n>=1e6)
+    return 'Rp '+(n/1e6).toFixed(1)+'jt';
+    return 'Rp '+Math.round(n).toLocaleString('id-ID');
+  };
 const parseM=v=>parseFloat((v+'').replace(/[^\d]/g,''))||0;
 const fmtInput=v=>{const d=(v+'').replace(/\D/g,'');return d?parseInt(d).toLocaleString('id-ID'):''};
 
 // Helper Function
+
+function getActiveMonthData() {
+  const months = JSON.parse(localStorage.getItem('bp_months') || '{}');
+  return months[activeMonth] || null;
+}
+
+function saveActiveMonthData() {
+  const months = JSON.parse(localStorage.getItem('bp_months') || '{}');
+  months[activeMonth] = {
+    salary: state.salary,
+    pN: state.pN,
+    pW: state.pW,
+    pS: state.pS,
+    debts: JSON.parse(JSON.stringify(state.debts)),
+    breakdown: JSON.parse(JSON.stringify(state.breakdown))
+  };
+  localStorage.setItem('bp_months', JSON.stringify(months));
+}
+
+function createNewMonth(key) {
+  const months = JSON.parse(localStorage.getItem('bp_months') || '{}');
+
+  // Cari bulan terakhir yang ada untuk carry-over struktur
+  const keys = Object.keys(months).sort();
+  const lastKey = keys[keys.length - 1];
+  const last = lastKey ? months[lastKey] : null;
+
+  months[key] = {
+    salary: 0,
+    pN: 0,
+    pW: 0,
+    pS: 0,
+    debts: last
+      ? last.debts.map(d => ({ name: d.name, amount: '', paid: false }))
+      : [],
+    breakdown: last
+      ? {
+          needs:   last.breakdown.needs.map(i   => ({ name: i.name,   amt: '' })),
+          wants:   last.breakdown.wants.map(i   => ({ name: i.name,   amt: '' })),
+          savings: last.breakdown.savings.map(i => ({ name: i.name,   amt: '' }))
+        }
+      : { needs: [], wants: [], savings: [] }
+  };
+
+  localStorage.setItem('bp_months', JSON.stringify(months));
+  return months[key];
+}
 
 function updateNominalInputs() {
   if (state.salary <= 0) return;
@@ -2043,9 +2117,34 @@ function update() {
   persistSettings();
 }
 
+// IIFE SECTION
+
   // Restore full state from localStorage
   (function(){
 
+  // Migrasi bp_history ke bp_months jika belum pernah dimigrasi
+  const oldHistory = JSON.parse(localStorage.getItem('bp_history') || '[]');
+  const existingMonths = JSON.parse(localStorage.getItem('bp_months') || '{}');
+
+  if (oldHistory.length && !Object.keys(existingMonths).length) {
+    const migrated = {};
+    const bl = ['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Agu','Sep','Okt','Nov','Des'];
+    oldHistory.forEach(entry => {
+      // Convert label "Jun 2025" ke key "2025-06"
+      const parts = entry.label.split(' ');
+      const monthIdx = bl.indexOf(parts[0]);
+      if (monthIdx < 0) return;
+      const key = `${parts[1]}-${String(monthIdx + 1).padStart(2, '0')}`;
+      migrated[key] = {
+        salary: entry.salary,
+        pN: entry.pN, pW: entry.pW, pS: entry.pS,
+        debts: entry.debts || [],
+        breakdown: entry.breakdown || { needs: [], wants: [], savings: [] }
+      };
+    });
+    localStorage.setItem('bp_months', JSON.stringify(migrated));
+  }
+  
   // Theme
   const savedTheme=localStorage.getItem('bp_theme');
   if(savedTheme==='light'){
@@ -2065,13 +2164,13 @@ function update() {
       if(s.pS!=null){state.pS=s.pS;document.getElementById('range-savings').value=s.pS;}
       if(s.debts){state.debts=s.debts;}
       if(s.breakdown){state.breakdown=s.breakdown;}
-    }catch(e){}
+    } catch(e){}
   }
-
-  renderDebtList();
-  syncSliders('needs');
-  update();
-  })();
+    renderDebtList();
+    syncSliders('needs');
+    update();
+  }
+  )();
 </script>
 </body>
 </html>
