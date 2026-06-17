@@ -1740,58 +1740,57 @@ function renderBreakdown(){
   });
 }
 function saveMonth() {
-  const salary  = state.salary;
-  const needs   = salary * (state.pN / 100);
-  const wants   = salary * (state.pW / 100);
-  const savings = salary * (state.pS / 100);
-  const debt    = getTotalDebt();
-
-  const d   = new Date();
-  const bl  = ['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Agu','Sep','Okt','Nov','Des'];
-  const label = bl[d.getMonth()] + ' ' + d.getFullYear();
-
-  let h = JSON.parse(localStorage.getItem('bp_history') || '[]');
-
-  const ei    = h.findIndex(x => x.label === label);
-  const entry = {
-    label, salary, needs, wants, savings, debt,
-    pN: state.pN, pW: state.pW, pS: state.pS,
-    breakdown: JSON.parse(JSON.stringify(state.breakdown)),
-    debts: JSON.parse(JSON.stringify(state.debts))
-  };
-
-  if (ei >= 0) h[ei] = entry;
-  else h.push(entry);
-
-  localStorage.setItem('bp_history', JSON.stringify(h));
-
+  saveActiveMonthData();
   const st = document.getElementById('save-status');
   st.classList.add('show');
   setTimeout(() => st.classList.remove('show'), 2500);
 }
-function clearHistory(){if(confirm('Hapus semua riwayat?')){localStorage.removeItem('bp_history');renderTrend();}}
+function clearHistory() {
+  if (!confirm('Hapus semua riwayat tren? Data bulan aktif tidak akan terhapus.')) return;
+  const months = JSON.parse(localStorage.getItem('bp_months') || '{}');
+  const kept = {};
+  if (months[activeMonth]) kept[activeMonth] = months[activeMonth];
+  localStorage.setItem('bp_months', JSON.stringify(kept));
+  renderTrend();
+}
 function renderTrend() {
-  const h = JSON.parse(localStorage.getItem('bp_history') || '[]');
-  const noEl = document.getElementById('no-trend');
-  const wrapEl = document.getElementById('chart-wrap');
-  const histEl = document.getElementById('history-list');
+  const bl = ['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Agu','Sep','Okt','Nov','Des'];
+  const months = JSON.parse(localStorage.getItem('bp_months') || '{}');
+
+  // Konversi bp_months ke array flat, filter hanya bulan dengan salary > 0
+  const h = Object.entries(months)
+    .filter(([, d]) => d.salary > 0)
+    .sort(([a], [b]) => a.localeCompare(b))
+    .map(([key, d]) => {
+      const [y, m] = key.split('-');
+      const label   = bl[parseInt(m) - 1] + ' ' + y;
+      const salary  = d.salary || 0;
+      const needs   = salary * ((d.pN || 0) / 100);
+      const wants   = salary * ((d.pW || 0) / 100);
+      const savings = salary * ((d.pS || 0) / 100);
+      const debt    = (d.debts || []).reduce((s, x) => s + parseM(x.amount), 0);
+      return { key, label, salary, needs, wants, savings, debt, pN: d.pN, pW: d.pW, pS: d.pS };
+    });
+
+  const noEl    = document.getElementById('no-trend');
+  const wrapEl  = document.getElementById('chart-wrap');
+  const histEl  = document.getElementById('history-list');
   const clearBtn = document.getElementById('btn-clear-history');
 
   histEl.innerHTML = '';
 
   if (!h.length) {
-    noEl.style.display = 'block';
+    noEl.style.display  = 'block';
     wrapEl.style.display = 'none';
     clearBtn.style.display = 'none';
     return;
   }
 
-  noEl.style.display = 'none';
+  noEl.style.display   = 'none';
   wrapEl.style.display = 'block';
   clearBtn.style.display = 'block';
 
-  h.slice().reverse().forEach((entry, i) => {
-    const ri = h.length - 1 - i;
+  h.slice().reverse().forEach(entry => {
     const d = document.createElement('div');
     d.className = 'history-item';
     d.innerHTML = `
@@ -1799,11 +1798,11 @@ function renderTrend() {
         <div class="hi-label">${entry.label}</div>
         <div class="hi-sub">Gaji: ${fmtK(entry.salary)} · Tagihan: ${fmtK(entry.debt)}</div>
       </div>
-      <button class="history-item-del" onclick="deleteEntry(${ri})">Hapus</button>`;
+      <button class="history-item-del" onclick="deleteEntry('${entry.key}')">Hapus</button>`;
     histEl.appendChild(d);
   });
 
-  const isAmt = chartMode === 'amount';
+  const isAmt   = chartMode === 'amount';
   const isLight = document.documentElement.classList.contains('light');
   const g = isLight ? '#d4d0c8' : '#2a2926';
   const t = isLight ? '#7a7870' : '#6e6c64';
@@ -1821,39 +1820,28 @@ function renderTrend() {
         { label: '% Tabungan',  data: h.map(x => x.pS), borderColor: '#c5f53b', backgroundColor: 'rgba(197,245,59,.08)', tension: .4, fill: true },
       ];
 
-  if (chartInstance) {
-    chartInstance.destroy();
-    chartInstance = null;
-  }
+  if (chartInstance) { chartInstance.destroy(); chartInstance = null; }
 
   chartInstance = new Chart(document.getElementById('trend-chart'), {
     type: 'line',
-    data: {
-      labels: h.map(x => x.label),
-      datasets,
-    },
+    data: { labels: h.map(x => x.label), datasets },
     options: {
       responsive: true,
       maintainAspectRatio: false,
-      plugins: {
-        legend: {
-          labels: { color: t, font: { size: 11 }, boxWidth: 10 },
-        },
-      },
+      plugins: { legend: { labels: { color: t, font: { size: 11 }, boxWidth: 10 } } },
       scales: {
-        x: {
-          ticks: { color: t, font: { size: 10 } },
-          grid: { color: g },
-        },
-        y: {
-          ticks: { color: t, font: { size: 10 }, callback: v => isAmt ? fmtK(v) : v + '%' },
-          grid: { color: g },
-        },
+        x: { ticks: { color: t, font: { size: 10 } }, grid: { color: g } },
+        y: { ticks: { color: t, font: { size: 10 }, callback: v => isAmt ? fmtK(v) : v + '%' }, grid: { color: g } },
       },
     },
   });
 }
-function deleteEntry(i){let h=JSON.parse(localStorage.getItem('bp_history')||'[]');h.splice(i,1);localStorage.setItem('bp_history',JSON.stringify(h));renderTrend();}
+function deleteEntry(key) {
+  const months = JSON.parse(localStorage.getItem('bp_months') || '{}');
+  delete months[key];
+  localStorage.setItem('bp_months', JSON.stringify(months));
+  renderTrend();
+}
 function setChartMode(mode,btn){chartMode=mode;document.querySelectorAll('.chart-actions button').forEach(b=>b.classList.remove('active'));btn.classList.add('active');renderTrend();}
 const ASSET_TYPES=[
     {key:'Saham',color:'#3b82f6',icon:'📈'},
