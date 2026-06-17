@@ -1498,15 +1498,13 @@ function switchMonth(key) {
 }
 
 function addNewMonth() {
-  const now = new Date();
-  // Default ke bulan depan dari activeMonth
   const [y, m] = activeMonth.split('-').map(Number);
-  const next = new Date(y, m, 1); // m sudah 1-based, Date otomatis ke bulan berikutnya
-  const key = next.toISOString().slice(0, 7);
+  const nextMonth = m === 12 ? 1 : m + 1;
+  const nextYear  = m === 12 ? y + 1 : y;
+  const key = `${nextYear}-${String(nextMonth).padStart(2, '0')}`;
 
   const months = JSON.parse(localStorage.getItem('bp_months') || '{}');
   if (months[key]) {
-    // Bulan sudah ada, cukup switch ke sana
     switchMonth(key);
     renderMonthSelector();
     return;
