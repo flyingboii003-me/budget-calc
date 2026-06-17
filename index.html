@@ -253,8 +253,6 @@ html.light .toggle-thumb{left:17px;background:#fff;}
   box-shadow:0 4px 14px -4px rgba(59,130,246,.55);
 }
 .topbar-save-btn:hover{background:var(--primary-glow);transform:translateY(-1px);}
-.save-status{font-size:.68rem;color:var(--savings);font-family:'JetBrains Mono',monospace;opacity:0;transition:opacity .3s;}
-.save-status.show{opacity:1;}
 
 /* ============ MAIN ============ */
 .main{
@@ -922,9 +920,7 @@ html.light .toggle-thumb{left:17px;background:#fff;}
   <div class="topbar-right">
     <div class="topbar-salary-badge">Gaji: <span id="topbar-salary">Rp 0</span></div>
     <button class="theme-toggle-mobile" onclick="toggleTheme()" title="Toggle tema">☀️</button>
-    <button class="topbar-save-btn" onclick="saveMonth()">&#128190; Simpan</button>
-    <span class="save-status" id="save-status">
-      <span class="material-symbols-rounded">check_small</span> Tersimpan</span>
+    <button class="topbar-save-btn" id="topbar-save-btn" onclick="saveMonth()">&#128190; Simpan</button>
   </div>
 </div>
 
@@ -1858,9 +1854,17 @@ function renderBreakdown(){
 }
 function saveMonth() {
   saveActiveMonthData();
-  const st = document.getElementById('save-status');
-  st.classList.add('show');
-  setTimeout(() => st.classList.remove('show'), 2500);
+  const btn = document.getElementById('topbar-save-btn');
+  btn.textContent = '✓ Tersimpan';
+  btn.style.background = 'var(--savings)';
+  btn.style.borderColor = 'var(--savings)';
+  btn.style.color = '#000';
+  setTimeout(() => {
+    btn.innerHTML = '&#128190; Simpan';
+    btn.style.background = '';
+    btn.style.borderColor = '';
+    btn.style.color = '';
+  }, 2500);
 }
 function clearHistory() {
   if (!confirm('Hapus semua riwayat tren? Data bulan aktif tidak akan terhapus.')) return;
