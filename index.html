@@ -105,6 +105,18 @@ html.light body::before{
 ::selection{background:rgba(59,130,246,.35);color:var(--text);}
 
 /* ============ SIDEBAR (collapsible icon-only, expand on hover) ============ */
+.material-symbols-rounded {
+  font-variation-settings:
+    'FILL' 1,
+    'wght' 400,
+    'GRAD' 0,
+    'opsz' 24;
+  font-size: 24px;
+  color: currentColor;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
 .sidebar{
   width:var(--sidebar-w);
   flex-shrink:0;
@@ -846,10 +858,22 @@ html.light .toggle-thumb{left:17px;background:#fff;}
   </div>
   <nav class="sidebar-nav">
     <div class="nav-section-label">Menu Utama</div>
-    <button class="nav-item active" onclick="switchPage('overview',this)"><span class="material-symbols-rounded">dashboard</span>Overview</button>
-    <button class="nav-item" onclick="switchPage('breakdown',this)"><span class="material-symbols-rounded">segment</span>Breakdown</button>
-    <button class="nav-item" onclick="switchPage('trend',this)"><span class="material-symbols-rounded">chart_data</span>Tren Bulanan</button>
-    <button class="nav-item" onclick="switchPage('aset',this)"><span class="material-symbols-rounded">money_bag</span>Aset & Investasi</button>
+    <button class="nav-item active" onclick="switchPage('overview',this)"><span class="nav-icon">
+      <span class="material-symbols-rounded">dashboard</span>
+      </span>Overview
+    </button>
+    <button class="nav-item" onclick="switchPage('breakdown',this)"><span class="nav-icon">
+      <span class="material-symbols-rounded">segment</span>
+      </span>Breakdown
+    </button>
+    <button class="nav-item" onclick="switchPage('trend',this)"><span class="nav-icon">
+      <span class="material-symbols-rounded">chart_data</span>
+    </span>Tren Bulanan
+  </button>
+    <button class="nav-item" onclick="switchPage('aset',this)"><span class="nav-icon">
+      <span class="material-symbols-rounded">money_bag</span>
+    </span>Aset & Investasi
+  </button>
   </nav>
   <div class="sidebar-bottom">
     <button class="theme-btn" onclick="toggleTheme()">
