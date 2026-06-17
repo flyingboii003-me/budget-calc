@@ -318,6 +318,27 @@ html.light .toggle-thumb{left:17px;background:#fff;}
 }
 .stat-sub{font-size:.66rem;color:var(--muted);margin-top:3px;font-weight:500;}
 
+/* ============ MONTH SELECTOR ============ */
+.month-selector-bar{
+  display:flex;align-items:center;justify-content:space-between;
+  margin-bottom:16px;gap:10px;
+}
+.month-select{
+  background:var(--surface2);border:1px solid var(--border);
+  border-radius:10px;color:var(--text);
+  font-family:'Inter',sans-serif;font-size:.8rem;font-weight:600;
+  padding:9px 12px;outline:none;cursor:pointer;flex:1;
+}
+.month-select:focus{border-color:var(--primary);box-shadow:var(--shadow-glow);}
+.btn-new-month{
+  background:var(--primary);border:1px solid var(--primary);
+  color:#fff;border-radius:10px;padding:9px 14px;cursor:pointer;
+  font-size:.76rem;font-weight:600;font-family:'Inter',sans-serif;
+  white-space:nowrap;flex-shrink:0;
+  box-shadow:0 4px 14px -4px rgba(59,130,246,.55);
+}
+.btn-new-month:hover{background:var(--primary-glow);transform:translateY(-1px);}
+
 /* ============ FORM ============ */
 .form-group{display:flex;flex-direction:column;gap:6px;margin-bottom:12px;}
 .form-label{font-size:.62rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted2);font-weight:600;}
@@ -911,6 +932,10 @@ html.light .toggle-thumb{left:17px;background:#fff;}
 
   <!-- PAGE: OVERVIEW -->
   <div class="page active" id="page-overview">
+    <div class="month-selector-bar">
+      <select class="month-select" id="month-selector" onchange="switchMonth(this.value)"></select>
+      <button class="btn-new-month" onclick="addNewMonth()">+ Bulan Baru</button>
+    </div>
     <div class="grid-4">
       <div class="stat-card"><div class="stat-inner"><div class="stat-icon" style="background:rgba(59,130,246,.12)">&#128184;</div><div><div class="stat-label">Gaji Bulanan</div><div class="stat-value" id="stat-salary">Rp 0</div></div></div></div>
       <div class="stat-card"><div class="stat-inner"><div class="stat-icon" style="background:rgba(92,118,160,.15)">&#127968;</div><div><div class="stat-label">Kebutuhan</div><div class="stat-value" id="stat-needs">Rp 0</div><div class="stat-sub" id="stat-needs-pct">50% dari gaji</div></div></div></div>
@@ -1421,6 +1446,78 @@ function toggleNominalInputs(isDisabled) {
 
 // End of Helper Function
 
+function renderMonthSelector() {
+  const months = JSON.parse(localStorage.getItem('bp_months') || '{}');
+  const keys = Object.keys(months).sort().reverse(); // terbaru di atas
+  const sel = document.getElementById('month-selector');
+  sel.innerHTML = '';
+
+  // Kalau activeMonth belum ada di bp_months, tambahkan sebagai opsi
+  if (!keys.includes(activeMonth)) keys.unshift(activeMonth);
+
+  const bl = ['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Agu','Sep','Okt','Nov','Des'];
+  keys.forEach(k => {
+    const [y, m] = k.split('-');
+    const label = bl[parseInt(m) - 1] + ' ' + y;
+    const opt = document.createElement('option');
+    opt.value = k;
+    opt.textContent = label;
+    opt.selected = k === activeMonth;
+    sel.appendChild(opt);
+  });
+}
+
+function switchMonth(key) {
+  // Simpan state bulan aktif sekarang sebelum pindah
+  saveActiveMonthData();
+
+  activeMonth = key;
+  const months = JSON.parse(localStorage.getItem('bp_months') || '{}');
+  const data = months[key];
+
+  if (!data) return;
+
+  // Load data bulan yang dipilih ke state
+  state.salary  = data.salary  || 0;
+  state.pN      = data.pN      || 0;
+  state.pW      = data.pW      || 0;
+  state.pS      = data.pS      || 0;
+  state.debts   = data.debts   || [];
+  state.breakdown = data.breakdown || { needs: [], wants: [], savings: [] };
+
+  // Sync UI
+  document.getElementById('salary-input').value = state.salary ? fmtInput(String(state.salary)) : '';
+  document.getElementById('range-needs').value   = state.pN;
+  document.getElementById('range-wants').value   = state.pW;
+  document.getElementById('range-savings').value = state.pS;
+
+  renderDebtList();
+  syncSliders('needs');
+  update();
+  if (allocMode === 'nominal') updateNominalInputs();
+}
+
+function addNewMonth() {
+  const now = new Date();
+  // Default ke bulan depan dari activeMonth
+  const [y, m] = activeMonth.split('-').map(Number);
+  const next = new Date(y, m, 1); // m sudah 1-based, Date otomatis ke bulan berikutnya
+  const key = next.toISOString().slice(0, 7);
+
+  const months = JSON.parse(localStorage.getItem('bp_months') || '{}');
+  if (months[key]) {
+    // Bulan sudah ada, cukup switch ke sana
+    switchMonth(key);
+    renderMonthSelector();
+    return;
+  }
+
+  createNewMonth(key);
+  activeMonth = key;
+  switchMonth(key);
+  renderMonthSelector();
+}
+
 function setArc(id, pct, off, cc) {
   const el = document.getElementById(id);
   if (!el) return;
@@ -1682,7 +1779,7 @@ function updateBreakdownSisa(){
       extraEl.innerHTML=totalDebtBD>0?`Setelah tagihan Rp ${Math.round(totalDebtBD).toLocaleString('id-ID')} = ${fmt(needsAlloc)}`:'';
     }
   });
-  persistSettings();
+  saveActiveMonthData();
 }
 
 function renderBreakdown(){
@@ -2539,7 +2636,7 @@ function update() {
   updateDebtSection(data);
   updateProgressBars(data);
 
-  persistSettings();
+  saveActiveMonthData();
 }
 
 // IIFE Init
@@ -2579,19 +2676,26 @@ function update() {
   }
 
   // Salary & allocation settings
-  const savedSettings=localStorage.getItem('bp_settings');
-  if(savedSettings){
-    try{
-      const s=JSON.parse(savedSettings);
-      if(s.salary){state.salary=s.salary;document.getElementById('salary-input').value=fmtInput(String(s.salary));}
-      if(s.pN!=null){state.pN=s.pN;document.getElementById('range-needs').value=s.pN;}
-      if(s.pW!=null){state.pW=s.pW;document.getElementById('range-wants').value=s.pW;}
-      if(s.pS!=null){state.pS=s.pS;document.getElementById('range-savings').value=s.pS;}
-      if(s.debts){state.debts=s.debts;}
-      if(s.breakdown){state.breakdown=s.breakdown;}
-    }catch(e){}
+  // Load data activeMonth dari bp_months
+  const monthData = getActiveMonthData();
+  if (monthData) {
+    state.salary    = monthData.salary    || 0;
+    state.pN        = monthData.pN        || 0;
+    state.pW        = monthData.pW        || 0;
+    state.pS        = monthData.pS        || 0;
+    state.debts     = monthData.debts     || [];
+    state.breakdown = monthData.breakdown || { needs: [], wants: [], savings: [] };
+
+    document.getElementById('salary-input').value = state.salary ? fmtInput(String(state.salary)) : '';
+    document.getElementById('range-needs').value   = state.pN;
+    document.getElementById('range-wants').value   = state.pW;
+    document.getElementById('range-savings').value = state.pS;
+  } else {
+    // Bulan ini belum ada data — buat baru
+    createNewMonth(activeMonth);
   }
 
+  renderMonthSelector();
   renderDebtList();
   syncSliders('needs');
   update();
