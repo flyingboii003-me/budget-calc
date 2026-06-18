@@ -338,6 +338,15 @@ html.light .toggle-thumb{left:17px;background:#fff;}
   box-shadow:0 4px 14px -4px rgba(59,130,246,.55);
 }
 .btn-new-month:hover{background:var(--primary-glow);transform:translateY(-1px);}
+.btn-data-action{
+  background:var(--surface2);border:1px solid var(--border);
+  color:var(--muted2);border-radius:10px;
+  width:38px;height:38px;
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;flex-shrink:0;
+}
+.btn-data-action:hover{background:var(--surface3);border-color:var(--border-strong);color:var(--text);}
+.btn-data-action .material-symbols-rounded{font-size:18px;}
 
 /* ============ FORM ============ */
 .form-group{display:flex;flex-direction:column;gap:6px;margin-bottom:12px;}
@@ -933,6 +942,12 @@ html.light .toggle-thumb{left:17px;background:#fff;}
     <div class="month-selector-bar">
       <select class="month-select" id="month-selector" onchange="switchMonth(this.value)"></select>
       <button class="btn-new-month" onclick="addNewMonth()">+ Bulan Baru</button>
+      <button class="btn-data-action" onclick="exportData()" title="Ekspor data ke JSON">
+        <span class="material-symbols-rounded">upload</span>
+      </button>
+      <button class="btn-data-action" onclick="importData()" title="Impor data dari JSON">
+        <span class="material-symbols-rounded">download</span>
+      </button>
     </div>
     <div class="grid-4">
       <div class="stat-card"><div class="stat-inner"><div class="stat-icon" style="background:rgba(59,130,246,.12)"><span class="material-symbols-rounded">payments</span></div><div><div class="stat-label">Gaji Bulanan</div><div class="stat-value" id="stat-salary">Rp 0</div></div></div></div>
