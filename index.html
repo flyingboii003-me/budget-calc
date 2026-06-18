@@ -1853,15 +1853,15 @@ function renderBreakdown(){
     });
   });
 }
-function th() {
+function saveMonth() {
   saveActiveMonthData();
-  const btn = document.getElementById('topbar-save-btn');
-  btn.textContent = '✓ Tersimpan';
+  const btn = document.querySelector('.topbar-save-btn');
+  btn.innerHTML = '<span class="material-symbols-rounded" style="font-size:15px;vertical-align:middle">check</span> Tersimpan';
   btn.style.background = 'var(--savings)';
   btn.style.borderColor = 'var(--savings)';
   btn.style.color = '#000';
   setTimeout(() => {
-    btn.innerHTML = '&#128190; Simpan';
+    btn.innerHTML = '<span class="material-symbols-rounded" style="font-size:15px;vertical-align:middle">save</span> Simpan';
     btn.style.background = '';
     btn.style.borderColor = '';
     btn.style.color = '';
