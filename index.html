@@ -4,8 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Budget Planner</title>
-<!-- <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&icon_names=menu" /> -->
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,1,0&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20,400,1,0&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <style>
 /* ============ MODERN FINTECH DARK — REWORKED UI/UX ============ */
@@ -899,12 +898,12 @@ html.light .toggle-thumb{left:17px;background:#fff;}
       <div class="toggle-track"><div class="toggle-thumb"></div></div>
       <span id="theme-label">Light Mode</span>
     </button>
-    <div style="display:flex;gap:6px;padding:0 10px 4px">
-      <button class="theme-btn" style="flex:1;justify-content:center;font-size:.72rem" onclick="exportData()">
-        ↑ Ekspor Data JSON
+    <div style="display:flex;flex-direction:column;gap:4px;padding:0 10px 4px">
+      <button class="theme-btn" style="justify-content:center;font-size:.72rem" onclick="exportData()">
+        <span class="material-symbols-rounded" style="font-size:15px;vertical-align:middle">upload</span> Ekspor
       </button>
-      <button class="theme-btn" style="flex:1;justify-content:center;font-size:.72rem" onclick="importData()">
-        ↓ Impor Data JSON
+      <button class="theme-btn" style="justify-content:center;font-size:.72rem" onclick="importData()">
+        <span class="material-symbols-rounded" style="font-size:15px;vertical-align:middle">download</span> Impor
       </button>
     </div>
   </div>
@@ -919,8 +918,8 @@ html.light .toggle-thumb{left:17px;background:#fff;}
   </div>
   <div class="topbar-right">
     <div class="topbar-salary-badge">Gaji: <span id="topbar-salary">Rp 0</span></div>
-    <button class="theme-toggle-mobile" onclick="toggleTheme()" title="Toggle tema">☀️</button>
-    <button class="topbar-save-btn" id="topbar-save-btn" onclick="saveMonth()">&#128190; Simpan</button>
+    <button class="theme-toggle-mobile" onclick="toggleTheme()" title="Toggle tema"><span class="material-symbols-rounded">light_mode</span></button>
+    <button class="topbar-save-btn" onclick="saveMonth()"><span class="material-symbols-rounded" style="font-size:15px;vertical-align:middle">save</span> Simpan</button>
   </div>
 </div>
 
@@ -933,15 +932,15 @@ html.light .toggle-thumb{left:17px;background:#fff;}
       <button class="btn-new-month" onclick="addNewMonth()">+ Bulan Baru</button>
     </div>
     <div class="grid-4">
-      <div class="stat-card"><div class="stat-inner"><div class="stat-icon" style="background:rgba(59,130,246,.12)">&#128184;</div><div><div class="stat-label">Gaji Bulanan</div><div class="stat-value" id="stat-salary">Rp 0</div></div></div></div>
-      <div class="stat-card"><div class="stat-inner"><div class="stat-icon" style="background:rgba(92,118,160,.15)">&#127968;</div><div><div class="stat-label">Kebutuhan</div><div class="stat-value" id="stat-needs">Rp 0</div><div class="stat-sub" id="stat-needs-pct">50% dari gaji</div></div></div></div>
-      <div class="stat-card"><div class="stat-inner"><div class="stat-icon" style="background:rgba(109,117,87,.18)">&#128717;</div><div><div class="stat-label">Keinginan</div><div class="stat-value" id="stat-wants">Rp 0</div><div class="stat-sub" id="stat-wants-pct">30% dari gaji</div></div></div></div>
-      <div class="stat-card"><div class="stat-inner"><div class="stat-icon" style="background:rgba(197,245,59,.12)">&#128200;</div><div><div class="stat-label">Tabungan</div><div class="stat-value" id="stat-savings">Rp 0</div><div class="stat-sub" id="stat-savings-pct">20% dari gaji</div></div></div></div>
+      <div class="stat-card"><div class="stat-inner"><div class="stat-icon" style="background:rgba(59,130,246,.12)"><span class="material-symbols-rounded">payments</span></div><div><div class="stat-label">Gaji Bulanan</div><div class="stat-value" id="stat-salary">Rp 0</div></div></div></div>
+      <div class="stat-card"><div class="stat-inner"><div class="stat-icon" style="background:rgba(92,118,160,.15)"><span class="material-symbols-rounded">home</span></div><div><div class="stat-label">Kebutuhan</div><div class="stat-value" id="stat-needs">Rp 0</div><div class="stat-sub" id="stat-needs-pct">50% dari gaji</div></div></div></div>
+      <div class="stat-card"><div class="stat-inner"><div class="stat-icon" style="background:rgba(109,117,87,.18)"><span class="material-symbols-rounded">shopping_bag</span></div><div><div class="stat-label">Keinginan</div><div class="stat-value" id="stat-wants">Rp 0</div><div class="stat-sub" id="stat-wants-pct">30% dari gaji</div></div></div></div>
+      <div class="stat-card"><div class="stat-inner"><div class="stat-icon" style="background:rgba(197,245,59,.12)"><span class="material-symbols-rounded">savings</span></div><div><div class="stat-label">Tabungan</div><div class="stat-value" id="stat-savings">Rp 0</div><div class="stat-sub" id="stat-savings-pct">20% dari gaji</div></div></div></div>
     </div>
     <div class="grid-2">
       <div style="display:flex;flex-direction:column;gap:14px;">
         <div class="card">
-          <div class="section-title">&#128188; Gaji &amp; Alokasi</div>
+          <div class="section-title"><span class="material-symbols-rounded">work</span> Gaji &amp; Alokasi</div>
           <div class="form-group">
             <label class="form-label">Total Gaji / Penghasilan</label>
             <div class="input-wrap"><span class="badge">Rp</span><input type="text" class="money-input" id="salary-input" placeholder="Masukkan gaji..." inputmode="numeric"></div>
@@ -952,17 +951,17 @@ html.light .toggle-thumb{left:17px;background:#fff;}
           </div>
           <div class="pct-grid">
             <div class="pct-row">
-              <span class="pct-row-label">&#127968; Kebutuhan</span>
+              <span class="pct-row-label"><span class="material-symbols-rounded" style="font-size:16px;vertical-align:middle">home</span> Kebutuhan</span>
               <div class="pct-input-wrap needs-focus" id="wrap-pct-needs"><input type="number" class="pct-number-input" id="range-needs" min="0" max="100" value="0" step="0.01" inputmode="decimal"><span class="pct-suffix">%</span></div>
               <div class="nominal-input-wrap" id="wrap-nominal-needs" style="display:none"><span class="badge">Rp</span><input type="text" class="nominal-alloc-input" id="nominal-needs" inputmode="numeric" placeholder="0"></div>
             </div>
             <div class="pct-row">
-              <span class="pct-row-label">&#128717; Keinginan</span>
+              <span class="pct-row-label"><span class="material-symbols-rounded" style="font-size:16px;vertical-align:middle">shopping_bag</span> Keinginan</span>
               <div class="pct-input-wrap wants-focus" id="wrap-pct-wants"><input type="number" class="pct-number-input" id="range-wants" min="0" max="100" value="0"step="0.01" inputmode="decimal"><span class="pct-suffix">%</span></div>
               <div class="nominal-input-wrap" id="wrap-nominal-wants" style="display:none"><span class="badge">Rp</span><input type="text" class="nominal-alloc-input" id="nominal-wants" inputmode="numeric" placeholder="0"></div>
             </div>
             <div class="pct-row">
-              <span class="pct-row-label">&#128184; Tabungan</span>
+              <span class="pct-row-label"><span class="material-symbols-rounded" style="font-size:16px;vertical-align:middle">savings</span> Tabungan</span>
               <div class="pct-input-wrap savings-focus" id="wrap-pct-savings"><input type="number" class="pct-number-input" id="range-savings" min="0" max="100" value="0"step="0.01" inputmode="decimal"><span class="pct-suffix">%</span></div>
               <div class="nominal-input-wrap" id="wrap-nominal-savings" style="display:none"><span class="badge">Rp</span><input type="text" class="nominal-alloc-input" id="nominal-savings" inputmode="numeric" placeholder="0"></div>
             </div>
@@ -970,7 +969,7 @@ html.light .toggle-thumb{left:17px;background:#fff;}
           <div class="pct-status" id="pct-status"></div>
         </div>
         <div class="card">
-          <div class="section-title">&#128308; Hutang &amp; Tagihan</div>
+          <div class="section-title"><span class="material-symbols-rounded">receipt_long</span> Hutang &amp; Tagihan</div>
           <div class="debt-list" id="debt-list"></div>
           <button class="btn-danger-ghost" id="btn-add-debt" style="margin-top:8px">+ Tambah Tagihan</button>
           <div class="debt-summary" id="debt-summary" style="display:none"><span>Total Tagihan</span><strong id="debt-total-display">Rp 0</strong></div>
@@ -978,7 +977,7 @@ html.light .toggle-thumb{left:17px;background:#fff;}
       </div>
       <div style="display:flex;flex-direction:column;gap:14px;">
         <div class="card">
-          <div class="section-title">&#128202; Alokasi Visual</div>
+          <div class="section-title"><span class="material-symbols-rounded">donut_large</span> Alokasi Visual</div>
           <div class="donut-row">
             <div class="donut-wrap">
               <svg id="donut-svg" width="100%" height="100%" viewBox="0 0 190 190">
@@ -999,12 +998,12 @@ html.light .toggle-thumb{left:17px;background:#fff;}
           </div>
         </div>
         <div class="card">
-          <div class="section-title">&#128181; Rincian Alokasi</div>
+          <div class="section-title"><span class="material-symbols-rounded">account_balance_wallet</span> Rincian Alokasi</div>
           <div class="budget-items">
-            <div class="budget-item needs"><div class="item-icon">&#127968;</div><div class="item-info"><div class="item-label" id="lbl-needs">50% dari gaji</div><div class="item-name">Kebutuhan</div><div class="bar-track"><div class="bar-fill" id="bar-needs"></div></div></div><div class="item-amount"><div class="item-pct" id="pct-needs-lbl">50%</div><div class="item-amt" id="amt-needs">Rp 0</div></div></div>
-            <div class="budget-item wants"><div class="item-icon">&#128717;</div><div class="item-info"><div class="item-label" id="lbl-wants">30% dari gaji</div><div class="item-name">Keinginan</div><div class="bar-track"><div class="bar-fill" id="bar-wants"></div></div></div><div class="item-amount"><div class="item-pct" id="pct-wants-lbl">30%</div><div class="item-amt" id="amt-wants">Rp 0</div></div></div>
-            <div class="budget-item savings"><div class="item-icon">&#128184;</div><div class="item-info"><div class="item-label" id="lbl-savings">20% dari gaji</div><div class="item-name">Tabungan</div><div class="bar-track"><div class="bar-fill" id="bar-savings"></div></div></div><div class="item-amount"><div class="item-pct" id="pct-savings-lbl">20%</div><div class="item-amt" id="amt-savings">Rp 0</div></div></div>
-            <div class="budget-item debt-card" id="debt-result-card" style="display:none"><div class="item-icon">&#128308;</div><div class="item-info"><div class="item-label">tagihan bulanan</div><div class="item-name">Hutang &amp; Tagihan</div><div class="bar-track"><div class="bar-fill" id="bar-debt"></div></div></div><div class="item-amount"><div class="item-pct" id="pct-debt-lbl">—</div><div class="item-amt" id="amt-debt">Rp 0</div></div></div>
+            <div class="budget-item needs"><div class="item-icon"><span class="material-symbols-rounded">home</span></div><div class="item-info"><div class="item-label" id="lbl-needs">50% dari gaji</div><div class="item-name">Kebutuhan</div><div class="bar-track"><div class="bar-fill" id="bar-needs"></div></div></div><div class="item-amount"><div class="item-pct" id="pct-needs-lbl">50%</div><div class="item-amt" id="amt-needs">Rp 0</div></div></div>
+            <div class="budget-item wants"><div class="item-icon"><span class="material-symbols-rounded">shopping_bag</span></div><div class="item-info"><div class="item-label" id="lbl-wants">30% dari gaji</div><div class="item-name">Keinginan</div><div class="bar-track"><div class="bar-fill" id="bar-wants"></div></div></div><div class="item-amount"><div class="item-pct" id="pct-wants-lbl">30%</div><div class="item-amt" id="amt-wants">Rp 0</div></div></div>
+            <div class="budget-item savings"><div class="item-icon"><span class="material-symbols-rounded">savings</span></div><div class="item-info"><div class="item-label" id="lbl-savings">20% dari gaji</div><div class="item-name">Tabungan</div><div class="bar-track"><div class="bar-fill" id="bar-savings"></div></div></div><div class="item-amount"><div class="item-pct" id="pct-savings-lbl">20%</div><div class="item-amt" id="amt-savings">Rp 0</div></div></div>
+            <div class="budget-item debt-card" id="debt-result-card" style="display:none"><div class="item-icon"><span class="material-symbols-rounded">receipt_long</span></div><div class="item-info"><div class="item-label">tagihan bulanan</div><div class="item-name">Hutang &amp; Tagihan</div><div class="bar-track"><div class="bar-fill" id="bar-debt"></div></div></div><div class="item-amount"><div class="item-pct" id="pct-debt-lbl">—</div><div class="item-amt" id="amt-debt">Rp 0</div></div></div>
           </div>
           <div id="sisa-card" style="display:none">
             <div class="sisa-row ok" id="sisa-row"><div><div class="sisa-label-text">Sisa setelah tagihan</div><div class="sisa-label-sub" id="sisa-desc">dari alokasi kebutuhan</div></div><div class="sisa-val pos" id="sisa-amount">Rp 0</div></div>
@@ -1017,7 +1016,7 @@ html.light .toggle-thumb{left:17px;background:#fff;}
   <!-- PAGE: BREAKDOWN -->
   <div class="page" id="page-breakdown">
     <div class="card">
-      <div class="section-title">&#128193; Rincian per Kategori</div>
+      <div class="section-title"><span class="material-symbols-rounded">folder_open</span> Rincian per Kategori</div>
       <p style="font-size:.74rem;color:var(--muted);margin-bottom:14px;line-height:1.6;">Masukkan rincian pengeluaran per kategori. Sisa anggaran dihitung otomatis.</p>
       <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:12px" id="breakdown-section"></div>
     </div>
@@ -1027,7 +1026,7 @@ html.light .toggle-thumb{left:17px;background:#fff;}
   <div class="page" id="page-trend">
     <div class="grid-2">
       <div class="card">
-        <div class="section-title">&#128200; Grafik Tren</div>
+        <div class="section-title"><span class="material-symbols-rounded">show_chart</span> Grafik Tren</div>
         <div class="chart-actions">
           <button class="active" onclick="setChartMode('amount',this)">Nominal</button>
           <button onclick="setChartMode('pct',this)">Persentase</button>
@@ -1036,9 +1035,9 @@ html.light .toggle-thumb{left:17px;background:#fff;}
         <div class="chart-wrap" id="chart-wrap" style="display:none"><canvas id="trend-chart"></canvas></div>
       </div>
       <div class="card">
-        <div class="section-title">&#128197; Riwayat Tersimpan</div>
+        <div class="section-title"><span class="material-symbols-rounded">calendar_month</span> Riwayat Tersimpan</div>
         <div id="history-list" style="display:flex;flex-direction:column;gap:7px"></div>
-        <button class="btn-danger-ghost" id="btn-clear-history" style="margin-top:10px;display:none" onclick="clearHistory()">&#128465; Hapus Semua</button>
+        <button class="btn-danger-ghost" id="btn-clear-history" style="margin-top:10px;display:none" onclick="clearHistory()"><span class="material-symbols-rounded" style="font-size:15px;vertical-align:middle">delete</span> Hapus Semua</button>
       </div>
     </div>
   </div>
@@ -1046,7 +1045,7 @@ html.light .toggle-thumb{left:17px;background:#fff;}
   <!-- PAGE: ASET -->
   <div class="page" id="page-aset">
     <div class="networth-banner">
-      <div><div class="nw-label">&#128142; Total Aset Tercatat</div><div class="nw-amount" id="nw-total">Rp 0</div></div>
+      <div><div class="nw-label"><span class="material-symbols-rounded" style="font-size:13px;vertical-align:middle">diamond</span> Total Aset Tercatat</div><div class="nw-amount" id="nw-total">Rp 0</div></div>
       <div class="networth-stats">
         <div><div class="nw-stat-label">Total Aset</div><div class="nw-stat-val pos" id="nw-assets">Rp 0</div></div>
         <div style="display:none"><div class="nw-stat-label">Total Hutang</div><div class="nw-stat-val neg" id="nw-debts">Rp 0</div></div>
@@ -1056,10 +1055,10 @@ html.light .toggle-thumb{left:17px;background:#fff;}
     <!-- FOREX TABLE CARD -->
     <div class="card" id="forex-card">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
-        <div class="section-title" style="margin-bottom:0">💱 Kurs Valas Per Hari Ini</div>
+        <div class="section-title" style="margin-bottom:0"><span class="material-symbols-rounded">currency_exchange</span> Kurs Valas Per Hari Ini</div>
         <div style="display:flex;align-items:center;gap:8px">
           <span id="forex-timestamp" style="font-size:.6rem;color:var(--muted);font-family:'JetBrains Mono',monospace"></span>
-          <button class="btn-fetch-price" id="btn-forex-refresh" onclick="fetchForexTable()">🔄 Refresh</button>
+          <button class="btn-fetch-price" id="btn-forex-refresh" onclick="fetchForexTable()"><span class="material-symbols-rounded" style="font-size:14px;vertical-align:middle">refresh</span> Refresh</button>
         </div>
       </div>
       <div id="forex-table-body" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:6px">
@@ -1068,7 +1067,7 @@ html.light .toggle-thumb{left:17px;background:#fff;}
     </div>
     <div class="grid-2">
       <div class="card">
-        <div class="section-title">&#128202; Komposisi Portofolio</div>
+        <div class="section-title"><span class="material-symbols-rounded">donut_large</span> Komposisi Portofolio</div>
         <div style="display:flex;gap:20px;align-items:center;flex-wrap:wrap">
           <div class="asset-donut-inner">
             <svg id="asset-donut-svg" width="100%" height="100%" viewBox="0 0 180 180">
@@ -1087,7 +1086,7 @@ html.light .toggle-thumb{left:17px;background:#fff;}
         </div>
       </div>
       <div class="card">
-        <div class="section-title">&#128279; Koneksi Tabungan</div>
+        <div class="section-title"><span class="material-symbols-rounded">link</span> Koneksi Tabungan</div>
         <div class="savings-link-card" style="margin-bottom:14px">
           <div><div class="sl-label">Alokasi tabungan <span id="sl-pct" style="color:var(--savings)">20%</span></div><div class="sl-title">sudah diinvestasikan</div></div>
           <div><div class="sl-val" id="sl-invested">Rp 0</div><div class="sl-sub" id="sl-idle">Rp 0 belum diinvestasikan</div></div>
@@ -1097,7 +1096,7 @@ html.light .toggle-thumb{left:17px;background:#fff;}
       </div>
     </div>
     <div class="card">
-      <div class="section-title">&#128203; Daftar Aset Investasi</div>
+      <div class="section-title"><span class="material-symbols-rounded">list_alt</span> Daftar Aset Investasi</div>
       <div class="asset-type-filter" id="asset-filter">
         <button class="type-pill active" onclick="filterAssets('all',this)">Semua</button>
         <button class="type-pill" onclick="filterAssets('Saham',this)">Saham</button>
@@ -1562,7 +1561,9 @@ function toggleTheme(){
   const isLight = document.documentElement.classList.toggle('light');
 
   document.getElementById('theme-label').textContent = isLight ? 'Dark Mode' : 'Light Mode';
-  document.querySelector('.theme-toggle-mobile').textContent = isLight ? '🌙' : '☀️';
+  document.querySelector('.theme-toggle-mobile').innerHTML = isLight
+  ? '<span class="material-symbols-rounded">dark_mode</span>'
+  : '<span class="material-symbols-rounded">light_mode</span>';
   localStorage.setItem('bp_theme', isLight ? 'light' : 'dark');
 
   if (chartInstance) {
@@ -1783,9 +1784,9 @@ function renderBreakdown(){
   const needsBase=state.salary*(state.pN/100);
   const needsAlloc=Math.max(0,needsBase-totalDebtBD);
   const groups=[
-    {key:'needs',label:'🏠 Kebutuhan',cls:'needs-c',alloc:needsAlloc},
-    {key:'wants',label:'🛍️ Keinginan',cls:'wants-c',alloc:state.salary*(state.pW/100)},
-    {key:'savings',label:'💰 Tabungan',cls:'savings-c',alloc:state.salary*(state.pS/100)}
+    {key:'needs',label:'<span class="material-symbols-rounded" style="font-size:14px;vertical-align:middle">home</span> Kebutuhan',cls:'needs-c',alloc:needsAlloc},
+    {key:'wants',label:'<span class="material-symbols-rounded" style="font-size:14px;vertical-align:middle">shopping_bag</span> Keinginan',cls:'wants-c',alloc:state.salary*(state.pW/100)},
+    {key:'savings',label:'<span class="material-symbols-rounded" style="font-size:14px;vertical-align:middle">savings</span> Tabungan',cls:'savings-c',alloc:state.salary*(state.pS/100)}
   ];
   groups.forEach(g=>{
     const items=state.breakdown[g.key];
@@ -1852,7 +1853,7 @@ function renderBreakdown(){
     });
   });
 }
-function saveMonth() {
+function th() {
   saveActiveMonthData();
   const btn = document.getElementById('topbar-save-btn');
   btn.textContent = '✓ Tersimpan';
@@ -2659,7 +2660,7 @@ function update() {
   if(savedTheme==='light'){
     document.documentElement.classList.add('light');
     document.getElementById('theme-label').textContent='Dark Mode';
-    document.querySelector('.theme-toggle-mobile').textContent='🌙';
+    document.querySelector('.theme-toggle-mobile').innerHTML='<span class="material-symbols-rounded">dark_mode</span>';
   }
 
   // Salary & allocation settings
