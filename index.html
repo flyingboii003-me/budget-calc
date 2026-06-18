@@ -898,12 +898,12 @@ html.light .toggle-thumb{left:17px;background:#fff;}
       <div class="toggle-track"><div class="toggle-thumb"></div></div>
       <span id="theme-label">Light Mode</span>
     </button>
-    <div style="display:flex;gap:6px;padding:0 10px 4px">
-      <button class="theme-btn" style="flex:1;justify-content:center;font-size:.72rem" onclick="exportData()">
-        ↑ Ekspor Data JSON
+    <div style="display:flex;flex-direction:column;gap:4px;padding:0 10px 4px">
+      <button class="theme-btn" style="justify-content:center;font-size:.72rem" onclick="exportData()">
+        <span class="material-symbols-rounded" style="font-size:15px;vertical-align:middle">upload</span> Ekspor
       </button>
-      <button class="theme-btn" style="flex:1;justify-content:center;font-size:.72rem" onclick="importData()">
-        ↓ Impor Data JSON
+      <button class="theme-btn" style="justify-content:center;font-size:.72rem" onclick="importData()">
+        <span class="material-symbols-rounded" style="font-size:15px;vertical-align:middle">download</span> Impor
       </button>
     </div>
   </div>
