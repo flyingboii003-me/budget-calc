@@ -478,6 +478,15 @@ html.light .toggle-thumb{left:17px;background:#fff;}
 }
 .debt-paid-btn:hover{border-color:var(--savings);color:var(--savings);}
 .debt-paid-btn.paid{background:var(--savings);border-color:var(--savings);color:#fff;}
+.debt-recurring-btn{
+  background:var(--surface3);border:1px solid var(--border);
+  border-radius:7px;width:26px;height:26px;
+  display:flex;align-items:center;justify-content:center;cursor:pointer;
+  flex-shrink:0;color:var(--muted);
+}
+.debt-recurring-btn:hover{border-color:var(--primary);color:var(--primary);}
+.debt-recurring-btn.active{background:rgba(59,130,246,.15);border-color:var(--primary);color:var(--primary);}
+.debt-recurring-btn .material-symbols-rounded{font-size:15px;}
 .debt-item.paid-item .debt-name-input,.debt-item.paid-item .debt-amount-input{text-decoration:line-through;color:var(--muted);}
 .debt-summary span{font-size:.64rem;color:var(--muted2);text-transform:uppercase;letter-spacing:.1em;font-weight:600;}
 .debt-summary strong{font-family:'JetBrains Mono',monospace;font-size:.92rem;color:var(--debt);font-weight:700;}
@@ -1227,7 +1236,12 @@ function createNewMonth(key) {
     pW: 0,
     pS: 0,
     debts: last
-      ? last.debts.map(d => ({ name: d.name, amount: '', paid: false }))
+      ? last.debts.map(d => ({
+          name: d.name,
+          amount: d.recurring ? d.amount : '',
+          paid: false,
+          recurring: d.recurring || false
+        }))
       : [],
     breakdown: last
       ? {
@@ -1713,16 +1727,16 @@ document
 function renderDebtList() {
   const list = document.getElementById('debt-list');
   list.innerHTML = '';
-
   state.debts.forEach((d, i) => {
-    const isPaid = d.paid || false;
+    const isPaid      = d.paid      || false;
+    const isRecurring = d.recurring || false;
 
     const row = document.createElement('div');
     row.className = 'debt-item' + (isPaid ? ' paid-item' : '');
     row.innerHTML = `
       <button class="debt-paid-btn${isPaid ? ' paid' : ''}"
         title="${isPaid ? 'Tandai belum lunas' : 'Tandai lunas'}">
-        ${isPaid ? '✓' : '○'}
+        <span class="material-symbols-rounded" style="font-size:14px">${isPaid ? 'check' : 'radio_button_unchecked'}</span>
       </button>
       <div class="debt-name-wrap">
         <input class="debt-name-input" type="text"
@@ -1733,7 +1747,13 @@ function renderDebtList() {
         <input class="debt-amount-input" type="text"
           inputmode="numeric" placeholder="0" value="${d.amount}">
       </div>
-      <button class="btn-remove">×</button>`;
+      <button class="debt-recurring-btn${isRecurring ? ' active' : ''}"
+        title="${isRecurring ? 'Recurring — klik untuk nonaktifkan' : 'Tandai sebagai tagihan berulang'}">
+        <span class="material-symbols-rounded">repeat</span>
+      </button>
+      <button class="btn-remove">
+        <span class="material-symbols-rounded" style="font-size:15px">close</span>
+      </button>`;
 
     row.querySelector('.debt-paid-btn').addEventListener('click', () => {
       state.debts[i].paid = !state.debts[i].paid;
@@ -1752,6 +1772,12 @@ function renderDebtList() {
       update();
     });
 
+    row.querySelector('.debt-recurring-btn').addEventListener('click', () => {
+      state.debts[i].recurring = !state.debts[i].recurring;
+      renderDebtList();
+      update();
+    });
+
     row.querySelector('.btn-remove').addEventListener('click', () => {
       state.debts.splice(i, 1);
       renderDebtList();
@@ -1761,8 +1787,20 @@ function renderDebtList() {
     list.appendChild(row);
   });
 }
-document.getElementById('btn-add-debt').addEventListener('click',()=>{state.debts.push({name:'',amount:'',paid:false});renderDebtList();update();});
+
+document.getElementById('btn-add-debt')
+  .addEventListener('click',()=>{
+    state.debts.push({
+      name:'',
+      amount:'',
+      paid:false,
+      recurring:false
+    });
+  renderDebtList()
+  update();
+});
 const getTotalDebt=()=>state.debts.reduce((s,d)=>s+parseM(d.amount),0);
+
 function updateBreakdownSisa(){
   const totalDebtBD=getTotalDebt();
   const needsBase=state.salary*(state.pN/100);
