@@ -1518,9 +1518,8 @@ function renderMonthSelector() {
   });
 }
 
-function switchMonth(key) {
-  // Simpan state bulan aktif sekarang sebelum pindah
-  saveActiveMonthData();
+function switchMonth(key, skipSave = false) {
+  if (!skipSave) saveActiveMonthData();
 
   activeMonth = key;
   const months = JSON.parse(localStorage.getItem('bp_months') || '{}');
@@ -1563,8 +1562,7 @@ function addNewMonth() {
 
   saveActiveMonthData();
   createNewMonth(key);
-  activeMonth = key;
-  switchMonth(key);
+  switchMonth(key, true);
   renderMonthSelector();
   showPriceToast('Bulan baru dibuat ✓');
 }
