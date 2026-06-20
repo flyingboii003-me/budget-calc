@@ -2039,6 +2039,10 @@ function renderTrend() {
   });
 }
 function deleteEntry(key) {
+  if (key === activeMonth) {
+    showPriceToast('Tidak bisa menghapus bulan yang sedang aktif!', true);
+    return;
+  }
   const months = JSON.parse(localStorage.getItem('bp_months') || '{}');
   delete months[key];
   localStorage.setItem('bp_months', JSON.stringify(months));
