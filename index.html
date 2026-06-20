@@ -950,6 +950,7 @@ html.light .toggle-thumb{left:17px;background:#fff;}
         <span class="material-symbols-rounded">download</span>
       </button>
     </div>
+    <div id="new-month-banner" style="display:none"></div>
     <div class="grid-4">
       <div class="stat-card"><div class="stat-inner"><div class="stat-icon" style="background:rgba(59,130,246,.12)"><span class="material-symbols-rounded">payments</span></div><div><div class="stat-label">Gaji Bulanan</div><div class="stat-value" id="stat-salary">Rp 0</div></div></div></div>
       <div class="stat-card"><div class="stat-inner"><div class="stat-icon" style="background:rgba(92,118,160,.15)"><span class="material-symbols-rounded">home</span></div><div><div class="stat-label">Kebutuhan</div><div class="stat-value" id="stat-needs">Rp 0</div><div class="stat-sub" id="stat-needs-pct">50% dari gaji</div></div></div></div>
@@ -1225,7 +1226,6 @@ function saveActiveMonthData() {
 function createNewMonth(key) {
   const months = JSON.parse(localStorage.getItem('bp_months') || '{}');
 
-  // Cari bulan terakhir yang ada untuk carry-over struktur
   const keys = Object.keys(months).sort();
   const lastKey = keys[keys.length - 1];
   const last = lastKey ? months[lastKey] : null;
@@ -1243,13 +1243,7 @@ function createNewMonth(key) {
           recurring: d.recurring || false
         }))
       : [],
-    breakdown: last
-      ? {
-          needs:   last.breakdown.needs.map(i   => ({ name: i.name,   amt: '' })),
-          wants:   last.breakdown.wants.map(i   => ({ name: i.name,   amt: '' })),
-          savings: last.breakdown.savings.map(i => ({ name: i.name,   amt: '' }))
-        }
-      : { needs: [], wants: [], savings: [] }
+    breakdown: { needs: [], wants: [], savings: [] }
   };
 
   localStorage.setItem('bp_months', JSON.stringify(months));
@@ -1463,6 +1457,44 @@ function toggleNominalInputs(isDisabled) {
   });
 }
 
+function updateNewMonthBanner() {
+  const banner = document.getElementById('new-month-banner');
+  if (!banner) return;
+
+  if (state.salary > 0) {
+    banner.style.display = 'none';
+    return;
+  }
+
+  const months = JSON.parse(localStorage.getItem('bp_months') || '{}');
+  const keys = Object.keys(months).sort();
+  const prevKey = keys[keys.length - 2]; // bulan sebelum aktif
+
+  if (!prevKey) {
+    banner.style.display = 'none';
+    return;
+  }
+
+  const bl = ['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Agu','Sep','Okt','Nov','Des'];
+  const [y, m] = prevKey.split('-');
+  const prevLabel = bl[parseInt(m) - 1] + ' ' + y;
+
+  banner.style.display = 'block';
+  banner.innerHTML = `
+    <div style="
+      padding:11px 15px;
+      background:linear-gradient(135deg,rgba(59,130,246,.08),rgba(59,130,246,.02));
+      border:1px solid rgba(59,130,246,.2);
+      border-radius:11px;
+      margin-bottom:4px;
+      display:flex;align-items:center;gap:10px;
+      font-size:.74rem;color:var(--muted2);
+    ">
+      <span class="material-symbols-rounded" style="font-size:16px;color:var(--primary)">calendar_month</span>
+      <span>Bulan baru dibuat. Data <strong style="color:var(--text)">${prevLabel}</strong> masih tersimpan.</span>
+    </div>`;
+}
+
 // End of Helper Function
 
 function renderMonthSelector() {
@@ -1529,10 +1561,12 @@ function addNewMonth() {
     return;
   }
 
+  saveActiveMonthData();
   createNewMonth(key);
   activeMonth = key;
   switchMonth(key);
   renderMonthSelector();
+  showPriceToast('Bulan baru dibuat ✓');
 }
 
 function setArc(id, pct, off, cc) {
@@ -2673,6 +2707,7 @@ function update() {
   updateProgressBars(data);
 
   saveActiveMonthData();
+  updateNewMonthBanner();
 }
 
 // IIFE Init
