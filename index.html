@@ -690,16 +690,21 @@ html.light .toggle-thumb{left:17px;background:#fff;}
 
 /* ============ ASSET LIST NEW ============ */
 .asset-list-new{display:flex;flex-direction:column;gap:9px;}
-.asset-card{
-  background:var(--surface2);
-  background-image:var(--grad-card);
-  border:1px solid var(--border);
-  border-radius:13px;padding:15px 18px;
-  display:flex;align-items:center;gap:15px;cursor:pointer;
-  position:relative;overflow:hidden;
+.asset-card {
+  background: var(--surface2);
+  background-image: var(--grad-card);
+  border: 1px solid var(--border);
+  border-radius: 13px; padding: 15px 18px;
+  display: flex; align-items: center; gap: 15px; cursor: pointer;
+  position: relative; overflow: hidden;
 }
-.asset-card::before{
-  content:'';position:absolute;left:0;top:0;bottom:0;width:3px;border-radius:3px 0 0 3px;
+.asset-card::before {
+  content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 3px; border-radius: 3px 0 0 3px;
+  background: var(--card-color);
+  box-shadow: 0 0 12px var(--card-color);
+}
+.asset-card .asset-card-icon {
+  background: var(--card-icon-bg);
 }
 .asset-card:hover{background:var(--surface3);border-color:var(--border-strong);transform:translateY(-2px);box-shadow:var(--shadow-md);}
 .asset-card-icon{
@@ -2112,11 +2117,8 @@ function renderAssets() {
 
     const card = document.createElement('div');
     card.className = 'asset-card';
-    card.style.setProperty('--card-color', ti.color);
-    card.style.cssText += `cursor:pointer;`;
+    card.style.cssText = `cursor:pointer;--card-color:${ti.color};--card-icon-bg:${ti.color}1a;`;
     card.innerHTML = `
-      <style>.asset-card[data-id="${a.id}"]::before{background:${ti.color};}
-      .asset-card[data-id="${a.id}"] .asset-card-icon{background:${ti.color}1a;}</style>
       <div class="asset-card-icon">${ti.icon}</div>
       <div class="asset-card-info">
         <div class="asset-card-name">${a.name}</div>
