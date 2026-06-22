@@ -690,23 +690,21 @@ html.light .toggle-thumb{left:17px;background:#fff;}
 
 /* ============ ASSET LIST NEW ============ */
 .asset-list-new{display:flex;flex-direction:column;gap:9px;}
-.asset-card{
-  background:var(--surface2);
-  background-image:var(--grad-card);
-  border:1px solid var(--border);
-  border-radius:13px;padding:15px 18px;
-  display:flex;align-items:center;gap:15px;cursor:pointer;
-  position:relative;overflow:hidden;
-  .asset-card::before {
+.asset-card {
+  background: var(--surface2);
+  background-image: var(--grad-card);
+  border: 1px solid var(--border);
+  border-radius: 13px; padding: 15px 18px;
+  display: flex; align-items: center; gap: 15px; cursor: pointer;
+  position: relative; overflow: hidden;
+}
+.asset-card::before {
+  content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 3px; border-radius: 3px 0 0 3px;
   background: var(--card-color);
   box-shadow: 0 0 12px var(--card-color);
-  }
+}
 .asset-card .asset-card-icon {
   background: var(--card-icon-bg);
-  }
-}
-.asset-card::before{
-  content:'';position:absolute;left:0;top:0;bottom:0;width:3px;border-radius:3px 0 0 3px;
 }
 .asset-card:hover{background:var(--surface3);border-color:var(--border-strong);transform:translateY(-2px);box-shadow:var(--shadow-md);}
 .asset-card-icon{
