@@ -1176,6 +1176,22 @@ const fmtInput=v=>{const d=(v+'').replace(/\D/g,'');return d?parseInt(d).toLocal
 
 // Helper Function
 
+function clampAllocIfNeeded() {
+  const total = state.pN + state.pW + state.pS;
+  if (total <= 100) return false;
+  const scale = 100 / total;
+  state.pN = Math.round(state.pN * scale * 100) / 100;
+  state.pW = Math.round(state.pW * scale * 100) / 100;
+  state.pS = Math.round(state.pS * scale * 100) / 100;
+  // Sync DOM
+  document.getElementById('range-needs').value = state.pN;
+  document.getElementById('range-wants').value = state.pW;
+  document.getElementById('range-savings').value = state.pS;
+  showPriceToast('Alokasi > 100% dikoreksi otomatis sebelum disimpan', true);
+  if (allocMode === 'nominal') updateNominalInputs();
+  return true;
+}
+
 function updateNominalInputs() {
   if (state.salary <= 0) return;
 
@@ -1532,7 +1548,10 @@ function renderMonthSelector() {
 }
 
 function switchMonth(key, skipSave = false) {
-  if (!skipSave) saveActiveMonthData();
+  if (!skipSave) {
+    clampAllocIfNeeded();
+    saveActiveMonthData();
+  }
 
   activeMonth = key;
   const months = JSON.parse(localStorage.getItem('bp_months') || '{}');
@@ -1577,6 +1596,7 @@ function addNewMonth() {
     return;
   }
 
+  clampAllocIfNeeded();
   saveActiveMonthData();
   createNewMonth(key);
   switchMonth(key, true);
@@ -1854,7 +1874,12 @@ function updateBreakdownSisa(){
   const totalDebtBD=getTotalDebt();
   const needsBase=state.salary*(state.pN/100);
   const needsAlloc=Math.max(0,needsBase-totalDebtBD);
-  const allocs={needs:needsAlloc,wants:state.salary*(state.pW/100),savings:state.salary*(state.pS/100)};
+  const allocs={
+    needs:needsAlloc,
+    wants:state.salary*(state.pW/100),
+    savings:state.salary*(state.pS/100)
+  };
+  
   ['needs','wants','savings'].forEach(key=>{
     const items=state.breakdown[key];
     const used=items.reduce((s,it)=>s+parseM(it.amt),0);
@@ -1871,7 +1896,6 @@ function updateBreakdownSisa(){
       extraEl.innerHTML=totalDebtBD>0?`Setelah tagihan Rp ${Math.round(totalDebtBD).toLocaleString('id-ID')} = ${fmt(needsAlloc)}`:'';
     }
   });
-  saveActiveMonthData();
 }
 
 function renderBreakdown(){
@@ -1951,6 +1975,12 @@ function renderBreakdown(){
   });
 }
 function saveMonth() {
+  const total = state.pN + state.pW + state.pS;
+  if (total > 100) {
+    showPriceToast('Alokasi melebihi 100% — perbaiki sebelum menyimpan', true);
+    return;
+  }
+
   saveActiveMonthData();
   const btn = document.querySelector('.topbar-save-btn');
   btn.innerHTML = '<span class="material-symbols-rounded" style="font-size:15px;vertical-align:middle">check</span> Tersimpan';
@@ -2722,7 +2752,6 @@ function update() {
   updateDebtSection(data);
   updateProgressBars(data);
 
-  saveActiveMonthData();
   updateNewMonthBanner();
 }
 
