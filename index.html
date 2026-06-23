@@ -1040,6 +1040,9 @@ html.light .toggle-thumb{left:17px;background:#fff;}
 
   <!-- PAGE: BREAKDOWN -->
   <div class="page" id="page-breakdown">
+    <div class="month-selector-bar">
+      <select class="month-select" id="breakdown-month-selector" onchange="switchMonth(this.value)"></select>
+    </div>
     <div class="card">
       <div class="section-title"><span class="material-symbols-rounded">folder_open</span> Rincian per Kategori</div>
       <p style="font-size:.74rem;color:var(--muted);margin-bottom:14px;line-height:1.6;">Masukkan rincian pengeluaran per kategori. Sisa anggaran dihitung otomatis.</p>
@@ -1504,22 +1507,27 @@ function updateNewMonthBanner() {
 
 function renderMonthSelector() {
   const months = JSON.parse(localStorage.getItem('bp_months') || '{}');
-  const keys = Object.keys(months).sort().reverse(); // terbaru di atas
-  const sel = document.getElementById('month-selector');
-  sel.innerHTML = '';
+  const keys = Object.keys(months).sort().reverse();
 
-  // Kalau activeMonth belum ada di bp_months, tambahkan sebagai opsi
+  // Tambahkan activeMonth jika belum ada
   if (!keys.includes(activeMonth)) keys.unshift(activeMonth);
 
   const bl = ['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Agu','Sep','Okt','Nov','Des'];
-  keys.forEach(k => {
-    const [y, m] = k.split('-');
-    const label = bl[parseInt(m) - 1] + ' ' + y;
-    const opt = document.createElement('option');
-    opt.value = k;
-    opt.textContent = label;
-    opt.selected = k === activeMonth;
-    sel.appendChild(opt);
+
+  // Sync ke SEMUA selector yang ada
+  ['month-selector', 'breakdown-month-selector'].forEach(selId => {
+    const sel = document.getElementById(selId);
+    if (!sel) return;
+    sel.innerHTML = '';
+    keys.forEach(k => {
+      const [y, m] = k.split('-');
+      const label = bl[parseInt(m) - 1] + ' ' + y;
+      const opt = document.createElement('option');
+      opt.value = k;
+      opt.textContent = label;
+      opt.selected = k === activeMonth;
+      sel.appendChild(opt);
+    });
   });
 }
 
@@ -1545,6 +1553,10 @@ function switchMonth(key, skipSave = false) {
   document.getElementById('range-needs').value   = state.pN;
   document.getElementById('range-wants').value   = state.pW;
   document.getElementById('range-savings').value = state.pS;
+
+  if (document.getElementById('page-breakdown').classList.contains('active')) {
+    renderBreakdown();
+  }
 
   renderDebtList();
   syncSliders('needs');
