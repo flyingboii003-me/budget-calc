@@ -2659,6 +2659,8 @@ function update() {
   updateProgressBars(data);
 
   updateNewMonthBanner();
+
+  if (allocMode === 'nominal') updateNominalInputs();
 }
 
 // IIFE Init
