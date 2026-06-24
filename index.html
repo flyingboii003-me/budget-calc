@@ -1777,7 +1777,6 @@ document.getElementById('btn-add-debt')
 });
 
 const getTotalDebt = () => state.debts
-  .filter(d => !d.paid)
   .reduce((s, d) => s + parseM(d.amount), 0);
 
 function updateBreakdownSisa(){
