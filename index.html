@@ -1807,8 +1807,8 @@ function renderBreakdown(){
   const netSalary = Math.max(0, state.salary - getTotalDebt());
   const groups=[
     {key:'needs',label:'<span class="material-symbols-rounded" style="font-size:14px;vertical-align:middle">home</span> Kebutuhan',cls:'needs-c',alloc:netSalary*(state.pN/100)},
-    {key:'wants',label:'<span class="material-symbols-rounded" style="font-size:14px;vertical-align:middle">shopping_bag</span> Keinginan',cls:'wants-c',alloc:state.salary*(state.pW/100)},
-    {key:'savings',label:'<span class="material-symbols-rounded" style="font-size:14px;vertical-align:middle">savings</span> Tabungan',cls:'savings-c',alloc:state.salary*(state.pS/100)}
+    {key:'wants',label:'<span class="material-symbols-rounded" style="font-size:14px;vertical-align:middle">shopping_bag</span> Keinginan',cls:'wants-c',alloc:netSalary*(state.pW/100)},
+    {key:'savings',label:'<span class="material-symbols-rounded" style="font-size:14px;vertical-align:middle">savings</span> Tabungan',cls:'savings-c',alloc:netSalary*(state.pS/100)}
   ];
   groups.forEach(g=>{
     const items=state.breakdown[g.key];
