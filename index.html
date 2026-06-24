@@ -1128,6 +1128,7 @@ html.light .toggle-thumb{left:17px;background:#fff;}
   <div id="asset-modal-container"></div>
 
 </main>
+
 <script>
 const C=2*Math.PI*75, CA=2*Math.PI*70;
 let activeMonth = new Date().toISOString().slice(0, 7);
@@ -2733,6 +2734,21 @@ function importData() {
   input.click();
 }
 
+function updateDebtSummary() {
+  const total = getTotalDebt();
+  const summaryEl = document.getElementById('debt-summary');
+  const totalEl   = document.getElementById('debt-total-display');
+
+  if (!summaryEl || !totalEl) return;
+
+  if (total > 0) {
+    totalEl.textContent = fmt(total);
+    summaryEl.style.display = 'flex';
+  } else {
+    summaryEl.style.display = 'none';
+  }
+}
+
 function update() {
   const data = getBudgetData();
 
@@ -2740,9 +2756,9 @@ function update() {
   updateBudgetCards(data);
   updateDonut(data);
   updateProgressBars(data);
+  updateDebtSummary();
 
   updateNewMonthBanner();
-
 }
 
 // IIFE Init
