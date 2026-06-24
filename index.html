@@ -544,15 +544,6 @@ html.light .toggle-thumb{left:17px;background:#fff;}
 .savings .bar-fill{background:linear-gradient(90deg,var(--savings),#dbff7a);}
 .debt-card .bar-fill{background:linear-gradient(90deg,var(--debt),#ff8970);}
 
-.sisa-row{display:flex;justify-content:space-between;align-items:center;padding:11px 15px;border-radius:11px;margin-top:10px;}
-.sisa-row.ok{background:linear-gradient(135deg,rgba(34,211,168,.08),rgba(34,211,168,.02));border:1px solid rgba(34,211,168,.2);}
-.sisa-row.over{background:linear-gradient(135deg,rgba(239,68,68,.08),rgba(239,68,68,.02));border:1px solid rgba(239,68,68,.2);}
-.sisa-label-text{font-size:.62rem;color:var(--muted2);text-transform:uppercase;letter-spacing:.1em;font-weight:600;}
-.sisa-label-sub{font-size:.76rem;margin-top:2px;font-weight:500;}
-.sisa-val{font-family:'JetBrains Mono',monospace;font-size:1rem;font-weight:700;letter-spacing:-.01em;}
-.sisa-val.pos{color:var(--savings);}
-.sisa-val.neg{color:var(--debt);}
-
 /* ============ BREAKDOWN ============ */
 .breakdown-group{background:var(--surface2);border:1px solid var(--border);border-radius:14px;padding:18px;}
 .breakdown-group-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;}
@@ -948,16 +939,16 @@ html.light .toggle-thumb{left:17px;background:#fff;}
     <div class="month-selector-bar">
       <select class="month-select" id="month-selector" onchange="switchMonth(this.value)"></select>
       <button class="btn-new-month" onclick="addNewMonth()">+ Bulan Baru</button>
-      <button class="btn-data-action" onclick="exportData()" title="Ekspor data ke JSON">
-        <span class="material-symbols-rounded">upload</span>
-      </button>
-      <button class="btn-data-action" onclick="importData()" title="Impor data dari JSON">
+      <button class="btn-data-action" onclick="exportData()" title="Download data ke JSON">
         <span class="material-symbols-rounded">download</span>
+      </button>
+      <button class="btn-data-action" onclick="importData()" title="Upload data dari JSON">
+        <span class="material-symbols-rounded">upload</span>
       </button>
     </div>
     <div id="new-month-banner" style="display:none"></div>
     <div class="grid-4">
-      <div class="stat-card"><div class="stat-inner"><div class="stat-icon" style="background:rgba(59,130,246,.12)"><span class="material-symbols-rounded">payments</span></div><div><div class="stat-label">Gaji Bulanan</div><div class="stat-value" id="stat-salary">Rp 0</div></div></div></div>
+      <div class="stat-card"><div class="stat-inner"><div class="stat-icon" style="background:rgba(59,130,246,.12)"><span class="material-symbols-rounded">payments</span></div><div><div class="stat-label">Gaji Bulanan</div><div class="stat-value" id="stat-net">Rp 0</div><div class="stat-sub" id="stat-gross" style="font-family:'JetBrains Mono',monospace;font-size:.64rem">—</div></div></div></div>
       <div class="stat-card"><div class="stat-inner"><div class="stat-icon" style="background:rgba(92,118,160,.15)"><span class="material-symbols-rounded">home</span></div><div><div class="stat-label">Kebutuhan</div><div class="stat-value" id="stat-needs">Rp 0</div><div class="stat-sub" id="stat-needs-pct">50% dari gaji</div></div></div></div>
       <div class="stat-card"><div class="stat-inner"><div class="stat-icon" style="background:rgba(109,117,87,.18)"><span class="material-symbols-rounded">shopping_bag</span></div><div><div class="stat-label">Keinginan</div><div class="stat-value" id="stat-wants">Rp 0</div><div class="stat-sub" id="stat-wants-pct">30% dari gaji</div></div></div></div>
       <div class="stat-card"><div class="stat-inner"><div class="stat-icon" style="background:rgba(197,245,59,.12)"><span class="material-symbols-rounded">savings</span></div><div><div class="stat-label">Tabungan</div><div class="stat-value" id="stat-savings">Rp 0</div><div class="stat-sub" id="stat-savings-pct">20% dari gaji</div></div></div></div>
@@ -1010,7 +1001,6 @@ html.light .toggle-thumb{left:17px;background:#fff;}
                 <circle id="arc-savings" cx="95" cy="95" r="75" fill="none" stroke="#c5f53b" stroke-width="22" stroke-dasharray="0 471.24" stroke-dashoffset="0" style="transition:all .8s ease"/>
                 <circle id="arc-wants"   cx="95" cy="95" r="75" fill="none" stroke="#6d7557" stroke-width="22" stroke-dasharray="0 471.24" stroke-dashoffset="0" style="transition:all .8s ease"/>
                 <circle id="arc-needs"   cx="95" cy="95" r="75" fill="none" stroke="#5c76a0" stroke-width="22" stroke-dasharray="0 471.24" stroke-dashoffset="0" style="transition:all .8s ease"/>
-                <circle id="arc-debt"    cx="95" cy="95" r="75" fill="none" stroke="#f5533b" stroke-width="22" stroke-dasharray="0 471.24" stroke-dashoffset="0" style="transition:all .8s ease"/>
               </svg>
               <div class="donut-center"><div class="total-label">Gaji</div><div class="total-amount" id="donut-total">Rp 0</div></div>
             </div>
@@ -1018,7 +1008,6 @@ html.light .toggle-thumb{left:17px;background:#fff;}
               <div class="legend-item"><div class="legend-dot" style="background:#5c76a0"></div><span id="leg-needs">Kebutuhan 50%</span><span class="legend-val" id="leg-needs-val">—</span></div>
               <div class="legend-item"><div class="legend-dot" style="background:#6d7557"></div><span id="leg-wants">Keinginan 30%</span><span class="legend-val" id="leg-wants-val">—</span></div>
               <div class="legend-item"><div class="legend-dot" style="background:#c5f53b"></div><span id="leg-savings">Tabungan 20%</span><span class="legend-val" id="leg-savings-val">—</span></div>
-              <div class="legend-item" id="leg-debt-wrap" style="display:none"><div class="legend-dot" style="background:#f5533b"></div><span id="leg-debt">Hutang</span><span class="legend-val" id="leg-debt-val">—</span></div>
             </div>
           </div>
         </div>
@@ -1028,10 +1017,6 @@ html.light .toggle-thumb{left:17px;background:#fff;}
             <div class="budget-item needs"><div class="item-icon"><span class="material-symbols-rounded">home</span></div><div class="item-info"><div class="item-label" id="lbl-needs">50% dari gaji</div><div class="item-name">Kebutuhan</div><div class="bar-track"><div class="bar-fill" id="bar-needs"></div></div></div><div class="item-amount"><div class="item-pct" id="pct-needs-lbl">50%</div><div class="item-amt" id="amt-needs">Rp 0</div></div></div>
             <div class="budget-item wants"><div class="item-icon"><span class="material-symbols-rounded">shopping_bag</span></div><div class="item-info"><div class="item-label" id="lbl-wants">30% dari gaji</div><div class="item-name">Keinginan</div><div class="bar-track"><div class="bar-fill" id="bar-wants"></div></div></div><div class="item-amount"><div class="item-pct" id="pct-wants-lbl">30%</div><div class="item-amt" id="amt-wants">Rp 0</div></div></div>
             <div class="budget-item savings"><div class="item-icon"><span class="material-symbols-rounded">savings</span></div><div class="item-info"><div class="item-label" id="lbl-savings">20% dari gaji</div><div class="item-name">Tabungan</div><div class="bar-track"><div class="bar-fill" id="bar-savings"></div></div></div><div class="item-amount"><div class="item-pct" id="pct-savings-lbl">20%</div><div class="item-amt" id="amt-savings">Rp 0</div></div></div>
-            <div class="budget-item debt-card" id="debt-result-card" style="display:none"><div class="item-icon"><span class="material-symbols-rounded">receipt_long</span></div><div class="item-info"><div class="item-label">tagihan bulanan</div><div class="item-name">Hutang &amp; Tagihan</div><div class="bar-track"><div class="bar-fill" id="bar-debt"></div></div></div><div class="item-amount"><div class="item-pct" id="pct-debt-lbl">—</div><div class="item-amt" id="amt-debt">Rp 0</div></div></div>
-          </div>
-          <div id="sisa-card" style="display:none">
-            <div class="sisa-row ok" id="sisa-row"><div><div class="sisa-label-text">Sisa setelah tagihan</div><div class="sisa-label-sub" id="sisa-desc">dari alokasi kebutuhan</div></div><div class="sisa-val pos" id="sisa-amount">Rp 0</div></div>
           </div>
         </div>
       </div>
@@ -1151,6 +1136,10 @@ let state={
     pN:0,
     pW:0,
     pS:0,
+    nN:0,
+    nW:0,
+    nS:0,
+    allocMode:'pct',
     debts:[],
   breakdown:{
     needs:[
@@ -1177,51 +1166,38 @@ const fmtInput=v=>{const d=(v+'').replace(/\D/g,'');return d?parseInt(d).toLocal
 // Helper Function
 
 function clampAllocIfNeeded() {
+  // Mode nominal punya validasi sendiri — clamp hanya berlaku di mode pct
+  if (allocMode === 'nominal') return false;
   const total = state.pN + state.pW + state.pS;
   if (total <= 100) return false;
   const scale = 100 / total;
   state.pN = Math.round(state.pN * scale * 100) / 100;
   state.pW = Math.round(state.pW * scale * 100) / 100;
   state.pS = Math.round(state.pS * scale * 100) / 100;
-  // Sync DOM
   document.getElementById('range-needs').value = state.pN;
   document.getElementById('range-wants').value = state.pW;
   document.getElementById('range-savings').value = state.pS;
   showPriceToast('Alokasi > 100% dikoreksi otomatis sebelum disimpan', true);
-  if (allocMode === 'nominal') updateNominalInputs();
   return true;
 }
 
-function updateNominalInputs() {
-  if (state.salary <= 0) return;
-
-  document.getElementById('nominal-needs').value =
-    fmtInput(String(Math.round(state.salary * state.pN / 100)));
-
-  document.getElementById('nominal-wants').value =
-    fmtInput(String(Math.round(state.salary * state.pW / 100)));
-
-  document.getElementById('nominal-savings').value =
-    fmtInput(String(Math.round(state.salary * state.pS / 100)));
-}
-
 function getBudgetData() {
-  const salary = state.salary;
-
-  const needs = salary * (state.pN / 100);
-  const wants = salary * (state.pW / 100);
-  const savings = salary * (state.pS / 100);
-
+  const grossSalary = state.salary;
   const debt = getTotalDebt();
+  const netSalary = Math.max(0, grossSalary - debt);
+
+  const needs   = allocMode === 'nominal' ? state.nN : netSalary * (state.pN / 100);
+  const wants   = allocMode === 'nominal' ? state.nW : netSalary * (state.pW / 100);
+  const savings = allocMode === 'nominal' ? state.nS : netSalary * (state.pS / 100);
 
   return {
-    salary,
+    grossSalary,
+    netSalary,
+    salary: netSalary,
     needs,
     wants,
     savings,
     debt,
-
-    hasDebt: debt > 0,
 
     pN: state.pN,
     pW: state.pW,
@@ -1241,6 +1217,10 @@ function saveActiveMonthData() {
     pN: state.pN,
     pW: state.pW,
     pS: state.pS,
+    nN: state.nN,
+    nW: state.nW,
+    nS: state.nS,
+    allocMode: state.allocMode,
     debts: JSON.parse(JSON.stringify(state.debts)),
     breakdown: JSON.parse(JSON.stringify(state.breakdown))
   };
@@ -1276,10 +1256,13 @@ function createNewMonth(key) {
 
 function updateStatCards(data) {
   document.getElementById('topbar-salary').textContent =
-    fmtK(data.salary);
+    fmtK(data.netSalary);
 
-  document.getElementById('stat-salary').textContent =
-    fmt(data.salary);
+  document.getElementById('stat-gross').textContent =
+    fmtK(data.grossSalary) + ' − ' + fmtK(data.debt);
+
+  document.getElementById('stat-net').textContent =
+    fmt(data.netSalary);
 
   document.getElementById('stat-needs').textContent =
     fmt(data.needs);
@@ -1367,87 +1350,6 @@ function updateDonut(data) {
     C
   );
 
-  setArc(
-    'arc-debt',
-    data.salary > 0
-      ? data.debt / data.salary
-      : 0,
-    0,
-    C
-  );
-}
-
-function updateDebtSection(data) {
-  const debtSummary =
-    document.getElementById('debt-summary');
-
-  const debtCard =
-    document.getElementById('debt-result-card');
-
-  const remainingCard =
-    document.getElementById('sisa-card');
-
-  const debtLegend =
-    document.getElementById('leg-debt-wrap');
-
-  if (!data.hasDebt) {
-    debtSummary.style.display = 'none';
-    debtCard.style.display = 'none';
-    remainingCard.style.display = 'none';
-    debtLegend.style.display = 'none';
-    return;
-  }
-
-  debtSummary.style.display = 'flex';
-  debtCard.style.display = 'flex';
-  remainingCard.style.display = 'block';
-  debtLegend.style.display = 'flex';
-
-  document.getElementById('debt-total-display')
-    .textContent = fmt(data.debt);
-
-  document.getElementById('amt-debt')
-    .textContent = fmt(data.debt);
-
-  const debtPct =
-    data.salary > 0
-      ? ((data.debt / data.salary) * 100).toFixed(1)
-      : '0';
-
-  document.getElementById('pct-debt-lbl')
-    .textContent = debtPct + '% dari gaji';
-
-  document.getElementById('leg-debt')
-    .textContent = 'Hutang ' + debtPct + '%';
-
-  document.getElementById('leg-debt-val')
-    .textContent = fmtK(data.debt);
-
-  const remaining =
-    data.needs - data.debt;
-
-  const remainingAmount =
-    document.getElementById('sisa-amount');
-
-  const remainingRow =
-    document.getElementById('sisa-row');
-
-  remainingAmount.textContent =
-    fmt(Math.abs(remaining));
-
-  remainingAmount.className =
-    'sisa-val ' +
-    (remaining >= 0 ? 'pos' : 'neg');
-
-  remainingRow.className =
-    'sisa-row ' +
-    (remaining >= 0 ? 'ok' : 'over');
-
-  document.getElementById('sisa-desc')
-    .textContent =
-      remaining >= 0
-        ? 'sisa dari alokasi kebutuhan'
-        : '⚠ tagihan melebihi alokasi kebutuhan';
 }
 
 function updateProgressBars(data) {
@@ -1560,12 +1462,20 @@ function switchMonth(key, skipSave = false) {
   if (!data) return;
 
   // Load data bulan yang dipilih ke state
-  state.salary  = data.salary  || 0;
-  state.pN      = data.pN      || 0;
-  state.pW      = data.pW      || 0;
-  state.pS      = data.pS      || 0;
-  state.debts   = data.debts   || [];
+  state.salary    = data.salary    || 0;
+  state.pN        = data.pN        || 0;
+  state.pW        = data.pW        || 0;
+  state.pS        = data.pS        || 0;
+  state.nN        = data.nN        || 0;
+  state.nW        = data.nW        || 0;
+  state.nS        = data.nS        || 0;
+  state.allocMode = data.allocMode || 'pct';
+  state.debts     = data.debts     || [];
   state.breakdown = data.breakdown || { needs: [], wants: [], savings: [] };
+
+  // Sync allocMode global variable dan UI toggle
+  allocMode = state.allocMode;
+  setAllocMode(allocMode, true); // true = skip reset (ini load, bukan user switch)
 
   // Sync UI
   document.getElementById('salary-input').value = state.salary ? fmtInput(String(state.salary)) : '';
@@ -1681,8 +1591,27 @@ function toggleTheme(){
 });
 
 function updatePctStatus(){
-  const sum=state.pN+state.pW+state.pS;
   const st=document.getElementById('pct-status');
+
+  if (allocMode === 'nominal') {
+    const netSalary = Math.max(0, state.salary - getTotalDebt());
+    if (netSalary <= 0) { st.className='pct-status'; return; }
+    const totalNominal = state.nN + state.nW + state.nS;
+    const sisa = netSalary - totalNominal;
+    if (totalNominal > netSalary) {
+      st.textContent = '⚠ Total melebihi gaji bersih sebesar ' + fmt(Math.abs(sisa));
+      st.className = 'pct-status warn';
+    } else if (totalNominal === netSalary) {
+      st.textContent = '✓ Alokasi pas = ' + fmt(netSalary);
+      st.className = 'pct-status ok';
+    } else {
+      st.textContent = 'Sisa belum dialokasikan: ' + fmt(sisa);
+      st.className = 'pct-status warn';
+    }
+    return;
+  }
+
+  const sum=state.pN+state.pW+state.pS;
   if(sum>100){
     st.textContent='⚠ Total melebihi 100%';
     st.className='pct-status warn';
@@ -1723,54 +1652,72 @@ function syncSliders(changed){
   updatePctStatus();
 }
 
-function setAllocMode(mode) {
+function setAllocMode(mode, isLoad = false) {
   allocMode = mode;
+  state.allocMode = mode;
 
   const isPct = mode === 'pct';
 
-  document
-    .getElementById('btn-mode-pct')
-    .classList.toggle('active', isPct);
-
-  document
-    .getElementById('btn-mode-nominal')
-    .classList.toggle('active', !isPct);
+  document.getElementById('btn-mode-pct').classList.toggle('active', isPct);
+  document.getElementById('btn-mode-nominal').classList.toggle('active', !isPct);
 
   ['needs', 'wants', 'savings'].forEach(category => {
-    const pctWrapper =
-      document.getElementById(`wrap-pct-${category}`);
-
-    const nominalWrapper =
-      document.getElementById(`wrap-nominal-${category}`);
-
-    pctWrapper.style.display = isPct ? '' : 'none';
-    nominalWrapper.style.display = isPct ? 'none' : '';
+    document.getElementById(`wrap-pct-${category}`).style.display = isPct ? '' : 'none';
+    document.getElementById(`wrap-nominal-${category}`).style.display = isPct ? 'none' : '';
   });
 
-  if (!isPct) {
-    updateNominalInputs();
+  if (isLoad) {
+    // Load dari localStorage — restore nilai tanpa reset
+    if (isPct) {
+      document.getElementById('range-needs').value = state.pN;
+      document.getElementById('range-wants').value = state.pW;
+      document.getElementById('range-savings').value = state.pS;
+    } else {
+      document.getElementById('nominal-needs').value = state.nN ? fmtInput(String(state.nN)) : '';
+      document.getElementById('nominal-wants').value = state.nW ? fmtInput(String(state.nW)) : '';
+      document.getElementById('nominal-savings').value = state.nS ? fmtInput(String(state.nS)) : '';
+    }
     return;
   }
 
-  document.getElementById('range-needs').value = state.pN;
-  document.getElementById('range-wants').value = state.pW;
-  document.getElementById('range-savings').value = state.pS;
+  // User switch mode — A2-Hard: reset semua alokasi
+  state.pN = 0; state.pW = 0; state.pS = 0;
+  state.nN = 0; state.nW = 0; state.nS = 0;
+
+  document.getElementById('range-needs').value = 0;
+  document.getElementById('range-wants').value = 0;
+  document.getElementById('range-savings').value = 0;
+  document.getElementById('nominal-needs').value = '';
+  document.getElementById('nominal-wants').value = '';
+  document.getElementById('nominal-savings').value = '';
+
+  updatePctStatus();
+  update();
 }
 
 ['needs','wants','savings'].forEach(k=>{
   document.getElementById('nominal-'+k).addEventListener('input',function(){
     this.value=fmtInput(this.value);
-    if(!state.salary)
-    return;
-    const val=parseM(this.value);
-    const pct = Math.min(100, Math.round((val / state.salary) * 10000) / 100);
-    if(k==='needs')state.pN=pct;
-    if(k==='wants')state.pW=pct;
-    if(k==='savings')state.pS=pct;
-    document.getElementById('range-'+k).value=pct;
+    const netSalary = Math.max(0, state.salary - getTotalDebt());
+    const val = parseM(this.value);
+
+    // Nominal adalah source of truth — simpan ke state.nN/nW/nS
+    if(k==='needs')  state.nN = val;
+    if(k==='wants')  state.nW = val;
+    if(k==='savings')state.nS = val;
+
+    // Derive pct dari nominal (untuk display dan save)
+    if(netSalary > 0){
+      const pct = Math.min(100, Math.round((val / netSalary) * 10000) / 100);
+      if(k==='needs')  state.pN = pct;
+      if(k==='wants')  state.pW = pct;
+      if(k==='savings')state.pS = pct;
+      document.getElementById('range-'+k).value = pct;
+    }
+
     updatePctStatus();
     update();
-    });
+  });
 });
 
 function handleSalaryInput(event) {
@@ -1780,12 +1727,18 @@ function handleSalaryInput(event) {
 
   state.salary = parseM(rawValue);
 
-  update();
-
+  // Di mode nominal: re-derive pct dari nominal yang sudah ada di state
+  // (nominal tidak di-overwrite — user yang pegang kendali)
   if (allocMode === 'nominal') {
-    updateNominalInputs();
+    const netSalary = Math.max(0, state.salary - getTotalDebt());
+    if (netSalary > 0) {
+      state.pN = Math.min(100, Math.round((state.nN / netSalary) * 10000) / 100);
+      state.pW = Math.min(100, Math.round((state.nW / netSalary) * 10000) / 100);
+      state.pS = Math.min(100, Math.round((state.nS / netSalary) * 10000) / 100);
+    }
   }
 
+  update();
   toggleNominalInputs(!state.salary);
 }
 
@@ -1868,16 +1821,28 @@ document.getElementById('btn-add-debt')
   renderDebtList()
   update();
 });
-const getTotalDebt=()=>state.debts.reduce((s,d)=>s+parseM(d.amount),0);
+
+const getTotalDebt = () => state.debts
+  .reduce((s, d) => s + parseM(d.amount), 0);
 
 function updateBreakdownSisa(){
-  const totalDebtBD=getTotalDebt();
-  const needsBase=state.salary*(state.pN/100);
-  const needsAlloc=Math.max(0,needsBase-totalDebtBD);
-  const allocs={
-    needs:needsAlloc,
-    wants:state.salary*(state.pW/100),
-    savings:state.salary*(state.pS/100)
+  const netSalary = Math.max(0, state.salary - getTotalDebt());
+
+  let needsAlloc, wantsAlloc, savingsAlloc;
+  if (allocMode === 'nominal') {
+    needsAlloc   = state.nN;
+    wantsAlloc   = state.nW;
+    savingsAlloc = state.nS;
+  } else {
+    needsAlloc   = netSalary * (state.pN / 100);
+    wantsAlloc   = netSalary * (state.pW / 100);
+    savingsAlloc = netSalary * (state.pS / 100);
+  }
+
+  const allocs = {
+    needs:   needsAlloc,
+    wants:   wantsAlloc,
+    savings: savingsAlloc
   };
   
   ['needs','wants','savings'].forEach(key=>{
@@ -1891,24 +1856,32 @@ function updateBreakdownSisa(){
     el.querySelector('strong').textContent=fmt(Math.abs(sisa));
     const allocEl=document.getElementById('bdalloc-'+key);
     if(allocEl)allocEl.textContent=fmt(allocs[key]);
-    const extraEl=document.getElementById('bdextra-needs');
-    if(extraEl&&key==='needs'){
-      extraEl.innerHTML=totalDebtBD>0?`Setelah tagihan Rp ${Math.round(totalDebtBD).toLocaleString('id-ID')} = ${fmt(needsAlloc)}`:'';
-    }
   });
 }
 
 function renderBreakdown(){
   const sec=document.getElementById('breakdown-section');
   sec.innerHTML='';
-  const totalDebtBD=getTotalDebt();
-  const needsBase=state.salary*(state.pN/100);
-  const needsAlloc=Math.max(0,needsBase-totalDebtBD);
+  const netSalary = Math.max(0, state.salary - getTotalDebt());
+
+  // Tentukan alokasi berdasarkan mode
+  let needsAlloc, wantsAlloc, savingsAlloc;
+  if (allocMode === 'nominal') {
+    needsAlloc   = state.nN;
+    wantsAlloc   = state.nW;
+    savingsAlloc = state.nS;
+  } else {
+    needsAlloc   = netSalary * (state.pN / 100);
+    wantsAlloc   = netSalary * (state.pW / 100);
+    savingsAlloc = netSalary * (state.pS / 100);
+  }
+
   const groups=[
-    {key:'needs',label:'<span class="material-symbols-rounded" style="font-size:14px;vertical-align:middle">home</span> Kebutuhan',cls:'needs-c',alloc:needsAlloc},
-    {key:'wants',label:'<span class="material-symbols-rounded" style="font-size:14px;vertical-align:middle">shopping_bag</span> Keinginan',cls:'wants-c',alloc:state.salary*(state.pW/100)},
-    {key:'savings',label:'<span class="material-symbols-rounded" style="font-size:14px;vertical-align:middle">savings</span> Tabungan',cls:'savings-c',alloc:state.salary*(state.pS/100)}
+    {key:'needs', label:'<span class="material-symbols-rounded" style="font-size:14px;vertical-align:middle">home</span> Kebutuhan', cls:'needs-c', alloc: needsAlloc},
+    {key:'wants', label:'<span class="material-symbols-rounded" style="font-size:14px;vertical-align:middle">shopping_bag</span> Keinginan', cls:'wants-c', alloc: wantsAlloc},
+    {key:'savings', label:'<span class="material-symbols-rounded" style="font-size:14px;vertical-align:middle">savings</span> Tabungan', cls:'savings-c', alloc: savingsAlloc}
   ];
+
   groups.forEach(g=>{
     const items=state.breakdown[g.key];
     const used=items.reduce((s,it)=>s+parseM(it.amt),0);
@@ -1920,7 +1893,6 @@ function renderBreakdown(){
         <span class="breakdown-group-title ${g.cls}">${g.label}</span>
         <div style="text-align:right">
           <span class="breakdown-alloc" id="bdalloc-${g.key}">${fmt(g.alloc)}</span>
-          ${g.key==='needs'?`<div id="bdextra-needs" style="font-size:.6rem;color:var(--debt);font-family:'JetBrains Mono',monospace;margin-top:2px">${totalDebtBD>0?`Setelah tagihan Rp ${Math.round(totalDebtBD).toLocaleString('id-ID')} = ${fmt(needsAlloc)}`:''}</div>`:''}
         </div>
       </div>
       <div class="breakdown-items" id="bdi-${g.key}"></div>
@@ -1974,11 +1946,21 @@ function renderBreakdown(){
     });
   });
 }
+
 function saveMonth() {
-  const total = state.pN + state.pW + state.pS;
-  if (total > 100) {
-    showPriceToast('Alokasi melebihi 100% — perbaiki sebelum menyimpan', true);
-    return;
+  if (allocMode === 'nominal') {
+    const netSalary = Math.max(0, state.salary - getTotalDebt());
+    const totalNominal = state.nN + state.nW + state.nS;
+    if (totalNominal > netSalary) {
+      showPriceToast('Alokasi melebihi gaji bersih — perbaiki sebelum menyimpan', true);
+      return;
+    }
+  } else {
+    const total = state.pN + state.pW + state.pS;
+    if (total > 100) {
+      showPriceToast('Alokasi melebihi 100% — perbaiki sebelum menyimpan', true);
+      return;
+    }
   }
 
   saveActiveMonthData();
@@ -1994,6 +1976,7 @@ function saveMonth() {
     btn.style.color = '';
   }, 2500);
 }
+
 function clearHistory() {
   if (!confirm('Hapus semua riwayat tren? Data bulan aktif tidak akan terhapus.')) return;
   const months = JSON.parse(localStorage.getItem('bp_months') || '{}');
@@ -2002,6 +1985,7 @@ function clearHistory() {
   localStorage.setItem('bp_months', JSON.stringify(kept));
   renderTrend();
 }
+
 function renderTrend() {
   const bl = ['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Agu','Sep','Okt','Nov','Des'];
   const months = JSON.parse(localStorage.getItem('bp_months') || '{}');
@@ -2013,12 +1997,16 @@ function renderTrend() {
     .map(([key, d]) => {
       const [y, m] = key.split('-');
       const label   = bl[parseInt(m) - 1] + ' ' + y;
-      const salary  = d.salary || 0;
-      const needs   = salary * ((d.pN || 0) / 100);
-      const wants   = salary * ((d.pW || 0) / 100);
-      const savings = salary * ((d.pS || 0) / 100);
-      const debt    = (d.debts || []).reduce((s, x) => s + parseM(x.amount), 0);
-      return { key, label, salary, needs, wants, savings, debt, pN: d.pN, pW: d.pW, pS: d.pS };
+      const salary     = d.salary || 0;
+      const unpaidDebt = (d.debts || [])
+        .filter(x => !x.paid)
+        .reduce((s, x) => s + parseM(x.amount), 0);
+      const netSalary  = Math.max(0, salary - unpaidDebt);
+      const needs   = netSalary * ((d.pN || 0) / 100);
+      const wants   = netSalary * ((d.pW || 0) / 100);
+      const savings = netSalary * ((d.pS || 0) / 100);
+      const debt    = unpaidDebt;
+      return { key, label, salary, netSalary, needs, wants, savings, debt, pN: d.pN, pW: d.pW, pS: d.pS };
     });
 
   const noEl    = document.getElementById('no-trend');
@@ -2045,7 +2033,7 @@ function renderTrend() {
     d.innerHTML = `
       <div>
         <div class="hi-label">${entry.label}</div>
-        <div class="hi-sub">Gaji: ${fmtK(entry.salary)} · Tagihan: ${fmtK(entry.debt)}</div>
+        <div class="hi-sub">Gaji bersih: ${fmtK(entry.netSalary)} · Tagihan: ${fmtK(entry.debt)}</div>
       </div>
       <button class="history-item-del" onclick="deleteEntry('${entry.key}')">Hapus</button>`;
     histEl.appendChild(d);
@@ -2085,6 +2073,7 @@ function renderTrend() {
     },
   });
 }
+
 function deleteEntry(key) {
   if (key === activeMonth) {
     showPriceToast('Tidak bisa menghapus bulan yang sedang aktif!', true);
@@ -2095,6 +2084,7 @@ function deleteEntry(key) {
   localStorage.setItem('bp_months', JSON.stringify(months));
   renderTrend();
 }
+
 function setChartMode(mode,btn){chartMode=mode;document.querySelectorAll('.chart-actions button').forEach(b=>b.classList.remove('active'));btn.classList.add('active');renderTrend();}
 const ASSET_TYPES=[
     {key:'Saham',color:'#3b82f6',icon:'📈'},
@@ -2749,10 +2739,10 @@ function update() {
   updateStatCards(data);
   updateBudgetCards(data);
   updateDonut(data);
-  updateDebtSection(data);
   updateProgressBars(data);
 
   updateNewMonthBanner();
+
 }
 
 // IIFE Init
@@ -2799,13 +2789,17 @@ function update() {
     state.pN        = monthData.pN        || 0;
     state.pW        = monthData.pW        || 0;
     state.pS        = monthData.pS        || 0;
+    state.nN        = monthData.nN        || 0;
+    state.nW        = monthData.nW        || 0;
+    state.nS        = monthData.nS        || 0;
+    state.allocMode = monthData.allocMode || 'pct';
     state.debts     = monthData.debts     || [];
     state.breakdown = monthData.breakdown || { needs: [], wants: [], savings: [] };
 
     document.getElementById('salary-input').value = state.salary ? fmtInput(String(state.salary)) : '';
-    document.getElementById('range-needs').value   = state.pN;
-    document.getElementById('range-wants').value   = state.pW;
-    document.getElementById('range-savings').value = state.pS;
+
+    allocMode = state.allocMode;
+    setAllocMode(allocMode, true); // restore UI tanpa reset
   } else {
     // Bulan ini belum ada data — buat baru
     createNewMonth(activeMonth);
