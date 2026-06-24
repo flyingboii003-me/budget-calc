@@ -1186,14 +1186,14 @@ function getBudgetData() {
   const debt = getTotalDebt();
   const netSalary = Math.max(0, grossSalary - debt);
 
-  const needs   = netSalary * (state.pN / 100);
-  const wants   = netSalary * (state.pW / 100);
-  const savings = netSalary * (state.pS / 100);
+  const needs   = allocMode === 'nominal' ? state.nN : netSalary * (state.pN / 100);
+  const wants   = allocMode === 'nominal' ? state.nW : netSalary * (state.pW / 100);
+  const savings = allocMode === 'nominal' ? state.nS : netSalary * (state.pS / 100);
 
   return {
     grossSalary,
     netSalary,
-    salary: netSalary, // alias baru, agar data lama tidak perlu dirubah
+    salary: netSalary,
     needs,
     wants,
     savings,
