@@ -1920,11 +1920,21 @@ function renderBreakdown(){
     });
   });
 }
+
 function saveMonth() {
-  const total = state.pN + state.pW + state.pS;
-  if (total > 100) {
-    showPriceToast('Alokasi melebihi 100% — perbaiki sebelum menyimpan', true);
-    return;
+  if (allocMode === 'nominal') {
+    const netSalary = Math.max(0, state.salary - getTotalDebt());
+    const totalNominal = state.nN + state.nW + state.nS;
+    if (totalNominal > netSalary) {
+      showPriceToast('Alokasi melebihi gaji bersih — perbaiki sebelum menyimpan', true);
+      return;
+    }
+  } else {
+    const total = state.pN + state.pW + state.pS;
+    if (total > 100) {
+      showPriceToast('Alokasi melebihi 100% — perbaiki sebelum menyimpan', true);
+      return;
+    }
   }
 
   saveActiveMonthData();
@@ -1940,6 +1950,7 @@ function saveMonth() {
     btn.style.color = '';
   }, 2500);
 }
+
 function clearHistory() {
   if (!confirm('Hapus semua riwayat tren? Data bulan aktif tidak akan terhapus.')) return;
   const months = JSON.parse(localStorage.getItem('bp_months') || '{}');
@@ -1948,6 +1959,7 @@ function clearHistory() {
   localStorage.setItem('bp_months', JSON.stringify(kept));
   renderTrend();
 }
+
 function renderTrend() {
   const bl = ['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Agu','Sep','Okt','Nov','Des'];
   const months = JSON.parse(localStorage.getItem('bp_months') || '{}');
