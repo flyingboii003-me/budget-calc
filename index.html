@@ -544,15 +544,6 @@ html.light .toggle-thumb{left:17px;background:#fff;}
 .savings .bar-fill{background:linear-gradient(90deg,var(--savings),#dbff7a);}
 .debt-card .bar-fill{background:linear-gradient(90deg,var(--debt),#ff8970);}
 
-.sisa-row{display:flex;justify-content:space-between;align-items:center;padding:11px 15px;border-radius:11px;margin-top:10px;}
-.sisa-row.ok{background:linear-gradient(135deg,rgba(34,211,168,.08),rgba(34,211,168,.02));border:1px solid rgba(34,211,168,.2);}
-.sisa-row.over{background:linear-gradient(135deg,rgba(239,68,68,.08),rgba(239,68,68,.02));border:1px solid rgba(239,68,68,.2);}
-.sisa-label-text{font-size:.62rem;color:var(--muted2);text-transform:uppercase;letter-spacing:.1em;font-weight:600;}
-.sisa-label-sub{font-size:.76rem;margin-top:2px;font-weight:500;}
-.sisa-val{font-family:'JetBrains Mono',monospace;font-size:1rem;font-weight:700;letter-spacing:-.01em;}
-.sisa-val.pos{color:var(--savings);}
-.sisa-val.neg{color:var(--debt);}
-
 /* ============ BREAKDOWN ============ */
 .breakdown-group{background:var(--surface2);border:1px solid var(--border);border-radius:14px;padding:18px;}
 .breakdown-group-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;}
@@ -957,7 +948,7 @@ html.light .toggle-thumb{left:17px;background:#fff;}
     </div>
     <div id="new-month-banner" style="display:none"></div>
     <div class="grid-4">
-      <div class="stat-card"><div class="stat-inner"><div class="stat-icon" style="background:rgba(59,130,246,.12)"><span class="material-symbols-rounded">payments</span></div><div><div class="stat-label">Gaji Bulanan</div><div class="stat-value" id="stat-salary">Rp 0</div></div></div></div>
+      <div class="stat-card"><div class="stat-inner"><div class="stat-icon" style="background:rgba(59,130,246,.12)"><span class="material-symbols-rounded">payments</span></div><div><div class="stat-label">Gaji Bulanan</div><div class="stat-value" id="stat-net">Rp 0</div><div class="stat-sub" id="stat-gross" style="font-family:'JetBrains Mono',monospace;font-size:.64rem">—</div></div></div></div>
       <div class="stat-card"><div class="stat-inner"><div class="stat-icon" style="background:rgba(92,118,160,.15)"><span class="material-symbols-rounded">home</span></div><div><div class="stat-label">Kebutuhan</div><div class="stat-value" id="stat-needs">Rp 0</div><div class="stat-sub" id="stat-needs-pct">50% dari gaji</div></div></div></div>
       <div class="stat-card"><div class="stat-inner"><div class="stat-icon" style="background:rgba(109,117,87,.18)"><span class="material-symbols-rounded">shopping_bag</span></div><div><div class="stat-label">Keinginan</div><div class="stat-value" id="stat-wants">Rp 0</div><div class="stat-sub" id="stat-wants-pct">30% dari gaji</div></div></div></div>
       <div class="stat-card"><div class="stat-inner"><div class="stat-icon" style="background:rgba(197,245,59,.12)"><span class="material-symbols-rounded">savings</span></div><div><div class="stat-label">Tabungan</div><div class="stat-value" id="stat-savings">Rp 0</div><div class="stat-sub" id="stat-savings-pct">20% dari gaji</div></div></div></div>
@@ -1010,7 +1001,6 @@ html.light .toggle-thumb{left:17px;background:#fff;}
                 <circle id="arc-savings" cx="95" cy="95" r="75" fill="none" stroke="#c5f53b" stroke-width="22" stroke-dasharray="0 471.24" stroke-dashoffset="0" style="transition:all .8s ease"/>
                 <circle id="arc-wants"   cx="95" cy="95" r="75" fill="none" stroke="#6d7557" stroke-width="22" stroke-dasharray="0 471.24" stroke-dashoffset="0" style="transition:all .8s ease"/>
                 <circle id="arc-needs"   cx="95" cy="95" r="75" fill="none" stroke="#5c76a0" stroke-width="22" stroke-dasharray="0 471.24" stroke-dashoffset="0" style="transition:all .8s ease"/>
-                <circle id="arc-debt"    cx="95" cy="95" r="75" fill="none" stroke="#f5533b" stroke-width="22" stroke-dasharray="0 471.24" stroke-dashoffset="0" style="transition:all .8s ease"/>
               </svg>
               <div class="donut-center"><div class="total-label">Gaji</div><div class="total-amount" id="donut-total">Rp 0</div></div>
             </div>
@@ -1018,7 +1008,6 @@ html.light .toggle-thumb{left:17px;background:#fff;}
               <div class="legend-item"><div class="legend-dot" style="background:#5c76a0"></div><span id="leg-needs">Kebutuhan 50%</span><span class="legend-val" id="leg-needs-val">—</span></div>
               <div class="legend-item"><div class="legend-dot" style="background:#6d7557"></div><span id="leg-wants">Keinginan 30%</span><span class="legend-val" id="leg-wants-val">—</span></div>
               <div class="legend-item"><div class="legend-dot" style="background:#c5f53b"></div><span id="leg-savings">Tabungan 20%</span><span class="legend-val" id="leg-savings-val">—</span></div>
-              <div class="legend-item" id="leg-debt-wrap" style="display:none"><div class="legend-dot" style="background:#f5533b"></div><span id="leg-debt">Hutang</span><span class="legend-val" id="leg-debt-val">—</span></div>
             </div>
           </div>
         </div>
@@ -1028,10 +1017,6 @@ html.light .toggle-thumb{left:17px;background:#fff;}
             <div class="budget-item needs"><div class="item-icon"><span class="material-symbols-rounded">home</span></div><div class="item-info"><div class="item-label" id="lbl-needs">50% dari gaji</div><div class="item-name">Kebutuhan</div><div class="bar-track"><div class="bar-fill" id="bar-needs"></div></div></div><div class="item-amount"><div class="item-pct" id="pct-needs-lbl">50%</div><div class="item-amt" id="amt-needs">Rp 0</div></div></div>
             <div class="budget-item wants"><div class="item-icon"><span class="material-symbols-rounded">shopping_bag</span></div><div class="item-info"><div class="item-label" id="lbl-wants">30% dari gaji</div><div class="item-name">Keinginan</div><div class="bar-track"><div class="bar-fill" id="bar-wants"></div></div></div><div class="item-amount"><div class="item-pct" id="pct-wants-lbl">30%</div><div class="item-amt" id="amt-wants">Rp 0</div></div></div>
             <div class="budget-item savings"><div class="item-icon"><span class="material-symbols-rounded">savings</span></div><div class="item-info"><div class="item-label" id="lbl-savings">20% dari gaji</div><div class="item-name">Tabungan</div><div class="bar-track"><div class="bar-fill" id="bar-savings"></div></div></div><div class="item-amount"><div class="item-pct" id="pct-savings-lbl">20%</div><div class="item-amt" id="amt-savings">Rp 0</div></div></div>
-            <div class="budget-item debt-card" id="debt-result-card" style="display:none"><div class="item-icon"><span class="material-symbols-rounded">receipt_long</span></div><div class="item-info"><div class="item-label">tagihan bulanan</div><div class="item-name">Hutang &amp; Tagihan</div><div class="bar-track"><div class="bar-fill" id="bar-debt"></div></div></div><div class="item-amount"><div class="item-pct" id="pct-debt-lbl">—</div><div class="item-amt" id="amt-debt">Rp 0</div></div></div>
-          </div>
-          <div id="sisa-card" style="display:none">
-            <div class="sisa-row ok" id="sisa-row"><div><div class="sisa-label-text">Sisa setelah tagihan</div><div class="sisa-label-sub" id="sisa-desc">dari alokasi kebutuhan</div></div><div class="sisa-val pos" id="sisa-amount">Rp 0</div></div>
           </div>
         </div>
       </div>
@@ -1206,22 +1191,22 @@ function updateNominalInputs() {
 }
 
 function getBudgetData() {
-  const salary = state.salary;
-
-  const needs = salary * (state.pN / 100);
-  const wants = salary * (state.pW / 100);
-  const savings = salary * (state.pS / 100);
-
+  const grossSalary = state.salary;
   const debt = getTotalDebt();
+  const netSalary = Math.max(0, grossSalary - debt);
+
+  const needs   = netSalary * (state.pN / 100);
+  const wants   = netSalary * (state.pW / 100);
+  const savings = netSalary * (state.pS / 100);
 
   return {
-    salary,
+    grossSalary,
+    netSalary,
+    salary: netSalary, // alias baru, agar data lama tidak perlu dirubah
     needs,
     wants,
     savings,
     debt,
-
-    hasDebt: debt > 0,
 
     pN: state.pN,
     pW: state.pW,
@@ -1276,10 +1261,13 @@ function createNewMonth(key) {
 
 function updateStatCards(data) {
   document.getElementById('topbar-salary').textContent =
-    fmtK(data.salary);
+    fmtK(data.netSalary);
 
-  document.getElementById('stat-salary').textContent =
-    fmt(data.salary);
+  document.getElementById('stat-gross').textContent =
+    fmtK(data.grossSalary) + ' − ' + fmtK(data.debt);
+
+  document.getElementById('stat-net').textContent =
+    fmt(data.netSalary);
 
   document.getElementById('stat-needs').textContent =
     fmt(data.needs);
@@ -1367,87 +1355,6 @@ function updateDonut(data) {
     C
   );
 
-  setArc(
-    'arc-debt',
-    data.salary > 0
-      ? data.debt / data.salary
-      : 0,
-    0,
-    C
-  );
-}
-
-function updateDebtSection(data) {
-  const debtSummary =
-    document.getElementById('debt-summary');
-
-  const debtCard =
-    document.getElementById('debt-result-card');
-
-  const remainingCard =
-    document.getElementById('sisa-card');
-
-  const debtLegend =
-    document.getElementById('leg-debt-wrap');
-
-  if (!data.hasDebt) {
-    debtSummary.style.display = 'none';
-    debtCard.style.display = 'none';
-    remainingCard.style.display = 'none';
-    debtLegend.style.display = 'none';
-    return;
-  }
-
-  debtSummary.style.display = 'flex';
-  debtCard.style.display = 'flex';
-  remainingCard.style.display = 'block';
-  debtLegend.style.display = 'flex';
-
-  document.getElementById('debt-total-display')
-    .textContent = fmt(data.debt);
-
-  document.getElementById('amt-debt')
-    .textContent = fmt(data.debt);
-
-  const debtPct =
-    data.salary > 0
-      ? ((data.debt / data.salary) * 100).toFixed(1)
-      : '0';
-
-  document.getElementById('pct-debt-lbl')
-    .textContent = debtPct + '% dari gaji';
-
-  document.getElementById('leg-debt')
-    .textContent = 'Hutang ' + debtPct + '%';
-
-  document.getElementById('leg-debt-val')
-    .textContent = fmtK(data.debt);
-
-  const remaining =
-    data.needs - data.debt;
-
-  const remainingAmount =
-    document.getElementById('sisa-amount');
-
-  const remainingRow =
-    document.getElementById('sisa-row');
-
-  remainingAmount.textContent =
-    fmt(Math.abs(remaining));
-
-  remainingAmount.className =
-    'sisa-val ' +
-    (remaining >= 0 ? 'pos' : 'neg');
-
-  remainingRow.className =
-    'sisa-row ' +
-    (remaining >= 0 ? 'ok' : 'over');
-
-  document.getElementById('sisa-desc')
-    .textContent =
-      remaining >= 0
-        ? 'sisa dari alokasi kebutuhan'
-        : '⚠ tagihan melebihi alokasi kebutuhan';
 }
 
 function updateProgressBars(data) {
@@ -1868,16 +1775,17 @@ document.getElementById('btn-add-debt')
   renderDebtList()
   update();
 });
-const getTotalDebt=()=>state.debts.reduce((s,d)=>s+parseM(d.amount),0);
+
+const getTotalDebt = () => state.debts
+  .filter(d => !d.paid)
+  .reduce((s, d) => s + parseM(d.amount), 0);
 
 function updateBreakdownSisa(){
-  const totalDebtBD=getTotalDebt();
-  const needsBase=state.salary*(state.pN/100);
-  const needsAlloc=Math.max(0,needsBase-totalDebtBD);
+  const netSalary = Math.max(0, state.salary - getTotalDebt());
   const allocs={
-    needs:needsAlloc,
-    wants:state.salary*(state.pW/100),
-    savings:state.salary*(state.pS/100)
+    needs:   netSalary * (state.pN / 100),
+    wants:   netSalary * (state.pW / 100),
+    savings: netSalary * (state.pS / 100)
   };
   
   ['needs','wants','savings'].forEach(key=>{
@@ -1891,21 +1799,15 @@ function updateBreakdownSisa(){
     el.querySelector('strong').textContent=fmt(Math.abs(sisa));
     const allocEl=document.getElementById('bdalloc-'+key);
     if(allocEl)allocEl.textContent=fmt(allocs[key]);
-    const extraEl=document.getElementById('bdextra-needs');
-    if(extraEl&&key==='needs'){
-      extraEl.innerHTML=totalDebtBD>0?`Setelah tagihan Rp ${Math.round(totalDebtBD).toLocaleString('id-ID')} = ${fmt(needsAlloc)}`:'';
-    }
   });
 }
 
 function renderBreakdown(){
   const sec=document.getElementById('breakdown-section');
   sec.innerHTML='';
-  const totalDebtBD=getTotalDebt();
-  const needsBase=state.salary*(state.pN/100);
-  const needsAlloc=Math.max(0,needsBase-totalDebtBD);
+  const netSalary = Math.max(0, state.salary - getTotalDebt());
   const groups=[
-    {key:'needs',label:'<span class="material-symbols-rounded" style="font-size:14px;vertical-align:middle">home</span> Kebutuhan',cls:'needs-c',alloc:needsAlloc},
+    {key:'needs',label:'<span class="material-symbols-rounded" style="font-size:14px;vertical-align:middle">home</span> Kebutuhan',cls:'needs-c',alloc:netSalary*(state.pN/100)},
     {key:'wants',label:'<span class="material-symbols-rounded" style="font-size:14px;vertical-align:middle">shopping_bag</span> Keinginan',cls:'wants-c',alloc:state.salary*(state.pW/100)},
     {key:'savings',label:'<span class="material-symbols-rounded" style="font-size:14px;vertical-align:middle">savings</span> Tabungan',cls:'savings-c',alloc:state.salary*(state.pS/100)}
   ];
@@ -1920,7 +1822,6 @@ function renderBreakdown(){
         <span class="breakdown-group-title ${g.cls}">${g.label}</span>
         <div style="text-align:right">
           <span class="breakdown-alloc" id="bdalloc-${g.key}">${fmt(g.alloc)}</span>
-          ${g.key==='needs'?`<div id="bdextra-needs" style="font-size:.6rem;color:var(--debt);font-family:'JetBrains Mono',monospace;margin-top:2px">${totalDebtBD>0?`Setelah tagihan Rp ${Math.round(totalDebtBD).toLocaleString('id-ID')} = ${fmt(needsAlloc)}`:''}</div>`:''}
         </div>
       </div>
       <div class="breakdown-items" id="bdi-${g.key}"></div>
@@ -2013,12 +1914,16 @@ function renderTrend() {
     .map(([key, d]) => {
       const [y, m] = key.split('-');
       const label   = bl[parseInt(m) - 1] + ' ' + y;
-      const salary  = d.salary || 0;
-      const needs   = salary * ((d.pN || 0) / 100);
-      const wants   = salary * ((d.pW || 0) / 100);
-      const savings = salary * ((d.pS || 0) / 100);
-      const debt    = (d.debts || []).reduce((s, x) => s + parseM(x.amount), 0);
-      return { key, label, salary, needs, wants, savings, debt, pN: d.pN, pW: d.pW, pS: d.pS };
+      const salary     = d.salary || 0;
+      const unpaidDebt = (d.debts || [])
+        .filter(x => !x.paid)
+        .reduce((s, x) => s + parseM(x.amount), 0);
+      const netSalary  = Math.max(0, salary - unpaidDebt);
+      const needs   = netSalary * ((d.pN || 0) / 100);
+      const wants   = netSalary * ((d.pW || 0) / 100);
+      const savings = netSalary * ((d.pS || 0) / 100);
+      const debt    = unpaidDebt;
+      return { key, label, salary, netSalary, needs, wants, savings, debt, pN: d.pN, pW: d.pW, pS: d.pS };
     });
 
   const noEl    = document.getElementById('no-trend');
@@ -2045,7 +1950,7 @@ function renderTrend() {
     d.innerHTML = `
       <div>
         <div class="hi-label">${entry.label}</div>
-        <div class="hi-sub">Gaji: ${fmtK(entry.salary)} · Tagihan: ${fmtK(entry.debt)}</div>
+        <div class="hi-sub">Gaji bersih: ${fmtK(entry.netSalary)} · Tagihan: ${fmtK(entry.debt)}</div>
       </div>
       <button class="history-item-del" onclick="deleteEntry('${entry.key}')">Hapus</button>`;
     histEl.appendChild(d);
@@ -2085,6 +1990,7 @@ function renderTrend() {
     },
   });
 }
+
 function deleteEntry(key) {
   if (key === activeMonth) {
     showPriceToast('Tidak bisa menghapus bulan yang sedang aktif!', true);
@@ -2095,6 +2001,7 @@ function deleteEntry(key) {
   localStorage.setItem('bp_months', JSON.stringify(months));
   renderTrend();
 }
+
 function setChartMode(mode,btn){chartMode=mode;document.querySelectorAll('.chart-actions button').forEach(b=>b.classList.remove('active'));btn.classList.add('active');renderTrend();}
 const ASSET_TYPES=[
     {key:'Saham',color:'#3b82f6',icon:'📈'},
@@ -2749,7 +2656,6 @@ function update() {
   updateStatCards(data);
   updateBudgetCards(data);
   updateDonut(data);
-  updateDebtSection(data);
   updateProgressBars(data);
 
   updateNewMonthBanner();
