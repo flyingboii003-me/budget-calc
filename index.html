@@ -1827,10 +1827,22 @@ const getTotalDebt = () => state.debts
 
 function updateBreakdownSisa(){
   const netSalary = Math.max(0, state.salary - getTotalDebt());
-  const allocs={
-    needs:   netSalary * (state.pN / 100),
-    wants:   netSalary * (state.pW / 100),
-    savings: netSalary * (state.pS / 100)
+
+  let needsAlloc, wantsAlloc, savingsAlloc;
+  if (allocMode === 'nominal') {
+    needsAlloc   = state.nN;
+    wantsAlloc   = state.nW;
+    savingsAlloc = state.nS;
+  } else {
+    needsAlloc   = netSalary * (state.pN / 100);
+    wantsAlloc   = netSalary * (state.pW / 100);
+    savingsAlloc = netSalary * (state.pS / 100);
+  }
+
+  const allocs = {
+    needs:   needsAlloc,
+    wants:   wantsAlloc,
+    savings: savingsAlloc
   };
   
   ['needs','wants','savings'].forEach(key=>{
@@ -1851,11 +1863,25 @@ function renderBreakdown(){
   const sec=document.getElementById('breakdown-section');
   sec.innerHTML='';
   const netSalary = Math.max(0, state.salary - getTotalDebt());
+
+  // Tentukan alokasi berdasarkan mode
+  let needsAlloc, wantsAlloc, savingsAlloc;
+  if (allocMode === 'nominal') {
+    needsAlloc   = state.nN;
+    wantsAlloc   = state.nW;
+    savingsAlloc = state.nS;
+  } else {
+    needsAlloc   = netSalary * (state.pN / 100);
+    wantsAlloc   = netSalary * (state.pW / 100);
+    savingsAlloc = netSalary * (state.pS / 100);
+  }
+
   const groups=[
-    {key:'needs',label:'<span class="material-symbols-rounded" style="font-size:14px;vertical-align:middle">home</span> Kebutuhan',cls:'needs-c',alloc:netSalary*(state.pN/100)},
-    {key:'wants',label:'<span class="material-symbols-rounded" style="font-size:14px;vertical-align:middle">shopping_bag</span> Keinginan',cls:'wants-c',alloc:netSalary*(state.pW/100)},
-    {key:'savings',label:'<span class="material-symbols-rounded" style="font-size:14px;vertical-align:middle">savings</span> Tabungan',cls:'savings-c',alloc:netSalary*(state.pS/100)}
+    {key:'needs', label:'<span class="material-symbols-rounded" style="font-size:14px;vertical-align:middle">home</span> Kebutuhan', cls:'needs-c', alloc: needsAlloc},
+    {key:'wants', label:'<span class="material-symbols-rounded" style="font-size:14px;vertical-align:middle">shopping_bag</span> Keinginan', cls:'wants-c', alloc: wantsAlloc},
+    {key:'savings', label:'<span class="material-symbols-rounded" style="font-size:14px;vertical-align:middle">savings</span> Tabungan', cls:'savings-c', alloc: savingsAlloc}
   ];
+
   groups.forEach(g=>{
     const items=state.breakdown[g.key];
     const used=items.reduce((s,it)=>s+parseM(it.amt),0);
