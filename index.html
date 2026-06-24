@@ -1136,6 +1136,10 @@ let state={
     pN:0,
     pW:0,
     pS:0,
+    nN:0,
+    nW:0,
+    nS:0,
+    allocMode:'pct',
     debts:[],
   breakdown:{
     needs:[
@@ -1162,33 +1166,19 @@ const fmtInput=v=>{const d=(v+'').replace(/\D/g,'');return d?parseInt(d).toLocal
 // Helper Function
 
 function clampAllocIfNeeded() {
+  // Mode nominal punya validasi sendiri — clamp hanya berlaku di mode pct
+  if (allocMode === 'nominal') return false;
   const total = state.pN + state.pW + state.pS;
   if (total <= 100) return false;
   const scale = 100 / total;
   state.pN = Math.round(state.pN * scale * 100) / 100;
   state.pW = Math.round(state.pW * scale * 100) / 100;
   state.pS = Math.round(state.pS * scale * 100) / 100;
-  // Sync DOM
   document.getElementById('range-needs').value = state.pN;
   document.getElementById('range-wants').value = state.pW;
   document.getElementById('range-savings').value = state.pS;
   showPriceToast('Alokasi > 100% dikoreksi otomatis sebelum disimpan', true);
-  if (allocMode === 'nominal') updateNominalInputs();
   return true;
-}
-
-function updateNominalInputs() {
-  const netSalary = Math.max(0, state.salary - getTotalDebt());
-  if (netSalary <= 0) return;
-
-  document.getElementById('nominal-needs').value =
-    fmtInput(String(Math.round(netSalary * state.pN / 100)));
-
-  document.getElementById('nominal-wants').value =
-    fmtInput(String(Math.round(netSalary * state.pW / 100)));
-
-  document.getElementById('nominal-savings').value =
-    fmtInput(String(Math.round(netSalary * state.pS / 100)));
 }
 
 function getBudgetData() {
@@ -1227,6 +1217,10 @@ function saveActiveMonthData() {
     pN: state.pN,
     pW: state.pW,
     pS: state.pS,
+    nN: state.nN,
+    nW: state.nW,
+    nS: state.nS,
+    allocMode: state.allocMode,
     debts: JSON.parse(JSON.stringify(state.debts)),
     breakdown: JSON.parse(JSON.stringify(state.breakdown))
   };
@@ -1468,12 +1462,20 @@ function switchMonth(key, skipSave = false) {
   if (!data) return;
 
   // Load data bulan yang dipilih ke state
-  state.salary  = data.salary  || 0;
-  state.pN      = data.pN      || 0;
-  state.pW      = data.pW      || 0;
-  state.pS      = data.pS      || 0;
-  state.debts   = data.debts   || [];
+  state.salary    = data.salary    || 0;
+  state.pN        = data.pN        || 0;
+  state.pW        = data.pW        || 0;
+  state.pS        = data.pS        || 0;
+  state.nN        = data.nN        || 0;
+  state.nW        = data.nW        || 0;
+  state.nS        = data.nS        || 0;
+  state.allocMode = data.allocMode || 'pct';
+  state.debts     = data.debts     || [];
   state.breakdown = data.breakdown || { needs: [], wants: [], savings: [] };
+
+  // Sync allocMode global variable dan UI toggle
+  allocMode = state.allocMode;
+  setAllocMode(allocMode, true); // true = skip reset (ini load, bukan user switch)
 
   // Sync UI
   document.getElementById('salary-input').value = state.salary ? fmtInput(String(state.salary)) : '';
@@ -1631,54 +1633,72 @@ function syncSliders(changed){
   updatePctStatus();
 }
 
-function setAllocMode(mode) {
+function setAllocMode(mode, isLoad = false) {
   allocMode = mode;
+  state.allocMode = mode;
 
   const isPct = mode === 'pct';
 
-  document
-    .getElementById('btn-mode-pct')
-    .classList.toggle('active', isPct);
-
-  document
-    .getElementById('btn-mode-nominal')
-    .classList.toggle('active', !isPct);
+  document.getElementById('btn-mode-pct').classList.toggle('active', isPct);
+  document.getElementById('btn-mode-nominal').classList.toggle('active', !isPct);
 
   ['needs', 'wants', 'savings'].forEach(category => {
-    const pctWrapper =
-      document.getElementById(`wrap-pct-${category}`);
-
-    const nominalWrapper =
-      document.getElementById(`wrap-nominal-${category}`);
-
-    pctWrapper.style.display = isPct ? '' : 'none';
-    nominalWrapper.style.display = isPct ? 'none' : '';
+    document.getElementById(`wrap-pct-${category}`).style.display = isPct ? '' : 'none';
+    document.getElementById(`wrap-nominal-${category}`).style.display = isPct ? 'none' : '';
   });
 
-  if (!isPct) {
-    updateNominalInputs();
+  if (isLoad) {
+    // Load dari localStorage — restore nilai tanpa reset
+    if (isPct) {
+      document.getElementById('range-needs').value = state.pN;
+      document.getElementById('range-wants').value = state.pW;
+      document.getElementById('range-savings').value = state.pS;
+    } else {
+      document.getElementById('nominal-needs').value = state.nN ? fmtInput(String(state.nN)) : '';
+      document.getElementById('nominal-wants').value = state.nW ? fmtInput(String(state.nW)) : '';
+      document.getElementById('nominal-savings').value = state.nS ? fmtInput(String(state.nS)) : '';
+    }
     return;
   }
 
-  document.getElementById('range-needs').value = state.pN;
-  document.getElementById('range-wants').value = state.pW;
-  document.getElementById('range-savings').value = state.pS;
+  // User switch mode — A2-Hard: reset semua alokasi
+  state.pN = 0; state.pW = 0; state.pS = 0;
+  state.nN = 0; state.nW = 0; state.nS = 0;
+
+  document.getElementById('range-needs').value = 0;
+  document.getElementById('range-wants').value = 0;
+  document.getElementById('range-savings').value = 0;
+  document.getElementById('nominal-needs').value = '';
+  document.getElementById('nominal-wants').value = '';
+  document.getElementById('nominal-savings').value = '';
+
+  updatePctStatus();
+  update();
 }
 
 ['needs','wants','savings'].forEach(k=>{
   document.getElementById('nominal-'+k).addEventListener('input',function(){
     this.value=fmtInput(this.value);
     const netSalary = Math.max(0, state.salary - getTotalDebt());
-    if(!netSalary) return;
-    const val=parseM(this.value);
-    const pct = Math.min(100, Math.round((val / netSalary) * 10000) / 100);
-    if(k==='needs')state.pN=pct;
-    if(k==='wants')state.pW=pct;
-    if(k==='savings')state.pS=pct;
-    document.getElementById('range-'+k).value=pct;
+    const val = parseM(this.value);
+
+    // Nominal adalah source of truth — simpan ke state.nN/nW/nS
+    if(k==='needs')  state.nN = val;
+    if(k==='wants')  state.nW = val;
+    if(k==='savings')state.nS = val;
+
+    // Derive pct dari nominal (untuk display dan save)
+    if(netSalary > 0){
+      const pct = Math.min(100, Math.round((val / netSalary) * 10000) / 100);
+      if(k==='needs')  state.pN = pct;
+      if(k==='wants')  state.pW = pct;
+      if(k==='savings')state.pS = pct;
+      document.getElementById('range-'+k).value = pct;
+    }
+
     updatePctStatus();
     update();
-    });
+  });
 });
 
 function handleSalaryInput(event) {
@@ -1688,12 +1708,18 @@ function handleSalaryInput(event) {
 
   state.salary = parseM(rawValue);
 
-  update();
-
+  // Di mode nominal: re-derive pct dari nominal yang sudah ada di state
+  // (nominal tidak di-overwrite — user yang pegang kendali)
   if (allocMode === 'nominal') {
-    updateNominalInputs();
+    const netSalary = Math.max(0, state.salary - getTotalDebt());
+    if (netSalary > 0) {
+      state.pN = Math.min(100, Math.round((state.nN / netSalary) * 10000) / 100);
+      state.pW = Math.min(100, Math.round((state.nW / netSalary) * 10000) / 100);
+      state.pS = Math.min(100, Math.round((state.nS / netSalary) * 10000) / 100);
+    }
   }
 
+  update();
   toggleNominalInputs(!state.salary);
 }
 
@@ -2706,13 +2732,17 @@ function update() {
     state.pN        = monthData.pN        || 0;
     state.pW        = monthData.pW        || 0;
     state.pS        = monthData.pS        || 0;
+    state.nN        = monthData.nN        || 0;
+    state.nW        = monthData.nW        || 0;
+    state.nS        = monthData.nS        || 0;
+    state.allocMode = monthData.allocMode || 'pct';
     state.debts     = monthData.debts     || [];
     state.breakdown = monthData.breakdown || { needs: [], wants: [], savings: [] };
 
     document.getElementById('salary-input').value = state.salary ? fmtInput(String(state.salary)) : '';
-    document.getElementById('range-needs').value   = state.pN;
-    document.getElementById('range-wants').value   = state.pW;
-    document.getElementById('range-savings').value = state.pS;
+
+    allocMode = state.allocMode;
+    setAllocMode(allocMode, true); // restore UI tanpa reset
   } else {
     // Bulan ini belum ada data — buat baru
     createNewMonth(activeMonth);
