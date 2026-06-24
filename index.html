@@ -1591,8 +1591,27 @@ function toggleTheme(){
 });
 
 function updatePctStatus(){
-  const sum=state.pN+state.pW+state.pS;
   const st=document.getElementById('pct-status');
+
+  if (allocMode === 'nominal') {
+    const netSalary = Math.max(0, state.salary - getTotalDebt());
+    if (netSalary <= 0) { st.className='pct-status'; return; }
+    const totalNominal = state.nN + state.nW + state.nS;
+    const sisa = netSalary - totalNominal;
+    if (totalNominal > netSalary) {
+      st.textContent = '⚠ Total melebihi gaji bersih sebesar ' + fmt(Math.abs(sisa));
+      st.className = 'pct-status warn';
+    } else if (totalNominal === netSalary) {
+      st.textContent = '✓ Alokasi pas = ' + fmt(netSalary);
+      st.className = 'pct-status ok';
+    } else {
+      st.textContent = 'Sisa belum dialokasikan: ' + fmt(sisa);
+      st.className = 'pct-status warn';
+    }
+    return;
+  }
+
+  const sum=state.pN+state.pW+state.pS;
   if(sum>100){
     st.textContent='⚠ Total melebihi 100%';
     st.className='pct-status warn';
