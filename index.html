@@ -1865,12 +1865,27 @@ function setAllocMode(mode, isLoad = false) {
   document.getElementById('nominal-' + k).addEventListener('input', function() {
     this.value = fmtInput(this.value);
 
+    const netSalary = Math.max(0, state.salary - getTotalDebt());
     const val = parseM(this.value);
 
     if (k === 'needs')   state.nN = val;
     if (k === 'wants')   state.nW = val;
     if (k === 'savings') state.nS = val;
 
+    if (netSalary > 0) {
+      const pct = Math.min(
+        100,
+        Math.round((val / netSalary) * 10000) / 100
+      );
+
+      if (k === 'needs')   state.pN = pct;
+      if (k === 'wants')   state.pW = pct;
+      if (k === 'savings') state.pS = pct;
+
+      document.getElementById('range-' + k).value = pct;
+    }
+
+    updatePctStatus();
     update();
   });
 });
@@ -1882,6 +1897,7 @@ function handleSalaryInput(event) {
   state.salary = parseM(rawValue);
 
   update();
+  updatePctStatus();
   toggleNominalInputs(!state.salary);
 }
 
