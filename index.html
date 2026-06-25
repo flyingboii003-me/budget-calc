@@ -50,6 +50,7 @@
   --transition:.22s cubic-bezier(.4,.0,.2,1);
   --radius:16px;
   --radius-sm:10px;
+  --main-offset: calc(var(--sidebar-w) / 2);
 }
 html.light {
   --bg:#f3f6fc;
@@ -736,11 +737,6 @@ html.light .toggle-thumb{left:17px;background:#fff;}
 .asset-modal-overlay{
   position:fixed;
   inset:0;
-  background:rgba(0,0,0,.65);
-  backdrop-filter:blur(10px);
-  -webkit-backdrop-filter:blur(10px);
-
-  z-index:500;
 
   display:flex;
   justify-content:center;
@@ -751,10 +747,21 @@ html.light .toggle-thumb{left:17px;background:#fff;}
     20px
     20px;
 
+  /* geser pusat visual mengikuti dashboard */
+  padding-left:
+    calc(20px + var(--main-offset));
+
+  background:rgba(0,0,0,.65);
+  backdrop-filter:blur(10px);
+  -webkit-backdrop-filter:blur(10px);
+
+  z-index:500;
+
   opacity:0;
   pointer-events:none;
   transition:opacity .25s;
-  overscroll-behavior: contain;
+
+  overscroll-behavior:contain;
 }
 .asset-modal-overlay.show{opacity:1;pointer-events:all;}
 .asset-modal{
@@ -921,24 +928,8 @@ html.light .toggle-thumb{left:17px;background:#fff;}
   .asset-modal{max-height:98vh;}
 }
 
-/* ============ FOOTER ============
-.app-footer {
-  margin-top: 40px;
-  padding-top: 32px;
-  padding-bottom: 14px;
-  line-height: 1;
-  border-top: 1px solid var(--border);
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  font-size: .62rem;
-  color: var(--muted);
-  font-weight: 500;
-  letter-spacing: .04em;
-} */
-
-/* ============ RESPONSIVE ============ */
 @media(max-width:900px){
+  .asset-modal-overlay{padding-left:20px;}
   .grid-4{grid-template-columns:repeat(2,1fr);}
   .grid-3{grid-template-columns:repeat(2,1fr);}
   .grid-2-1{grid-template-columns:1fr;}
