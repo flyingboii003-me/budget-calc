@@ -262,7 +262,7 @@ html.light .toggle-thumb{left:17px;background:#fff;}
   margin-top:var(--topbar-h);
   flex:1;min-height:calc(100vh - var(--topbar-h));
   padding:28px;
-  padding-bottom: 48px;
+  padding-bottom: 24px;
   transition:margin-left var(--transition);
   position:relative;z-index:1;
 }
@@ -813,12 +813,27 @@ html.light .toggle-thumb{left:17px;background:#fff;}
 }
 .avg-info strong{color:var(--needs);font-family:'JetBrains Mono',monospace;font-weight:700;}
 
+/* ============ FOOTER ============ */
+.app-footer {
+  margin-top: 32px;
+  padding: 16px 0 8px;
+  border-top: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: .62rem;
+  color: var(--muted);
+  font-weight: 500;
+  letter-spacing: .04em;
+}
+
 /* ============ RESPONSIVE ============ */
 @media(max-width:900px){
   .grid-4{grid-template-columns:repeat(2,1fr);}
   .grid-3{grid-template-columns:repeat(2,1fr);}
   .grid-2-1{grid-template-columns:1fr;}
 }
+
 @media(max-width:700px){
   :root{--sidebar-w:0px;--topbar-h:54px;}
   .sidebar{width:240px;transform:translateX(-100%);}
@@ -886,7 +901,7 @@ html.light .toggle-thumb{left:17px;background:#fff;}
   }
   .main{
     padding:32px 36px;
-    padding-bottom: 56px;
+    padding-bottom: 28px;
   }
 }
 </style>
@@ -1135,6 +1150,13 @@ html.light .toggle-thumb{left:17px;background:#fff;}
   </div>
 
   <div id="asset-modal-container"></div>
+
+  <!-- FOOTER -->
+<footer class="app-footer">
+  <span>Budget Planner - Beta v0.1.4</span>
+  <span>·</span>
+  <span>Made with ❤️ by Faris and the Loving Intelligence</span>
+</footer>
 
 </main>
 
