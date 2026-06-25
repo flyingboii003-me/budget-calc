@@ -1370,6 +1370,15 @@ function getActiveMonthData() {
 }
 
 function saveActiveMonthData() {
+  if (state.allocMode === 'nominal') {
+    const netSalary = Math.max(0, state.salary - getTotalDebt());
+    if (netSalary > 0) {
+      state.pN = Math.min(100, Math.round((state.nN / netSalary) * 10000) / 100);
+      state.pW = Math.min(100, Math.round((state.nW / netSalary) * 10000) / 100);
+      state.pS = Math.min(100, Math.round((state.nS / netSalary) * 10000) / 100);
+    }
+  }
+
   const months = JSON.parse(localStorage.getItem('bp_months') || '{}');
   months[activeMonth] = {
     salary: state.salary,
@@ -3037,7 +3046,17 @@ function update() {
     document.getElementById('salary-input').value = state.salary ? fmtInput(String(state.salary)) : '';
 
     allocMode = state.allocMode;
-    setAllocMode(allocMode, true); // restore UI tanpa reset
+    setAllocMode(allocMode, true);
+
+    // Derive pN/pW/pS dari nominal saat load (menutupi data lama yg tersimpan dengan pct=0)
+    if (state.allocMode === 'nominal') {
+      const netSalary = Math.max(0, state.salary - getTotalDebt());
+      if (netSalary > 0) {
+        state.pN = Math.min(100, Math.round((state.nN / netSalary) * 10000) / 100);
+        state.pW = Math.min(100, Math.round((state.nW / netSalary) * 10000) / 100);
+        state.pS = Math.min(100, Math.round((state.nS / netSalary) * 10000) / 100);
+      }
+    }
   } else {
     // Bulan ini belum ada data — buat baru
     createNewMonth(activeMonth);
