@@ -262,11 +262,15 @@ html.light .toggle-thumb{left:17px;background:#fff;}
   margin-top:var(--topbar-h);
   flex:1;min-height:calc(100vh - var(--topbar-h));
   padding:28px;
+  padding-bottom: 48px;
   transition:margin-left var(--transition);
   position:relative;z-index:1;
 }
 .page{display:none;flex-direction:column;gap:20px;}
 .page.active{display:flex;animation:fadeIn .35s ease;}
+.page > *:last-child {
+  margin-bottom: 8px;
+}
 @keyframes fadeIn{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:none;}}
 
 /* ============ GRID ============ */
@@ -822,7 +826,7 @@ html.light .toggle-thumb{left:17px;background:#fff;}
   .sidebar.open{transform:translateX(0);box-shadow:var(--shadow-lg);}
   .sidebar .logo-title,.sidebar .logo-sub,.sidebar .nav-section-label{opacity:1;}
   .topbar{left:0;padding:0 16px;}
-  .main{margin-left:0;padding:16px;}
+  .main{margin-left:0;padding:16px;padding-bottom: 48px;}
   .hamburger{display:flex;align-items:center;}
   .theme-toggle-mobile{display:flex;}
   .grid-2,.grid-3,.grid-4,.grid-2-1{grid-template-columns:1fr;}
@@ -877,8 +881,13 @@ html.light .toggle-thumb{left:17px;background:#fff;}
 }
 
 @media(min-width:1280px){
-  :root{--sidebar-w:76px;}
-  .main{padding:32px 36px;}
+  :root{
+    --sidebar-w:76px;
+  }
+  .main{
+    padding:32px 36px;
+    padding-bottom: 56px;
+  }
 }
 </style>
 </head>
