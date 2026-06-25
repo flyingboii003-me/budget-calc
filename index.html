@@ -907,6 +907,26 @@ html.light .toggle-thumb{left:17px;background:#fff;}
     padding-bottom: 28px;
   }
 }
+
+/* ============ FOOTER ============ */
+.site-footer{
+  margin-top:40px;
+  padding:20px 16px;
+  border-top:1px solid var(--border);
+  background:var(--surface);
+  color:var(--muted2);
+  font-size:14px;
+  text-align:center;
+  border-radius:var(--radius) var(--radius) 0 0;
+  display:flex;align-items:center;justify-content:center;gap:6px;
+  flex-wrap:wrap;
+}
+.site-footer strong{color:var(--text);font-weight:600;}
+.site-footer .heart{color:var(--debt);display:inline-block;animation:heartBeat 1.4s ease-in-out infinite;}
+@keyframes heartBeat{0%,100%{transform:scale(1);}50%{transform:scale(1.18);}}
+@media (max-width:640px){
+  .site-footer{font-size:13px;padding:16px 12px;margin-top:28px;}
+}
 </style>
 </head>
 <body>
@@ -1153,6 +1173,10 @@ html.light .toggle-thumb{left:17px;background:#fff;}
   </div>
 
   <div id="asset-modal-container"></div>
+
+  <footer class="site-footer">
+    <span>Made with <span class="heart" aria-label="love">❤️</span> by <strong>flyingdutchman</strong></span>
+  </footer>
 
 </main>
 
