@@ -50,6 +50,7 @@
   --transition:.22s cubic-bezier(.4,.0,.2,1);
   --radius:16px;
   --radius-sm:10px;
+  --main-offset: calc(var(--sidebar-w) / 2);
 }
 html.light {
   --bg:#f3f6fc;
@@ -736,11 +737,6 @@ html.light .toggle-thumb{left:17px;background:#fff;}
 .asset-modal-overlay{
   position:fixed;
   inset:0;
-  background:rgba(0,0,0,.65);
-  backdrop-filter:blur(10px);
-  -webkit-backdrop-filter:blur(10px);
-
-  z-index:500;
 
   display:flex;
   justify-content:center;
@@ -751,10 +747,21 @@ html.light .toggle-thumb{left:17px;background:#fff;}
     20px
     20px;
 
+  /* geser pusat visual mengikuti dashboard */
+  padding-left:
+    calc(20px + var(--main-offset));
+
+  background:rgba(0,0,0,.65);
+  backdrop-filter:blur(10px);
+  -webkit-backdrop-filter:blur(10px);
+
+  z-index:500;
+
   opacity:0;
   pointer-events:none;
   transition:opacity .25s;
-  overscroll-behavior: contain;
+
+  overscroll-behavior:contain;
 }
 .asset-modal-overlay.show{opacity:1;pointer-events:all;}
 .asset-modal{
@@ -921,24 +928,8 @@ html.light .toggle-thumb{left:17px;background:#fff;}
   .asset-modal{max-height:98vh;}
 }
 
-/* ============ FOOTER ============
-.app-footer {
-  margin-top: 40px;
-  padding-top: 32px;
-  padding-bottom: 14px;
-  line-height: 1;
-  border-top: 1px solid var(--border);
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  font-size: .62rem;
-  color: var(--muted);
-  font-weight: 500;
-  letter-spacing: .04em;
-} */
-
-/* ============ RESPONSIVE ============ */
 @media(max-width:900px){
+  .asset-modal-overlay{padding-left:20px;}
   .grid-4{grid-template-columns:repeat(2,1fr);}
   .grid-3{grid-template-columns:repeat(2,1fr);}
   .grid-2-1{grid-template-columns:1fr;}
@@ -1282,7 +1273,7 @@ html.light .toggle-thumb{left:17px;background:#fff;}
   <div id="asset-modal-container"></div>
 
   <footer class="site-footer">
-    <span>Made with <span class="heart" aria-label="love">❤️</span> by <strong>flyingdutchman</strong></span>
+    <span>Made with <span class="heart" aria-label="love">❤️</span> by <strong><\fine.code></strong></span>
   </footer>
 
 </main>
@@ -1349,6 +1340,22 @@ function getBudgetData() {
   const wants   = allocMode === 'nominal' ? state.nW : netSalary * (state.pW / 100);
   const savings = allocMode === 'nominal' ? state.nS : netSalary * (state.pS / 100);
 
+  let pN = state.pN;
+  let pW = state.pW;
+  let pS = state.pS;
+
+  if (allocMode === 'nominal') {
+    if (netSalary > 0) {
+      pN = Math.min(100, Math.round((needs   / netSalary) * 10000) / 100);
+      pW = Math.min(100, Math.round((wants   / netSalary) * 10000) / 100);
+      pS = Math.min(100, Math.round((savings / netSalary) * 10000) / 100);
+    } else {
+      pN = 0;
+      pW = 0;
+      pS = 0;
+    }
+  }
+
   return {
     grossSalary,
     netSalary,
@@ -1357,10 +1364,9 @@ function getBudgetData() {
     wants,
     savings,
     debt,
-
-    pN: state.pN,
-    pW: state.pW,
-    pS: state.pS
+    pN,
+    pW,
+    pS
   };
 }
 
@@ -1647,7 +1653,7 @@ function switchMonth(key, skipSave = false) {
   }
 
   renderDebtList();
-  syncSliders('needs');
+  if (allocMode === 'pct') syncSliders('needs');
   update();
   if (allocMode === 'nominal') updateNominalInputs();
 }
@@ -1854,24 +1860,29 @@ function setAllocMode(mode, isLoad = false) {
   update();
 }
 
-['needs','wants','savings'].forEach(k=>{
-  document.getElementById('nominal-'+k).addEventListener('input',function(){
-    this.value=fmtInput(this.value);
+  // Input Listeners
+['needs','wants','savings'].forEach(k => {
+  document.getElementById('nominal-' + k).addEventListener('input', function() {
+    this.value = fmtInput(this.value);
+
     const netSalary = Math.max(0, state.salary - getTotalDebt());
     const val = parseM(this.value);
 
-    // Nominal adalah source of truth — simpan ke state.nN/nW/nS
-    if(k==='needs')  state.nN = val;
-    if(k==='wants')  state.nW = val;
-    if(k==='savings')state.nS = val;
+    if (k === 'needs')   state.nN = val;
+    if (k === 'wants')   state.nW = val;
+    if (k === 'savings') state.nS = val;
 
-    // Derive pct dari nominal (untuk display dan save)
-    if(netSalary > 0){
-      const pct = Math.min(100, Math.round((val / netSalary) * 10000) / 100);
-      if(k==='needs')  state.pN = pct;
-      if(k==='wants')  state.pW = pct;
-      if(k==='savings')state.pS = pct;
-      document.getElementById('range-'+k).value = pct;
+    if (netSalary > 0) {
+      const pct = Math.min(
+        100,
+        Math.round((val / netSalary) * 10000) / 100
+      );
+
+      if (k === 'needs')   state.pN = pct;
+      if (k === 'wants')   state.pW = pct;
+      if (k === 'savings') state.pS = pct;
+
+      document.getElementById('range-' + k).value = pct;
     }
 
     updatePctStatus();
@@ -1881,28 +1892,17 @@ function setAllocMode(mode, isLoad = false) {
 
 function handleSalaryInput(event) {
   const rawValue = event.target.value.replace(/\D/g, '');
-
+  
   event.target.value = fmtInput(rawValue);
-
   state.salary = parseM(rawValue);
 
-  // Di mode nominal: re-derive pct dari nominal yang sudah ada di state
-  // (nominal tidak di-overwrite — user yang pegang kendali)
-  if (allocMode === 'nominal') {
-    const netSalary = Math.max(0, state.salary - getTotalDebt());
-    if (netSalary > 0) {
-      state.pN = Math.min(100, Math.round((state.nN / netSalary) * 10000) / 100);
-      state.pW = Math.min(100, Math.round((state.nW / netSalary) * 10000) / 100);
-      state.pS = Math.min(100, Math.round((state.nS / netSalary) * 10000) / 100);
-    }
-  }
-
   update();
+  updatePctStatus();
   toggleNominalInputs(!state.salary);
 }
 
 document
-  .getElementById('salary-input')
+.getElementById('salary-input')
   .addEventListener('input', handleSalaryInput);
 
 function renderDebtList() {
@@ -3037,7 +3037,7 @@ function update() {
     document.getElementById('salary-input').value = state.salary ? fmtInput(String(state.salary)) : '';
 
     allocMode = state.allocMode;
-    setAllocMode(allocMode, true); // restore UI tanpa reset
+    setAllocMode(allocMode, true);
   } else {
     // Bulan ini belum ada data — buat baru
     createNewMonth(activeMonth);
