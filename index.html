@@ -2619,7 +2619,7 @@ function openAssetModal(assetId) {
   document.getElementById('asset-modal-container').innerHTML = html;
   document.body.style.overflow = 'hidden';
   activeModalId = assetId;
-  setupModalA11y(assetId);
+  setupModal(assetId);
 }
 
 function closeAssetModal() {
@@ -2643,17 +2643,15 @@ function getModalFocusables() {
     'a[href],button:not([disabled]),input:not([disabled]):not([type="hidden"]),select:not([disabled]),textarea:not([disabled]),[tabindex]:not([tabindex="-1"])'
   )).filter(el => el.offsetParent !== null || el.getClientRects().length);
 }
-function setupModalA11y(assetId) {
+function setupModal(assetId) {
   _modalPrevFocus = document.activeElement;
   const modal = document.querySelector('#asset-modal-overlay .asset-modal');
   if (modal) {
     modal.setAttribute('role','dialog');
     modal.setAttribute('aria-modal','true');
     modal.setAttribute('tabindex','-1');
-    // Focus first input, fallback to modal
-    const focusables = getModalFocusables();
-    const firstInput = focusables.find(el => el.tagName === 'INPUT' || el.tagName === 'TEXTAREA' || el.tagName === 'SELECT');
-    (firstInput || modal).focus({preventScroll:true});
+    // Fokus ke container modal, bukan input
+    modal.focus({ preventScroll:true });
   }
   _modalKeyHandler = (e) => {
     if (!document.getElementById('asset-modal-overlay')) return;
