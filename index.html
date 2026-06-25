@@ -260,11 +260,15 @@ html.light .toggle-thumb{left:17px;background:#fff;}
 .main{
   margin-left:var(--sidebar-w);
   margin-top:var(--topbar-h);
-  flex:1;min-height:calc(100vh - var(--topbar-h));
+  flex:1;
+  min-height:calc(100vh - var(--topbar-h));
   padding:28px;
   padding-bottom: 24px;
   transition:margin-left var(--transition);
-  position:relative;z-index:1;
+  position:relative;
+  z-index:1;
+  display:flex;
+  flex-direction:column;
 }
 .page{display:none;flex-direction:column;gap:20px;}
 .page.active{display:flex;animation:fadeIn .35s ease;}
@@ -815,8 +819,9 @@ html.light .toggle-thumb{left:17px;background:#fff;}
 
 /* ============ FOOTER ============ */
 .app-footer {
-  margin-top: 40px;
-  padding: 14px;
+  margin-top: auto;
+  padding-top: 32px;
+  padding-bottom: 14px;
   line-height: 1;
   border-top: 1px solid var(--border);
   display: flex;
