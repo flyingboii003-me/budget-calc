@@ -1647,7 +1647,7 @@ function switchMonth(key, skipSave = false) {
   }
 
   renderDebtList();
-  syncSliders('needs');
+  if (allocMode === 'pct') syncSliders('needs');
   update();
   if (allocMode === 'nominal') updateNominalInputs();
 }
