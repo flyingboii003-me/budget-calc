@@ -2465,8 +2465,9 @@ function updateNetWorth(){
 
 //Fungsi Asset Modal
 let activeModalId = null;
+let modalSnapshot = null;
 
-function openAssetModal(assetId) {
+function openAssetModal(assetId, isReopen = false) {
   const arr = loadAssets();
   const a = arr.find(x => x.id === assetId);
   if (!a) return;
@@ -2526,7 +2527,7 @@ function openAssetModal(assetId) {
             </div>
             <div class="asset-modal-subtitle" style="margin-top:6px">
               <select style="background:var(--surface2);border:1px solid var(--border);border-radius:6px;color:var(--text);font-family:'Inter',sans-serif;font-size:.72rem;padding:4px 8px;outline:none;cursor:pointer;"
-                onchange="saveModalField(${a.id},'type',this.value);openAssetModal(${a.id})">
+                onchange="saveModalField(${a.id},'type',this.value);openAssetModal(${a.id}, true)">
                 ${ASSET_TYPES.map(t => `<option value="${t.key}" ${a.type === t.key ? 'selected' : ''}>${t.icon} ${t.key}</option>`).join('')}
               </select>
             </div>
@@ -2626,6 +2627,13 @@ function openAssetModal(assetId) {
       </div>
     </div>`;
 
+    if (!isReopen) {
+    modalSnapshot = JSON.parse(JSON.stringify(a));
+  }
+  document.getElementById('asset-modal-container').innerHTML = html;
+  document.body.style.overflow = 'hidden';
+
+  modalSnapshot = JSON.parse(JSON.stringify(a));
   document.getElementById('asset-modal-container').innerHTML = html;
   document.body.style.overflow = 'hidden';
   activeModalId = assetId;
@@ -2633,6 +2641,19 @@ function openAssetModal(assetId) {
 }
 
 function closeAssetModal() {
+  // Restore snapshot jika ada (user klik Batal atau tutup via ×/overlay)
+  if (modalSnapshot !== null) {
+    const arr = loadAssets();
+    const idx = arr.findIndex(a => a.id === modalSnapshot.id);
+    if (idx >= 0) {
+      arr[idx] = modalSnapshot;
+      saveAssets(arr);
+      renderAssets();
+      updateAssetDonut();
+      updateNetWorth();
+    }
+    modalSnapshot = null;
+  }
   teardownModalA11y();
   document.getElementById('asset-modal-container').innerHTML = '';
   document.body.style.overflow = '';
@@ -2742,6 +2763,8 @@ function saveAndCloseModal(assetId) {
     });
     saveAssets(arr);
   }
+  
+  modalSnapshot = null;
   closeAssetModal();
   renderAssets();
   updateAssetDonut();
@@ -2881,12 +2904,12 @@ async function fetchForexTable() {
 // Versi modal — update harga lalu refresh modal
 async function fetchGoldPriceModal(assetId) {
   await fetchGoldPrice(assetId); // pakai fungsi yang sudah ada
-  openAssetModal(assetId);       // re-render modal dengan harga baru
+  openAssetModal(assetId, true);       // re-render modal dengan harga baru
 }
 
 async function fetchForexPriceModal(assetId, currency) {
   await fetchForexPrice(assetId, currency);
-  openAssetModal(assetId);
+  openAssetModal(assetId, true);
 }
 
 function showPriceToast(msg, isError=false) {
