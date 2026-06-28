@@ -2632,10 +2632,6 @@ function openAssetModal(assetId, isReopen = false) {
   }
   document.getElementById('asset-modal-container').innerHTML = html;
   document.body.style.overflow = 'hidden';
-
-  modalSnapshot = JSON.parse(JSON.stringify(a));
-  document.getElementById('asset-modal-container').innerHTML = html;
-  document.body.style.overflow = 'hidden';
   activeModalId = assetId;
   setupModal(assetId);
 }
