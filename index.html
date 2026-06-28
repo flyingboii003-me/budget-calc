@@ -2637,12 +2637,19 @@ function openAssetModal(assetId, isReopen = false) {
 }
 
 function closeAssetModal() {
-  // Restore snapshot jika ada (user klik Batal atau tutup via ×/overlay)
   if (modalSnapshot !== null) {
     const arr = loadAssets();
     const idx = arr.findIndex(a => a.id === modalSnapshot.id);
     if (idx >= 0) {
-      arr[idx] = modalSnapshot;
+      const isNewEmpty = !modalSnapshot.name || modalSnapshot.name === 'Aset Baru';
+      const hasNoData = !modalSnapshot.buyPrice && !modalSnapshot.currentPrice && !modalSnapshot.qty;
+      if (isNewEmpty && hasNoData) {
+        // Aset baru yang belum diisi — hapus sepenuhnya
+        arr.splice(idx, 1);
+      } else {
+        // Aset existing yang diedit — restore ke state sebelum edit
+        arr[idx] = modalSnapshot;
+      }
       saveAssets(arr);
       renderAssets();
       updateAssetDonut();
